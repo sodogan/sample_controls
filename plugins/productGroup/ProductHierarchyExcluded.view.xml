@@ -1,0 +1,107 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:View controllerName="retail.pmr.promotionaloffers.plugins.productGroup.ProductHierarchyExcluded"
+	xmlns:core="sap.ui.core" 
+	xmlns="sap.m" 
+	xmlns:l="sap.ui.layout" 
+	xmlns:smartTable="sap.ui.comp.smarttable"	
+	xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"	
+	xmlns:tree="sap.ui.table"
+	height="auto">
+
+	<l:VerticalLayout width="100%" class="sapUiMediumMarginTop">
+		<l:content>
+				<smartTable:SmartTable 
+						header=" "
+						id="leadingCategoryExcludedSmartTable"
+						entitySet="LeadingCategory"
+						tableType="ResponsiveTable"
+						showRowCount="false"
+                        enableAutoBinding="true"
+                        editable="true"
+                        tableBindingPath="/ProductHierarchy" 
+                        persistencyKey="ProductsFromProductHierarchyExcluded"
+                        useVariantManagement="true"
+                        useExportToExcel="false" 
+						>
+					
+						<smartTable:customData>
+							<core:CustomData key="p13nDialogSettings" value='\{"filter": \{ "visible": false}, 
+																			   "group": \{ "visible": false}}'/>
+						</smartTable:customData>
+						<smartTable:customToolbar>
+							<OverflowToolbar design="Transparent">								
+								<ToolbarSpacer />
+								<SearchField class="sapUiSmallMargin" 
+									id="excludeProductGroupSearchId"
+									placeholder="{i18n>ProductGroupPage.ProductSearch}" 
+									liveChange="onLiveChange" 
+									width="400px"
+									selectOnFocus="false"
+									visible="{Content>/Editable}"/>		
+									<Button
+										id="addLeadingCategoryButtonExcluded"
+										icon="sap-icon://add"
+				    	 				type="Transparent"
+				    	 				press="handleAddProductHierarchy"	
+				    	 				visible="{= ${Content>/ReadOnly} !== true}"			    	 				
+				    	 				tooltip="{i18n>CreateOffer.General.Tactics.Add}">
+									</Button>
+									<Link 
+										class="sapUiSmallMargin" 
+										text="{i18n>ProductHierarchy.Delete}" 
+										enabled="{Content>/IncludedEnabled}"	
+										visible="{= ${Content>/ReadOnly} !== true}"									
+										press="handleIncludeProduct" />						
+							</OverflowToolbar>
+						</smartTable:customToolbar>
+						<tree:TreeTable
+							id="productHierarchyExcludedTable"							
+							noData="{i18n>ProductHierarchy.NoData.Exclude}"
+							showNoData="true"
+							selectionMode="{= ${Content>/ReadOnly} !== true ? 'MultiToggle' :'None' }"						
+							visibleRowCountMode="Fixed" 
+							rootLevel="1" 
+							expandFirstLevel="true"
+							rows="{/}"
+							rowSelectionChange="selectionChanged"
+							>							
+							<tree:Column grouped="false" autoResizable="true">
+								
+								<tree:customData>
+									<core:CustomData key="p13nData"
+										value='\{"columnKey": "ExtId", "leadingProperty": "ExtId"}' />
+								</tree:customData>
+								
+								<Label text="{i18n>productHierarchy.Name}" />
+								<tree:template>
+										<Text text="{
+												parts : [{path: 'Name'},{path: 'ExtId'}],
+												formatter:'retail.pmr.promotionaloffers.utils.Formatter.tableNodeName'
+											}" />										
+								</tree:template>
+							</tree:Column>
+							<tree:Column grouped="false" autoResizable="true" hAlign="Right">
+								
+								<tree:customData>
+									<core:CustomData key="p13nData"
+										value='\{"columnKey": "MaxCardinality", "leadingProperty": "MaxCardinality"}' />
+								</tree:customData>  
+								
+								<Label text="{i18n>ProductHierarchy.Count}" />
+								<tree:template>
+										<Text text="{MaxCardinality}" />										
+								</tree:template>
+							</tree:Column>
+						</tree:TreeTable>
+						
+						<smartTable:layoutData>
+							<FlexItemData growFactor="1" />
+						</smartTable:layoutData>								 
+					</smartTable:SmartTable>
+			</l:content>
+	</l:VerticalLayout>
+</core:View>

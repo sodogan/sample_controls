@@ -1,0 +1,31 @@
+/* Layout for the main chart and comments */
+.contentPadding{
+	padding-right: 20px;
+}
+
+div.contentPadding > div{
+	margin-right: 10px;
+}
+
+.halfWidthForChildren > div {
+	width : 50%
+}
+.contentMargin {
+	margin-right : 5px;
+}
+
+.transparentBar{
+	background-color : transparent;
+}
+.toRight{
+	float: right;
+}
+.toCenterText{
+	padding: 10% 0 0 5%;
+}
+.gridInVerticalLayout>div{
+	margin-bottom: 0rem !important;
+}
+.labelTitleSize{
+     font-size:1.25rem !important;
+}

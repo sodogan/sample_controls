@@ -1,0 +1,41 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition  
+	xmlns:mvc="sap.ui.core.mvc" 
+	xmlns:l="sap.ui.layout"
+	xmlns:core="sap.ui.core" 
+	xmlns:forms="sap.ui.layout.form" 
+	xmlns="sap.m"
+	xmlns:dialog="sap.ui.comp.valuehelpdialog" 
+	displayBlock="true"
+	xmlns:tree="sap.ui.table">
+
+			<tree:Table
+				rows="{/}">
+
+				<tree:Column grouped="false" autoResizable="true">
+					<Label text="" />
+					<tree:template>
+						<Text text="{ExtOfferId}" />
+					</tree:template>
+				</tree:Column>
+				
+				<tree:Column grouped="false" autoResizable="true">
+					<Label text="{i18n>Terms.CouponOfferAdvancedSearch.Name}" />
+					<tree:template>
+						<Text text="{Name}" />
+					</tree:template>
+				</tree:Column>
+				
+				<tree:Column grouped="false" autoResizable="true">
+					<Label text="{i18n>Terms.CouponOfferAdvancedSearch.StatusName}" />
+					<tree:template>
+						<Text text="{StatusName}" />
+					</tree:template>
+				</tree:Column>
+			</tree:Table>
+
+</core:FragmentDefinition>

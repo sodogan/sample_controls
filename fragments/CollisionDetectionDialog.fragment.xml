@@ -1,0 +1,170 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:smartTable="sap.ui.comp.smarttable"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<Dialog title="{i18n>Offer.CollisionDetection}" afterClose="onAfterClose" contentWidth="100%" class="sapUiSizeCompact">
+		<content>
+			<smartTable:SmartTable
+				entitySet="Offers"
+				useVariantManagement="true" 
+				useTablePersonalisation="true"
+				tableType="ResponsiveTable"
+				persistencyKey="COLLISIONS_TABLE_PERSISTENT_KEY"				
+				header="{i18n>ManageOffers.Offers}"
+                showRowCount="false"
+				class="sapUiMediumMarginBegin sapUiMediumMarginEnd"
+				enableAutoBinding="true"
+				beforeRebindTable="onBeforeRebind"
+				noData="{i18n>Offer.CollisionDetection.Dialog.NoCollisions}">
+				<smartTable:customData>
+					<core:CustomData key="p13nDialogSettings" value='\{"filter": \{ "visible": false}, 
+																	   "group": \{ "visible": false}}'/>
+				</smartTable:customData>
+				
+				<Table
+					growing="true"
+					growingThreshold="20"
+					growingScrollToLoad="true">
+						<columns>
+								<Column>
+									<customData>
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "0", "columnKey": "Name","leadingProperty": ["ExtOfferId", "Name"],"sortProperty": "Name","filterProperty": "Name"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.Name}" />
+								</Column>							
+								<Column minScreenWidth="Tablet" demandPopin="true">
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "1", "columnKey": "ImagePath","leadingProperty": "ImagePath","sortProperty": "ImagePath","filterProperty": "ImagePath"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.Image}" />
+								</Column>
+								
+								<Column minScreenWidth="Tablet" demandPopin="true">
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "2", "columnKey": "Status","leadingProperty": ["Status", "StatusName"],"sortProperty": "Status","filterProperty": "Status"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.Status}" />
+								</Column>
+
+								<Column minScreenWidth="Tablet" demandPopin="true">
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "4", "columnKey": "Timeframe", "leadingProperty": ["StartOfOffer", "EndOfOffer"],"sortProperty": "StartOfOffer","filterProperty": "StartOfOffer"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.TimeFrame}" />
+								</Column>
+								
+								<Column minScreenWidth="Tablet" demandPopin="true">
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "8", "columnKey": "ChangedByName","leadingProperty": ["ChangedByName", "ChangedOn"],"sortProperty": "ChangedByName","filterProperty": "ChangedByName"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.LastChanged}" />
+								</Column>
+								
+								<Column minScreenWidth="Tablet" demandPopin="true" visible="false">
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "9", "columnKey": "CreatedByName","leadingProperty": ["CreatedByName", "CreatedOn"],"sortProperty": "CreatedByName","filterProperty": "CreatedByName"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.Created}" />
+								</Column>
+								
+								<Column visible="false">
+									<customData>
+							          	<core:CustomData key="p13nData"  value='\{"columnKey": "ExportedOn","leadingProperty": ["ExtOfferId", "ExportedOn"],"sortProperty": "ExportedOn","filterProperty": "ExportedOn"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.ExportedOn}" />
+								</Column>
+								
+								<Column visible="false">
+									<customData>
+							          	<core:CustomData key="p13nData"  value='\{"columnKey": "ChangedOn","leadingProperty": ["ExtOfferId", "ChangedOn"],"sortProperty": "ChangedOn","filterProperty": "ChangedOn"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.ChangedOn}" />
+								</Column> 
+								
+								<Column visible="false">
+									<customData>
+							          	<core:CustomData key="p13nData"  value='\{"columnKey": "CreatedOn","leadingProperty": ["ExtOfferId", "CreatedOn"],"sortProperty": "CreatedOn","filterProperty": "CreatedOn"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.CreatedOn}" />
+								</Column>										
+						</columns>
+						<items>
+							<ColumnListItem>
+								<cells>
+									<ObjectIdentifier
+											title="{Name}"
+											text="{ExtOfferId}"
+											titleActive="{settings>/linkEnabled}"
+											titlePress="displayCollision"/>									
+										<Image
+											width="50px"
+											src="{ImagePath}" 
+											alt="{Name}"/>
+										<ObjectStatus
+											text="{StatusName}"
+											class="sapMText sapMTextMaxWidth"
+											state="{
+												parts: [
+													{path: 'UIState'},
+													{path: 'Status'}
+												],
+												formatter: 'retail.pmr.promotionaloffers.utils.Utils.status'
+											}" />
+										<Text text="{
+											parts : [
+												{path: 'StartOfOffer' },
+												{path: 'EndOfOffer' }
+											],
+											formatter:'retail.pmr.promotionaloffers.utils.Formatter.datesFormatterForManageOffer'
+										}" />
+										<Text text="{
+											parts : [
+												{path: 'ChangedByName' },
+												{path: 'ChangedOn' }],
+											formatter:'retail.pmr.promotionaloffers.utils.Formatter.lastChangedByFormatter'
+										}" />
+										<Text text="{
+											parts : [
+												{path: 'CreatedByName' },
+												{path: 'CreatedOn' }],
+											formatter:'retail.pmr.promotionaloffers.utils.Formatter.lastChangedByFormatter'
+										}" />
+										<Text
+											text="{
+												path: 'ExportedOn',
+												formatter: 'retail.pmr.promotionaloffers.utils.Formatter.dateFormat'
+										}"/>
+										<Text
+											text="{
+												path: 'ChangedOn',
+												formatter: 'retail.pmr.promotionaloffers.utils.Formatter.dateFormat'
+										}"/>
+										<Text
+											text="{
+												path: 'CreatedOn',
+												formatter: 'retail.pmr.promotionaloffers.utils.Formatter.dateFormat'
+										}"/>										
+								</cells>
+							</ColumnListItem>
+						</items>
+				</Table>
+				
+				<smartTable:layoutData>
+					<FlexItemData growFactor="1" />
+				</smartTable:layoutData>								 
+			</smartTable:SmartTable>
+		</content>
+		<beginButton>
+			<Button 
+				text="{i18n>Offer.OK}"
+				press="onCollisionDialogConfirm" />
+		</beginButton>
+		 
+	</Dialog>
+</core:FragmentDefinition>

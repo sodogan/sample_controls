@@ -1,0 +1,41 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<P13nDialog ok="okProductFields" cancel="closeProductFields" class="sapUiSizeCompact">
+		<panels>
+			<P13nColumnsPanel title="{i18n>Freestyle.Financials.FinancialFileds}" visible="true"
+				type="columns"
+				items="{
+                    path: '/Fields'
+                }"
+                columnsItems="{
+                    path: '/Fields'
+                }" >
+				<items>
+					<P13nItem columnKey="{columnKey}" text="{text}" visible="{visible}" />
+				</items>
+				<columnsItems>
+				  <P13nColumnsItem columnKey="{columnKey}" index ="{index}" text="{text}" visible="{visible}"/>
+				</columnsItems>
+			</P13nColumnsPanel>
+			<P13nSortPanel title="{i18n>Freestyle.Financials.Sort}" visible="false" type="sort"
+				items="{
+                    path: '/Fields'
+                }"
+                sortItems="{
+                    path: '/SortItems'
+                }"
+				>
+				<P13nItem columnKey="{columnKey}" text="{text}" />
+				<sortItems>
+					<P13nSortItem columnKey="{keyField}" operation="{operation}" />
+				</sortItems>
+			</P13nSortPanel>
+		</panels>
+	</P13nDialog>
+</core:FragmentDefinition>

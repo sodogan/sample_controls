@@ -1,0 +1,248 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:core="sap.ui.core">
+	<Dialog
+		title="{i18n>MassEdit.Title}"
+		class="sapUiContentPadding sapUiSizeCompact"
+		resizable="true"
+		draggable="true"
+		contentWidth="400px">
+		<content>
+			<!-- Invisible labels for Aria support -->
+			<core:InvisibleText id="massChangel1" text="{i18n>ManageOffers.ProductDetails.DiscountValue}"/>
+			<core:InvisibleText id="massChangel2" text="{i18n>ManageOffers.ProductDetails.SubDiscountValue}"/>
+			
+			<!-- Offer Set -->
+			<l:VerticalLayout  width="100%">
+				<Label class="sapUiSmallMarginBegin" text="{i18n>ManageOffers.ProductDetails.DiscountValue}:" labelFor="discountValueMassChange" />
+				<l:Grid width="100%" defaultSpan="L12 M12 S12" hSpacing="1" class="gridInVerticalLayout">
+					<l:content>
+						<Input id="discountValueMassChange" 
+							   value="{/DiscountValue}"
+							   change="validateDiscountValue">
+							<layoutData>
+								<l:GridData span="L10 M10 S10" />
+							</layoutData>
+						</Input>		
+						<CheckBox class="sapUiContentPadding" selected="{Data>/DiscountValueSelected}" ariaLabelledBy="massChangel1">
+							<layoutData>
+								<l:GridData span="L2 M2 S2" />
+							</layoutData>
+						</CheckBox>
+					</l:content>
+				</l:Grid>
+				
+			</l:VerticalLayout>				
+			
+			<l:VerticalLayout  width="100%">
+				<Label class="sapUiSmallMarginBegin" text="{i18n>ManageOffers.ProductDetails.SubsequentValue}:" labelFor="subDiscountValueMassChange" />
+				<l:Grid width="100%" defaultSpan="L12 M12 S12" hSpacing="1" class="gridInVerticalLayout">
+					<l:content>
+						<Input id="subDiscountValueMassChange"
+							   value="{/SubDiscountValue}"
+						 	   change="validateSubDiscountValue">
+							<layoutData>
+								<l:GridData span="L10 M10 S10" />
+							</layoutData>
+						</Input>		
+						<CheckBox class="sapUiContentPadding" selected="{Data>/SubDiscountValueSelected}" ariaLabelledBy="massChangel2">
+							<layoutData>
+								<l:GridData span="L2 M2 S2" />
+							</layoutData>
+						</CheckBox>
+					</l:content>
+				</l:Grid>
+
+			</l:VerticalLayout>					
+				
+			<l:VerticalLayout  width="100%">
+				<Label class="sapUiSmallMarginBegin" text="{i18n>ManageOffers.ProductDetails.UserProjection}:" labelFor="userProjectionMassChange" />
+				<l:Grid width="100%" defaultSpan="L12 M12 S12" hSpacing="1" class="gridInVerticalLayout">
+					<l:content>
+						<Input id="userProjectionMassChange" 
+							   value="{/UserProjection}"
+						 	   change="validateUserProjection">
+							<layoutData>
+								<l:GridData span="L10 M10 S10" />
+							</layoutData>
+						</Input>		
+						<CheckBox class="sapUiContentPadding" selected="{Data>/UserProjectionSelected}" ariaLabelledBy="massChangel2">
+							<layoutData>
+								<l:GridData span="L2 M2 S2" />
+							</layoutData>
+						</CheckBox>
+					</l:content>
+				</l:Grid>
+
+			</l:VerticalLayout>					
+			
+			<l:VerticalLayout  width="100%">
+				<Label class="sapUiSmallMarginBegin" text="{i18n>ManageOffers.ProductDetails.LockUserProjection}:" labelFor="lockUserProjectionMassChange" />
+				<l:Grid width="100%" defaultSpan="L12 M12 S12" hSpacing="1" class="gridInVerticalLayout">
+					<l:content>
+						<ComboBox width="100%"
+							id="lockUserProjectionMassChange"
+							selectedKey="{/LockUserProjection}">
+							<items>
+								<core:Item key="true" text="{i18n>CreateOffer.MassEdit.Yes}" />
+								<core:Item key="false" text="{i18n>CreateOffer.MassEdit.No}" />
+							</items>
+							<layoutData>
+								<l:GridData span="L10 M10 S10" />
+							</layoutData>
+						</ComboBox>
+						
+						<CheckBox class="sapUiContentPadding" selected="{Data>/LockUserProjectionSelected}" ariaLabelledBy="massChangel2">
+							<layoutData>
+								<l:GridData span="L2 M2 S2" />
+							</layoutData>
+						</CheckBox>
+					</l:content>
+				</l:Grid>
+
+			</l:VerticalLayout>	
+			
+			<l:VerticalLayout  width="100%">
+				<Label class="sapUiSmallMarginBegin" text="{i18n>ManageOffers.ProductDetails.PromoCostPrice}:" labelFor="promoCostPriceMassChange" />
+				<l:Grid width="100%" defaultSpan="L12 M12 S12" hSpacing="1" class="gridInVerticalLayout">
+					<l:content>
+						<Input id="promoCostPriceMassChange" 
+							   value="{/PromoCostPrice}"
+							   change="validatePromoCostPrice">
+							<layoutData>
+								<l:GridData span="L10 M10 S10" />
+							</layoutData>
+						</Input>		
+						<CheckBox class="sapUiContentPadding" selected="{Data>/PromoCostPriceSelected}" ariaLabelledBy="massChangel2">
+							<layoutData>
+								<l:GridData span="L2 M2 S2" />
+							</layoutData>
+						</CheckBox>
+					</l:content>
+				</l:Grid>
+			</l:VerticalLayout>		
+
+			<l:VerticalLayout 
+			    visible="{= ${Data>/CurrencyList}.length > 0}"
+			    width="100%">
+				<Label class="sapUiSmallMarginBegin" text="{i18n>ManageOffers.ProductDetails.PromoCostPriceCurrency}:" labelFor="promoCostPriceCurrencyMassChange" />
+				<l:Grid width="100%" defaultSpan="L12 M12 S12" hSpacing="1" class="gridInVerticalLayout">
+					<l:content>
+						<ComboBox 
+						    width="100%"
+							id="promoCostPriceCurrencyMassChange"
+							showSecondaryValues="true" 
+							filterSecondaryValues="true" 
+							selectedKey="{/PromoCostPriceCurrency}"
+							items="{
+								path: 'Data>/CurrencyList',
+								length: 300,
+								templateShareable : 'true'
+					        }">
+							<core:ListItem key="{Data>Key}" text="{Data>Key}" additionalText= "{Data>Value}"/>
+							<layoutData>
+								<l:GridData span="L10 M10 S10" />
+							</layoutData>
+						</ComboBox>			
+						<CheckBox class="sapUiContentPadding" selected="{Data>/PromoCostPriceCurrencySelected}" ariaLabelledBy="massChangel2">
+							<layoutData>
+								<l:GridData span="L2 M2 S2" />
+							</layoutData>
+						</CheckBox>
+					</l:content>
+				</l:Grid>
+			</l:VerticalLayout>	
+			
+			<l:VerticalLayout  width="100%">
+				<Label class="sapUiSmallMarginBegin" text="{i18n>ManageOffers.ProductDetails.PromotedUoM}:" labelFor="promotedUoMMassChange" />
+				<l:Grid width="100%" defaultSpan="L12 M12 S12" hSpacing="1" class="gridInVerticalLayout">
+					<l:content>
+						<ComboBox width="100%"
+							id="promotedUoMMassChange"
+							selectedKey="{/PromotedUoM}"
+							items="{
+								path: 'Data>/UnitOfMeasures',
+								sorter: { path: 'Id' },
+								templateShareable : 'true'
+					        }">
+							<core:Item key="{Data>Id}" text="{Data>Id}" />
+							<layoutData>
+								<l:GridData span="L10 M10 S10" />
+							</layoutData>
+						</ComboBox>			
+						<CheckBox class="sapUiContentPadding" selected="{Data>/PromotedUoMSelected}" ariaLabelledBy="massChangel2">
+							<layoutData>
+								<l:GridData span="L2 M2 S2" />
+							</layoutData>
+						</CheckBox>
+					</l:content>
+				</l:Grid>
+
+			</l:VerticalLayout>
+			
+			<l:VerticalLayout  width="100%">
+				<Label class="sapUiSmallMarginBegin" text="{i18n>ManageOffers.ProductDetails.DisplayUoM}:" labelFor="displayUoMMassChange" />
+				<l:Grid width="100%" defaultSpan="L12 M12 S12" hSpacing="1" class="gridInVerticalLayout">
+					<l:content>
+						<ComboBox width="100%" id="displayUoMMassChange"
+							selectedKey="{/DisplayUoM}"
+							items="{
+								path: 'Data>/UnitOfMeasures',
+								sorter: { path: 'Id' },
+								templateShareable : 'true'
+					        }">
+							<core:Item key="{Data>Id}" text="{Data>Id}" />
+							<layoutData>
+								<l:GridData span="L10 M10 S10" />
+							</layoutData>
+						</ComboBox>		
+						<CheckBox class="sapUiContentPadding" selected="{Data>/DisplayUoMSelected}" ariaLabelledBy="massChangel2">
+							<layoutData>
+								<l:GridData span="L2 M2 S2" />
+							</layoutData>
+						</CheckBox>
+					</l:content>
+				</l:Grid>
+
+			</l:VerticalLayout>
+			
+			<l:VerticalLayout  width="100%">
+				<Label class="sapUiSmallMarginBegin" text="{i18n>ManageOffers.ProductDetails.DisplayUoMValue}:" labelFor="displayUoMValueMassChange" />
+				<l:Grid width="100%" defaultSpan="L12 M12 S12" hSpacing="1" class="gridInVerticalLayout">
+					<l:content>
+						<Input id="displayUoMValueMassChange"
+							   value="{/DisplayUoMValue}"
+							   change="validateDisplayUoMValue">
+							<layoutData>
+								<l:GridData span="L10 M10 S10" />
+							</layoutData>
+						</Input>		
+						<CheckBox class="sapUiContentPadding" selected="{Data>/DisplayUoMValueSelected}" ariaLabelledBy="massChangel2">
+							<layoutData>
+								<l:GridData span="L2 M2 S2" />
+							</layoutData>
+						</CheckBox>
+					</l:content>
+				</l:Grid>
+
+			</l:VerticalLayout>
+	
+				
+				
+		</content>
+		
+		<beginButton>
+			<Button press="ok" text="{i18n>CreateOffer.Confirm}" />
+		</beginButton>
+		<endButton>
+			<Button press="cancel" text="{i18n>CreateOffer.Cancel}" />
+		</endButton>
+		
+	</Dialog>
+</core:FragmentDefinition>

@@ -1,0 +1,59 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:layout="sap.ui.layout" xmlns:viz="sap.viz.ui5.controls"
+	xmlns:viz.data="sap.viz.ui5.data" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds">
+	<Dialog class="sapUiSizeCompact" resizable="true" draggable="true" showHeader="true" title="{i18n>ForecastDialog.Title}" contentWidth="80%">
+		<content>
+			<IconTabBar id="tabBar">
+				<items>
+					<IconTabFilter text="{i18n>ForecastDialog.DecompositionTab}" id="decompositionTab">
+						<viz:VizFrame id="decompositionChart" uiConfig="{applicationSet:'fiori'}" width="100%" vizType='waterfall' legendVisible="false"
+							vizProperties="{data>/ConfigFall}">
+							<viz:dataset>
+								<viz.data:FlattenedDataset data="{data>/Decomposition}">
+									<viz.data:dimensions>
+										<viz.data:DimensionDefinition name="Type" value="{Type}"/>
+										<viz.data:DimensionDefinition name="CategoryAxis" value="{Category}"/>
+									</viz.data:dimensions>
+									<viz.data:measures>
+										<viz.data:MeasureDefinition name="Forecast" value="{Forecast}"/>
+									</viz.data:measures>
+								</viz.data:FlattenedDataset>
+							</viz:dataset>
+							<viz:feeds>
+								<viz.feeds:FeedItem uid="valueAxis" type="Measure" values="Forecast"/>
+								<viz.feeds:FeedItem uid="categoryAxis" type="Dimension" values="CategoryAxis"/>
+								<viz.feeds:FeedItem uid="waterfallType" type="Dimension" values="Type"/>
+							</viz:feeds>
+						</viz:VizFrame>
+					</IconTabFilter>
+					<IconTabFilter text="{i18n>ForecastDialog.ConfidenceTab}" id="confidenceTab">
+						<viz:VizFrame id="confidenceChart" uiConfig="{applicationSet:'fiori'}" width="100%" vizType="column" legendVisible="false"
+							vizProperties="{data>/ConfigCol}">
+							<viz:dataset>
+								<viz.data:FlattenedDataset data="{data>/Confidence}">
+									<viz.data:dimensions>
+										<viz.data:DimensionDefinition name="Category" value="{Category}"/>
+									</viz.data:dimensions>
+									<viz.data:measures>
+										<viz.data:MeasureDefinition name="Locations" value="{Locations}"/>
+									</viz.data:measures>
+								</viz.data:FlattenedDataset>
+							</viz:dataset>
+							<viz:feeds>
+								<viz.feeds:FeedItem id='valueAxisFeed' uid="valueAxis" type="Measure" values="Locations"/>
+								<viz.feeds:FeedItem id='categoryAxisFeed' uid="categoryAxis" type="Dimension" values="Category"/>
+							</viz:feeds>
+						</viz:VizFrame>
+					</IconTabFilter>
+				</items>
+			</IconTabBar>
+		</content>
+		<buttons>
+			<Button press="onOK" text="{i18n>Offer.Close}"/>
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

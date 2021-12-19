@@ -1,0 +1,137 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:View controllerName="retail.pmr.promotionaloffers.plugins.productGroup.controls.ProductsTable"
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core" 
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:table="sap.m.table"
+	xmlns:layout="sap.ui.layout"
+	xmlns:controls="retail.pmr.promotionaloffers.plugins.productGroup.controls">
+ 	<layout:VerticalLayout width="100%">
+		<layout:content>
+		<controls:SmartProducts id="smartProductsTableForGroups"
+			persistencyKey="ProductsFromProductGroup"
+			itemProperty="/ProductGroupItems">
+		    <controls:table>
+		    	<Table
+		    	id="productsTable"
+		    	items="{Content>/ProductGroupItems}"
+		    	selectionChange="onRowSelected"
+		    	growing="true"
+		    	noDataText="{= ${Content>/IsIncluded} === true ? ${i18n>ProductGroupPage.ProductsTable.NoData} : ${i18n>ProductGroupPage.ProductsTableExcludes.NoData}}"
+		    	mode="{= ${Content>/Editable} &amp;&amp; ${Content>/ReadOnly} !== true ? 'MultiSelect' : 'None'}">
+		    	<headerToolbar>
+					<OverflowToolbar>
+						<Title text="{parts : [{path : 'i18n>ProductGroupPage.ProductsTable.TableTitle'}, {path : 'Content>/ProductGroupItems/length'}], formatter : 'jQuery.sap.formatMessage'}" level="H2"/>
+						<ToolbarSpacer/>
+						<SearchField 
+							id="productFilterId"
+							class="sapUiSmallMargin" 
+							placeholder="{i18n>ProductGroupPage.ProductSearch}" 
+							liveChange="onLiveChange" 
+							search="onSearch"
+							width="400px" 
+							selectOnFocus="false"
+							visible="{Content>/Editable}"/>
+						
+						<Button
+							icon="sap-icon://add"
+	    	 				type="Transparent"
+	    	 				press="handleAddPress"
+	    	 				tooltip="{i18n>ProductGroupPage.ProductsTable.Add}"
+	    	 				visible="{= ${Content>/Editable} &amp;&amp; ${Content>/ReadOnly} !== true}"
+	    	 				>
+						</Button>
+						
+						<Link
+							class="sapUiSmallMargin"
+	    	 				press="handleAddMultiplePress"
+	    	 				text="{i18n>ProductGroupPage.ProductsTable.AddMultiple}"
+	    	 				tooltip="{i18n>ProductGroupPage.ProductsTable.AddMultiple}"
+	    	 				visible="{= ${Content>/EnableMultipleAdd} &amp;&amp; ${Content>/ReadOnly} !== true}" />
+						
+						<Link class="sapUiSmallMargin" text="{i18n>ProductGroupPage.DeleteProducts}" 
+							enabled="{Content>/EnableDelete}"
+							visible="{= ${Content>/ReadOnly} !== true}"
+							press="handleDeletePress" />						
+					</OverflowToolbar>
+				</headerToolbar>
+			
+				<columns>	
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<customData> 
+				          	<core:CustomData key="cellData" value="ExtId"/>
+				     	</customData>
+						<Text text="{i18n>ProductGroupPage.ProductsTable.ID}" />
+					</Column>	
+					<Column>
+						<customData> 
+				          	<core:CustomData key="cellData" value="Name"/>
+				     	</customData>
+						<Text text="{i18n>ProductGroupPage.ProductsTable.Name}" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<customData> 
+				          	<core:CustomData key="cellData" value="TypeName"/>
+				     	</customData>
+						<Text text="{i18n>ProductGroupPage.ProductsTable.Type}" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<customData> 
+				          	<core:CustomData key="cellData" value="MerchandiseCategory"/>
+				     	</customData>
+						<Text text="{i18n>ProductGroupPage.ProductsTable.MerchandiseCategory}" />
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<customData> 
+				          	<core:CustomData key="cellData" value="Size"/>
+				     	</customData>
+						<Text text="{i18n>ProductGroupPage.ProductsTable.Size}" />
+					</Column>	
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<customData> 
+				          	<core:CustomData key="cellData" value="Color"/>
+				     	</customData>
+						<Text text="{i18n>ProductGroupPage.ProductsTable.Color}" />
+					</Column>	
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<customData> 
+				          	<core:CustomData key="cellData" value="BrandId"/>
+				     	</customData>
+						<Text text="{i18n>ProductGroupPage.ProductsTable.Brand}" />
+					</Column>	
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<customData> 
+				          	<core:CustomData key="cellData" value="BaseUom"/>
+				     	</customData>
+						<Text text="{i18n>ProductGroupPage.ProductsTable.BaseUom}" />
+					</Column>	
+					<core:ExtensionPoint name="extProductsTableColumns" />
+				</columns>
+				<items>
+					<ColumnListItem>
+						<cells>	
+							<ObjectIdentifier title="{Content>ExtId}" />	
+							<Text text="{Content>Name}" />
+							<Text text="{Content>TypeName}" />
+							<Text text="{Content>MerchandiseCategory}" />
+							<Text text="{Content>Size}" />
+							<Text text="{Content>Color}" />
+							<Text text="{Content>BrandId}" />
+							<Text text="{Content>BaseUom}"/>
+							<core:ExtensionPoint name="extProductsTableCells" />
+						</cells>					
+					</ColumnListItem>
+				</items>
+				</Table>
+			 </controls:table>
+			 <controls:layoutData>
+				<FlexItemData growFactor="1" />
+			</controls:layoutData>			
+			</controls:SmartProducts>
+		 </layout:content>
+		</layout:VerticalLayout>
+</core:View>

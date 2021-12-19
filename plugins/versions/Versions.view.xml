@@ -1,0 +1,185 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:View controllerName="retail.pmr.promotionaloffers.plugins.versions.Versions"
+	xmlns:core="sap.ui.core" 
+	xmlns="sap.m" 
+	xmlns:l="sap.ui.layout" 
+	xmlns:smartTable="sap.ui.comp.smarttable"	
+	xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+	height="auto">
+
+	<l:VerticalLayout width="100%">
+		<l:content>
+				<smartTable:SmartTable 
+						id="versions"
+						entitySet="Offers"
+						tableType="ResponsiveTable"
+						header="{i18n>CreateOffer.Versions.Title}"
+                        showRowCount="true"
+                        enableAutoBinding="true"
+                        editable="true"
+                        tableBindingPath="/VersionItems"  
+                        useVariantManagement="true" 
+                        persistencyKey="VERSIONS_TABLE_PERSISTENT_KEY"  
+                        beforeRebindTable="onBeforeRebindTable"                    
+						>
+						
+						<smartTable:customData>
+							<core:CustomData key="p13nDialogSettings" value='\{"filter": \{ "visible": false}, 
+																			   "group": \{ "visible": false}}'/>
+						</smartTable:customData>
+						<smartTable:customToolbar>
+							<OverflowToolbar design="Transparent">
+								<ToolbarSpacer />		
+									<Link class="sapUiSmallMargin" text="{i18n>ManageVersions.ManageVersionsButton}" 
+										enabled="{Content>/ManageVersionEnabled}"
+										press="handleManageVersionPress" />
+						
+							</OverflowToolbar>
+						</smartTable:customToolbar>
+						<Table
+							id="versionsTable"							
+							growing="true"
+							mode="None"
+							growingThreshold="20"
+							growingScrollToLoad="true"
+							selectionChange="onSelectionChange"
+							noDataText="{i18n>Versions.NoData}"
+							>							
+							<columns>
+								<Column minScreenWidth="Tablet" demandPopin="true">
+									<customData>
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "0", "columnKey": "Name","leadingProperty": ["Name"],"sortProperty": "Name","filterProperty": "Name"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.VersionName}" />									
+								</Column>
+								<Column minScreenWidth="Tablet" demandPopin="true">
+									<customData>
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "1", "columnKey": "Description","leadingProperty": ["Description"],"sortProperty": "Description","filterProperty": "Description"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.Description}" />
+								</Column>
+								
+								<Column minScreenWidth="Tablet" demandPopin="true">
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "2", "columnKey": "Timeframe", "leadingProperty": ["StartOfOffer", "EndOfOffer"],"sortProperty": "StartOfOffer","filterProperty": "StartOfOffer"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.TimeFrame}" />
+								</Column>
+								<Column minScreenWidth="Tablet" demandPopin="true">
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "5", "columnKey": "ExtLocationNodeId","leadingProperty": ["ExtLocationNodeId"]}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.Versions.Location}" />
+								</Column>
+								
+								<Column minScreenWidth="Tablet" demandPopin="true" hAlign="End">
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "6", "columnKey": "Sales","leadingProperty": ["Sales"],"sortProperty": "Sales","filterProperty": "Sales"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.Sales}" />
+								</Column>
+								
+								<Column minScreenWidth="Tablet" demandPopin="true" hAlign="End">
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "7", "columnKey": "Profit","leadingProperty": ["Profit"],"sortProperty": "Profit","filterProperty": "Profit"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.Profit}" />
+								</Column>
+								
+								<Column minScreenWidth="Tablet" demandPopin="true" hAlign="End">
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "8", "columnKey": "Margin","leadingProperty": ["Margin"],"sortProperty": "Margin","filterProperty": "Margin"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.Margin}" />
+								</Column>	
+								
+								<Column minScreenWidth="Tablet" demandPopin="true" hAlign="End">
+									<customData>
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "9", "columnKey": "UnitProjection","leadingProperty": ["UnitProjection"],"sortProperty": "UnitProjection","filterProperty": "UnitProjection"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.VersionUnitProjection}" />									
+								</Column>							
+							</columns>
+							<items templateShareable="true">
+								<ColumnListItem type="Navigation" press="displayVersion">
+									<cells>
+										<ObjectIdentifier
+											title="{Name}"/>										
+										<Text text="{Description}" />
+
+										<Text text="{
+											parts : [
+												{path: 'StartOfOffer' },
+												{path: 'EndOfOffer' }
+											],
+											formatter:'retail.pmr.promotionaloffers.utils.Formatter.datesShortFormatter'
+										}" />
+										
+										
+										<Text text="{
+											parts : [
+												{path: 'locationPath'}
+											],
+											formatter:'retail.pmr.promotionaloffers.utils.Formatter.breadCrumbFormatter'
+										}"/>
+										
+										<ObjectNumber 
+										unit="{Currency}"
+										emphasized="false"
+										number="{
+											parts : [
+												{path: 'Sales'},												
+												{path: 'Currency'}],
+											type: 'sap.ui.model.type.Currency',
+											formatOptions: {
+												showMeasure: false
+											}
+										}" />	
+										<ObjectNumber 
+										unit="{Currency}"
+										emphasized="false"
+										number="{
+											parts : [												
+												{path: 'Profit'},
+												{path: 'Currency'}],
+											type: 'sap.ui.model.type.Currency',
+											formatOptions: {
+												showMeasure: false
+											}
+										}" />	
+										<ObjectNumber
+											emphasized="true"
+											unit="%"
+											number="{Margin}" />
+											
+										<ObjectNumber
+											emphasized="false"
+											number="{ path : 'UnitProjection',
+													  type: 'sap.ui.model.type.Float',
+													  constraints: {maximum: 99999999999999},
+													  formatOptions: {
+															style: 'standard',
+															groupingEnabled: false,
+															minIntegerDigits: 0,
+															maxIntegerDigits: 12,
+															minFractionDigits: 0,
+															maxFractionDigits: 2,
+															emptyString : null
+														}
+													}" />		
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>
+						
+						<smartTable:layoutData>
+							<FlexItemData growFactor="1" />
+						</smartTable:layoutData>								 
+					</smartTable:SmartTable>
+			</l:content>
+	</l:VerticalLayout>
+</core:View>

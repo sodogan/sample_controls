@@ -1,0 +1,277 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:View xmlns="sap.uxap" xmlns:l="sap.ui.layout" xmlns:m="sap.m"
+	xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:semantic="sap.m.semantic"
+	controllerName="retail.pmr.promotionaloffers.view.MainPageTabs" height="100%">
+	<semantic:FullscreenPage 
+		showNavButton="true"
+		navButtonPress="onNavButtonPress"
+		showFooter="{Content>/ShowFooter}"
+		title="{= ${/Name} === '' ? ${i18n>createoffer.AppTitle} : ${i18n>editoffer.AppTitle} }">
+		<semantic:content>
+			<ObjectPageLayout id="ObjectPageLayout" visible="{UIVisiblity>/Visible}">
+				<headerTitle>
+					<ObjectPageHeader objectImageURI="{/ImagePath}"
+						objectImageShape="Square"
+						objectTitle="{= ${/Name} === '' ? ${i18n>createoffer.AppTitle} : ${/Name} }"
+						objectSubtitle="{/ExtOfferId}">
+						<actions>               
+							<ObjectPageHeaderActionButton
+								visible="{= ${Content>/NavButtonsEnabled} === false}" hideText="{= ${Content>/NavButtonsEnabled} === true}"
+								hideIcon="true" text="{i18n>copyoffer.Button}" press="onCopyOfferPress" />
+							<ObjectPageHeaderActionButton
+								visible="{
+									parts : [ { path : 'Content>/NavButtonsEnabled' }, { path : '/UIState' }, { path : '/Status' }],
+									formatter : '.canBeEdited'
+								}" hideText="{= ${Content>/NavButtonsEnabled} === true}"
+								hideIcon="true" text="{i18n>ManagerOffers.editButton}" press="onEditOfferPress" />
+							<ObjectPageHeaderActionButton
+								visible="{= ${Content>/NavButtonsEnabled} === false}"
+								hideText="{= ${Content>/NavButtonsEnabled} === true}"
+								hideIcon="true" text="{i18n>ManagerOffers.deleteButton}" press="onDeleteOfferPress" />
+							<ObjectPageHeaderActionButton
+								visible="{= ${Content>/NavButtonsEnabled} === false}" hideText="{= ${Content>/NavButtonsEnabled} === true}"
+								hideIcon="true" text="{i18n>ManagerOffers.statusButton}" press="onOfferFunctionPress">
+								<customData>
+									<core:CustomData key="area" value="S" />
+								</customData>
+							</ObjectPageHeaderActionButton>
+							<ObjectPageHeaderActionButton
+								visible="{= ${Content>/NavButtonsEnabled} === false}" hideText="{= ${Content>/NavButtonsEnabled} === true}"
+								hideIcon="true" text="{i18n>ManagerOffers.transferButton}"
+								press="onOfferFunctionPress">
+								<customData>
+									<core:CustomData key="area" value="T" />
+								</customData>
+							</ObjectPageHeaderActionButton>
+							<ObjectPageHeaderActionButton
+								visible="{= ${Content>/NavButtonsEnabled} === false}" hideText="{= ${Content>/NavButtonsEnabled} === true}"
+								hideIcon="true" text="{i18n>ManagerOffers.updateButton}" press="onOfferFunctionPress">
+								<customData>
+									<core:CustomData key="area" value="U" />
+								</customData>
+							</ObjectPageHeaderActionButton>
+							<ObjectPageHeaderActionButton
+								visible="{= ${Content>/NavButtonsEnabled} === false}" hideText="{= ${Content>/NavButtonsEnabled} === true}"
+								hideIcon="true" text="{i18n>Offer.CollisionDetection}" press="onCollisionDetection">
+								<customData>
+									<core:CustomData key="area" value="C" />
+								</customData>
+							</ObjectPageHeaderActionButton>
+							<ObjectPageHeaderActionButton
+								visible="{= ${Content>/NavButtonsEnabled} === false &amp;&amp; ${UIVisiblity>/ContentAssignmentEnabled} === true}" hideIcon="true" hideText="false" 
+								text="{i18n>Offer.OfferContent}" press="onOfferContent">
+								<customData>
+									<core:CustomData key="area" value="C" />
+								</customData>
+							</ObjectPageHeaderActionButton>							
+							<core:ExtensionPoint name="extPageHeaderActionFields" />
+						</actions>
+					</ObjectPageHeader>
+				</headerTitle>
+				<headerContent>
+					<l:VerticalLayout visible="{= ${Content>/Editable} === false}">
+						<m:ObjectStatus title="{i18n>CreateOffer.General.Status}"
+										text="{/StatusName}"
+										state="{
+											parts: [
+												{path: '/UIState'},
+												{path: '/Status'}
+											],
+											formatter: 'retail.pmr.promotionaloffers.utils.Utils.status'
+										}" />
+						<m:ObjectAttribute title="{i18n>CreateOffer.General.PackageOffer}" 
+										   text="{= ${/PackageOffer} === true ? 
+										 		 ${i18n>CreateOffer.General.PackageOfferYes} :
+										 		 ${i18n>CreateOffer.General.PackageOfferNo} }"/>
+					</l:VerticalLayout>
+					<m:Text width="300px" text="{/Description}" visible="{= ${Content>/Editable} === false &amp;&amp; ${/Description} !== '' }" />
+					<l:VerticalLayout visible="{= ${featuresAvailable>/Financials} === 'X' }" id="marginField">
+						<m:Label text="{i18n>Offer.MarginProjection}" />
+						<m:ObjectNumber unit="%" number="{
+							path : '/Margin',
+							type : 'sap.ui.model.type.Integer',
+							formatOptions: {decimals: 2, groupingEnabled: true}
+							}"/>
+					</l:VerticalLayout>
+					<l:VerticalLayout visible="{= ${featuresAvailable>/Financials} === 'X' }" id="unitField">
+						<m:Label text="{i18n>Offer.UnitProjection}" />
+						<m:ObjectNumber
+							number="{
+										path : '/UnitProjection',
+										type : 'sap.ui.model.type.Integer',
+										formatOptions: {decimals: 0, groupingEnabled: true}
+										}" />
+					</l:VerticalLayout>
+					<l:VerticalLayout visible="{= ${featuresAvailable>/Financials} === 'X' }" id="salesField">
+						<m:Label text="{i18n>Offer.SalesProjection}" />
+						<m:ObjectNumber unit="{/Currency}"
+							number="{
+										path : '/Sales',
+										type : 'sap.ui.model.type.Integer',
+										formatOptions: {decimals: 0, groupingEnabled: true}
+										}" />
+					</l:VerticalLayout>
+					<l:VerticalLayout visible="{= ${featuresAvailable>/Financials} === 'X' }" id="profitField">
+						<m:Label text="{i18n>Offer.ProfitProjection}" />
+						<m:ObjectNumber unit="{/Currency}"
+							number="{
+										path : '/Profit',
+										type : 'sap.ui.model.type.Integer',
+										formatOptions: {decimals: 0, groupingEnabled: true}
+										}" />
+					</l:VerticalLayout>
+					<l:VerticalLayout visible="{= ${featuresAvailable>/Financials} === 'X' }" id="fundField">
+						<m:Label text="{i18n>Offer.VendorFundImpact}" />
+						<m:ObjectNumber unit="{/Currency}"
+							number="{
+										path : '/VendorFundImpact',
+										type : 'sap.ui.model.type.Integer',
+										formatOptions: {decimals: 0, groupingEnabled: true}
+										}" />
+					</l:VerticalLayout>
+					<l:VerticalLayout id="transferField">
+						<m:Label text="{i18n>Offer.TransferDetails}" />
+						<m:ObjectAttribute title="{i18n>Offer.Status}" text="{/TransferStatusDesc}" />
+						<m:ObjectAttribute title="{i18n>Offer.ERPPromotionId}" text="{/ERPPromotionId}"/>
+						<m:ObjectAttribute title="{i18n>Offer.Date}" text="{
+												path: '/TransferredOn',
+												formatter: 'retail.pmr.promotionaloffers.utils.Formatter.dateTimeShortFormatter'
+										}"/>
+					</l:VerticalLayout>
+					<l:VerticalLayout id="exportField">
+						<m:Label text="{i18n>Offer.ExportDetails}" />
+						<m:ObjectAttribute title="{i18n>Offer.Status}" text="{/ExportStatusDescription}" />
+						<m:ObjectAttribute title="{i18n>Offer.ExportedRefId}" text="{/ExportedRefId}"/>
+						<m:ObjectAttribute title="{i18n>Offer.Date}" text="{
+												path: '/ExportedOn',
+												formatter: 'retail.pmr.promotionaloffers.utils.Formatter.dateTimeShortFormatter'
+										}"/>
+					</l:VerticalLayout>
+					<l:VerticalLayout  visible="{= ${featuresAvailable>/Financials} === 'X' }" id="forecastField">
+						<m:Label text="{i18n>Offer.Forecast}" />
+						<m:ObjectAttribute title="{i18n>Offer.ForecastCurrent}" text="{= ${/ForecastIsCurrent} === true ? 
+																						 ${i18n>CreateOffer.General.PackageOfferYes} :
+																					     ${i18n>CreateOffer.General.PackageOfferNo} }" />
+						<m:ObjectAttribute title="{i18n>Offer.ForecastUnits}" text="{
+												path: '/UnitForecast',
+												type : 'sap.ui.model.type.Float',
+												formatOptions: {maxFractionDigits: 2, groupingEnabled: true}	
+										}"
+										active="{= ${/UnitForecast} > 0  &amp;&amp; ${UIVisiblity>/Version} > 2 }"
+										press="showForecast"/>
+						<m:ObjectAttribute title="{i18n>Offer.ForecastDate}" text="{
+												path: '/ForecastTimestamp',
+												formatter: 'retail.pmr.promotionaloffers.utils.Formatter.dateTimeShortFormatter'
+										}"/>
+					</l:VerticalLayout>					
+					<core:ExtensionPoint name="extPageHeaderFields" />
+				</headerContent>
+				<sections>
+					<ObjectPageSection id="ganeral" title="{i18n>CreateOffer.Properties.Title}">
+						<subSections>
+							<ObjectPageSubSection>
+								<blocks>
+									<mvc:XMLView id="generalView"
+										viewName="retail.pmr.promotionaloffers.plugins.general.General" />
+								</blocks>
+							</ObjectPageSubSection>
+						</subSections>
+					</ObjectPageSection>
+
+					<ObjectPageSection id="versions" title="{i18n>CreateOffer.Versions.Title}"
+						visible="{= ${featuresAvailable>/Versions} === 'X' }">
+						<subSections>
+							<ObjectPageSubSection>
+								<blocks>
+									<mvc:XMLView id="versionsView"
+										viewName="retail.pmr.promotionaloffers.plugins.versions.Versions" />
+								</blocks>
+							</ObjectPageSubSection>
+						</subSections>
+					</ObjectPageSection>
+
+					<ObjectPageSection id="terms" title="{i18n>CreateOffer.Terms.Title}">
+						<subSections>
+							<ObjectPageSubSection>
+								<blocks>
+									<mvc:XMLView id="termsView"
+										viewName="retail.pmr.promotionaloffers.plugins.terms.Terms" />
+								</blocks>
+							</ObjectPageSubSection>
+						</subSections>
+					</ObjectPageSection>
+
+					<ObjectPageSection id="vendorFunds" title="{i18n>CreateOffer.VendorFund.Title}"
+						visible="{= ${featuresAvailable>/VendorFunds} === 'X' }">
+						<subSections>
+							<ObjectPageSubSection>
+								<blocks>
+									<mvc:XMLView id="vendorFundsView"
+										viewName="retail.pmr.promotionaloffers.plugins.VendorFund" />
+								</blocks>
+							</ObjectPageSubSection>
+						</subSections>
+					</ObjectPageSection>
+
+					<ObjectPageSection id="attributes" title="{i18n>CreateOffer.Attributes.Title}"
+						visible="{= ${featuresAvailable>/Attributes} === 'X' }">
+						<subSections>
+							<ObjectPageSubSection>
+								<blocks>
+									<mvc:XMLView id="attributesView"
+										viewName="retail.pmr.promotionaloffers.plugins.Attributes" />
+								</blocks>
+							</ObjectPageSubSection>
+						</subSections>
+					</ObjectPageSection>
+					<core:ExtensionPoint name="extPageHeaderSectionFields" />
+				</sections>
+
+			</ObjectPageLayout>
+		</semantic:content>
+
+		<semantic:messagesIndicator>
+			<semantic:MessagesIndicator press="onMessagesIndicatorPress" />
+		</semantic:messagesIndicator>
+
+		<semantic:customFooterContent>
+		
+			<m:Button text="{i18n>Offer.SaveButton}" type="Emphasized"
+				visible="{Content>/NavButtonsEnabled}" press="onSave" 
+				enabled="{ActionsAllowed>/ActionAllowed}"/>
+			<m:Button text="{i18n>CreateOffer.General.CancelBtn}"
+				visible="{Content>/NavButtonsEnabled}" press="onCancel" 
+				enabled="{ActionsAllowed>/ActionAllowed}"/>
+			<m:Button 
+				id="contentAssignment"
+				text="{i18n>Offer.OfferContent}"
+				press="onOfferContentSave" 
+				visible="{= ${Content>/NavButtonsEnabled} &amp;&amp; ${UIVisiblity>/ContentAssignmentEnabled}}"
+				enabled="{ActionsAllowed>/ActionAllowed}" />
+			<m:Button text="{i18n>Offer.CalculateFinancials}" 
+				visible="{parts: [
+							{path: 'Content>/NavButtonsEnabled'}, 
+							{path: 'featuresAvailable>/Financials' }
+						  ], 
+						  formatter:'retail.pmr.promotionaloffers.utils.Formatter.isCalculateVisible'}"
+				press="handleCalcFinancialsPress" 
+				enabled="{ActionsAllowed>/ActionAllowed}"/>
+				<m:Button text="{i18n>Offer.ForecastButton}" 
+				 visible="{parts: [
+							{path: 'Content>/NavButtonsEnabled'}, 
+							{path: 'featuresAvailable>/Financials' }
+						  ], 
+						  formatter:'retail.pmr.promotionaloffers.utils.Formatter.isCalculateVisible'}"
+				 press="onForecastPress" 
+				 enabled="{ActionsAllowed>/ActionAllowed}"/>
+			<m:Button text="{i18n>Offer.CollisionDetection}" visible="{Content>/NavButtonsEnabled}"
+				enabled="{= ${Content>/CollisionEnabled} &amp;&amp; ${ActionsAllowed>/ActionAllowed}}" press="onCollisionDetection" />
+			<core:ExtensionPoint name="extPageFooterFields" />
+		</semantic:customFooterContent>
+
+	</semantic:FullscreenPage>
+</core:View>

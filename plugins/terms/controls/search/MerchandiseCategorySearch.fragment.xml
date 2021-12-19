@@ -1,0 +1,35 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition displayBlock="true"
+	xmlns:core="sap.ui.core" xmlns:tree="sap.ui.table" xmlns="sap.m"
+	xmlns:l="sap.ui.layout">
+	
+	<tree:TreeTable 
+		selectionMode="Single"			
+		showColumnVisibilityMenu="false" 
+		visibleRowCountMode="Interactive"
+		rootLevel="1" 
+		rows="{/}" 
+		busy="{/Busy}"
+		selectionBehavior="RowSelector">
+		
+		<tree:Column grouped="false">
+			<Label/>
+			<tree:template>
+				<Label text="{parts: [{path:'i18n>CreateOffer.MerchCategorySearch.TreeNodeName'}, {path:'Title'}, {path:'SubTitle'}], 
+				              formatter: 'jQuery.sap.formatMessage'}" />
+			</tree:template>
+		</tree:Column>
+		
+		<tree:Column grouped="false">
+			<Label/>
+			<tree:template>
+				<Label text="{parts: [{path: 'Info1'}, {path: 'Info2'}], 
+				              formatter: 'retail.pmr.promotionaloffers.utils.Formatter.formatDescripTionIdType'}" />
+			</tree:template>
+		</tree:Column>		
+	</tree:TreeTable>		
+</core:FragmentDefinition>

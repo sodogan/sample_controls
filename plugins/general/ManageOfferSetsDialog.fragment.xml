@@ -1,0 +1,128 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:core="sap.ui.core">
+	<Dialog
+		class="sapUiSizeCompact"
+		contentWidth="auto"
+		contentHeight="50%"
+		title="{i18n>Offer.General.ManageOfferSets}"
+		resizable="true"
+		draggable="true">
+		<content>
+			<!-- Invisible labels for Aria support -->
+			<core:InvisibleText id="l1" text="{i18>CreateOffer.General.OfferSet}"/>
+			
+			<OverflowToolbar>
+				<Title text="{parts : [{path : 'i18n>Offer.General.OfferSets'}, {path : 'OfferSet>/Count'}], formatter : 'jQuery.sap.formatMessage'}" level="H2"/>
+				<ToolbarSpacer/>
+				<SearchField width="10rem" liveChange="onOfferSetsSearch" />
+				<Button icon="sap-icon://add" press="handleAddOfferSetPress" type="Transparent" tooltip="{i18n>CreateOffer.General.ManageOfferSets.Add}"/>
+			</OverflowToolbar>
+			<List
+				id="OfferSetManageListId"
+				items="{
+					path : 'OfferSet>/OfferSets',
+					sorter : {
+            			path : 'Text' 
+        			}
+				}">				
+				<CustomListItem>	
+					<l:Grid 
+						width="100%" 
+						defaultSpan="L12 M12 S12" 
+						hSpacing="1" 
+						vSpacing="1" 
+						visible="{= ${OfferSet>isDeleted} !== true}" 
+						class="gridInVerticalLayout">
+						<VBox visible="{= ${OfferSet>isEditValue} !== true}">
+							<ObjectIdentifier 
+								title="{OfferSet>Text}"
+								text="{
+									parts: [
+										{path: 'OfferSet>ChangedByName'},
+										{path: 'OfferSet>ChangedOn'}],
+									formatter : '.offerSetChangedFormatter'
+									}"
+								class="sapUiSmallMarginTop sapUiSmallMarginBottom"/>
+							<layoutData>
+								<l:GridData span="L8 M7 S6" />
+							</layoutData>	
+						</VBox>
+						<HBox class="sapMMessageBoxLinkText sapUiSmallMarginTop"
+							visible="{= ${OfferSet>isEditValue} !== true}">
+							<Button 
+								icon="sap-icon://edit"
+								press="handleEditOfferSetPress" 
+								type="Transparent" 
+								tooltip="{i18n>CreateOffer.General.ManageOfferSets.Edit}"/>
+							<Button 
+								icon="sap-icon://sys-cancel" 
+								tooltip="{i18n>Offer.Delete}"
+								press="handleDeleteOfferSetPress" 
+								type="Transparent" 
+								enabled="{
+									path : 'OfferSet>Offers',
+									formatter : '.offerSetDeleteButtonFormatter'}" />
+							<layoutData>
+								<l:GridData span="L4 M5 S6" />
+							</layoutData>							
+						</HBox>
+						
+						<VBox visible="{= ${OfferSet>isEditValue} === true}">
+							<Input 
+								width="100%"
+								valueState="{= ${OfferSet>ValueState} === true ? 'Error' : 'None'}"
+								valueStateText="{OfferSet>ValueStateText}"
+								value="{OfferSet>TextInput}" 
+								class="sapUiSmallMarginTop sapUiSmallMarginBottom"
+								maxLength="40"
+								change="validateOfferSetText" 
+								ariaLabelledBy="l1"/>
+							<Label
+								text="{
+									parts: [
+										{path: 'OfferSet>ChangedByName'},
+										{path: 'OfferSet>ChangedOn'}],
+									formatter : '.offerSetChangedFormatter'
+									}" />
+							<layoutData>
+								<l:GridData span="L8 M8 S7" />
+							</layoutData>	
+						</VBox>
+						<HBox  class="sapUiSmallMarginTop"
+							visible="{= ${OfferSet>isEditValue} === true}">
+							<Button 
+								text="{i18n>Offer.OK}" 
+								type="Transparent" 
+								press="handleOkOfferSetPress">
+							</Button>
+							<Button
+								text="{i18n>CreateOffer.Cancel}"
+								type="Transparent" 
+								class="sapUiLargeMarginEnd"
+								press="handleCancelOfferSetPress">
+							</Button>
+							<layoutData>
+								<l:GridData span="L4 M4 S5" />
+							</layoutData>						
+						</HBox>						
+					</l:Grid>
+				</CustomListItem>
+			</List>		
+		</content>
+		
+		<beginButton>
+			<Button press="onSaveOfferSets" text="{i18n>Offer.SaveButton}" />
+		</beginButton>
+		<endButton>
+			<Button press="onCancelOfferSets" text="{i18n>CreateOffer.Cancel}" />
+		</endButton>
+		
+	</Dialog>
+</core:FragmentDefinition>

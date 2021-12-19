@@ -1,0 +1,49 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:core="sap.ui.core"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:controls="retail.pmr.promotionaloffers.plugins.productGroup.controls">
+	<Dialog
+		class="sapUiSizeCompact sapUiContentPadding"
+		contentWidth="25%"
+		contentHeight="25%"
+		title="{i18n>ProductGroupPage.ProductsTable.AddMultipleTitle}"
+		resizable="false"
+		draggable="true">
+		<content>
+			<f:SimpleForm
+				class="sapUiContentPadding"
+				backgroundDesign="Transparent" 
+				editable="true"
+				layout="ResponsiveGridLayout"
+				labelSpanL="3"
+				labelSpanM="3"
+				emptySpanL="4"
+				emptySpanM="4"
+				columnsL="1"
+				columnsM="1">
+				<f:content>
+					<Text text="{i18n>ProductGroupPage.ProductsTable.AddMultipleTitleText}"/>
+					<Label text="{i18n>ProductGroupPage.ProductsTable.AddMultipleProductIdsLabel}" />
+					<controls:MultiInputWithInitEvent initialize="onInit" enableMultiLineMode="true" paste="onPaste" liveChange="onChange" tokenUpdate="onTokenUpdate" showValueHelp="false"/>		
+				</f:content>
+			</f:SimpleForm>
+			
+			
+		</content>
+
+		<beginButton>
+			<Button press="handleOkPress" text="{i18n>CreateOffer.Confirm}" />
+		</beginButton>
+		<endButton>
+			<Button press="handleCancelPress" text="{i18n>CreateOffer.Cancel}" />
+		</endButton>
+		
+	</Dialog>
+</core:FragmentDefinition>

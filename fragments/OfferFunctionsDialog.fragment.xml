@@ -1,0 +1,19 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition 
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<SelectDialog
+		title="{/Title}"
+		noDataText="{i18n>ManageOffers.OfferFunctionsDialog.NoData}"
+		confirm="offerFunctionsConfirmSelectDialog"
+		search="handleOfferFunctionsDialogSearch"
+		items="{/Items}">
+		<StandardListItem
+			title="{ActionName}"
+			type="Active" />
+	</SelectDialog>
+</core:FragmentDefinition>

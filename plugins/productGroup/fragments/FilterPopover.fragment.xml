@@ -1,0 +1,89 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<Popover
+		title="{Data>/SelectedTitle}"
+		class="sapUiContentPadding"
+		placement="Bottom"
+		afterClose="handleFilterClose"
+		contentWidth="30%"
+		contentHeight="400px">
+		<footer>
+			<Toolbar visible="{= ${Content>/ReadOnly} !== true}">
+				<ToolbarSpacer/>
+				<Button
+					text="{i18n>Product.Groups.Filter.Popover.Edit}"
+					press="handleDefineFilter"
+					/>
+				<Button
+					text="{i18n>Product.Groups.Filter.Popover.Remove}"
+					press="handleFilterRemove"
+					/>
+			</Toolbar>			
+		</footer>
+		<Table
+			items="{
+					path: 'Data>/FilterItems'
+		        }">
+			<columns>
+				<Column>
+					<Text text="{i18n>Product.Groups.Attribute}" />
+				</Column>
+				<Column>
+					<Text text="{i18n>Product.Groups.Include}" />
+				</Column>
+				<Column>
+					<Text text="{i18n>Product.Groups.Exclude}" />
+				</Column>
+				<Column
+					width="1%"
+					visible="false">					
+				</Column>
+			</columns>
+			<items>
+				<ColumnListItem>
+					<cells>
+						<ObjectIdentifier
+							title="{Data>Label}"/>
+						<Text
+							text="{parts : [
+											{path: 'Data>Low' },
+											{path: 'Data>High' },
+											{path: 'Data>Sign' },
+											{path: 'Data>Option' }
+										],
+										formatter:'retail.pmr.promotionaloffers.utils.Formatter.showTextLikeToken'
+									}" 
+							visible="{parts : [
+											{path: 'Data>Sign' }
+										],
+										formatter:'retail.pmr.promotionaloffers.utils.Formatter.popoverShowIncludeValue'
+									}"/>
+						<Text
+							text="{parts : [
+											{path: 'Data>Low' },
+											{path: 'Data>High' },
+											{path: 'Data>Sign' },
+											{path: 'Data>Option' }
+										],
+										formatter:'retail.pmr.promotionaloffers.utils.Formatter.showTextLikeToken'
+									}" 
+							visible="{parts : [
+											{path: 'Data>Sign' }
+										],
+										formatter:'retail.pmr.promotionaloffers.utils.Formatter.popoverShowExcludeValue'
+									}"/>
+									<Text
+										text="{Data>NodeID}"
+										visible="false"/>
+					</cells>			
+				</ColumnListItem>
+			</items>
+		</Table>
+	</Popover>
+</core:FragmentDefinition>

@@ -1,0 +1,143 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:l="sap.ui.layout"
+	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<core:InvisibleText id="productComboLabel" text="{DimensionTypeText}"/>
+	<Input
+		ariaLabelledBy="productComboLabel"
+		id="productComboProduct"
+		showValueHelp="true"
+		showSuggestion="true"
+		value="{ProductTextValue}"
+		description="{ProductDescriptionValue}"
+		valueState="{ProductErrorState}"
+		busy="{ProductBusy}"
+		editable="{
+			parts : [ {path : 'ProductConfig/ProductId/Editable'}, { path : 'Content>/Editable'}],
+			formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter'
+		}"
+		valueHelpRequest=".productController.openValueHelpSearch"
+		suggest=".productController.openSuggest"
+		suggestionItemSelected=".productController.onSuggestionSelected"
+		startSuggestion="3"
+		change=".productController.onChange" 
+		visible="{= ${Selection/DimensionType} === '01'}">
+		<layoutData>
+			<l:GridData span="L12 M12 S12" />
+		</layoutData>
+	</Input>
+	
+	<VBox visible="{= ${Selection/DimensionType} === '02'}">
+		<Input
+			ariaLabelledBy="productComboLabel"
+			id="productComboProductGroup"
+			showValueHelp="true"
+			showSuggestion="true"
+			value="{ProductTextValue}"
+			description="{ProductDescriptionValue}"
+			valueState="{ProductErrorState}"
+			busy="{ProductBusy}"
+			editable="{
+				parts : [ {path : 'ProductConfig/HierarchyNodeId/Editable'}, { path : 'Content>/Editable'}],
+				formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter'
+			}"
+			valueHelpRequest=".productGroupController.openValueHelpSearch"
+			suggest=".productGroupController.openSuggest"
+			suggestionItemSelected=".productGroupController.onSuggestionSelected"
+			startSuggestion="3"
+			change=".productGroupController.onChange"/>
+		<layoutData>
+			<l:GridData span="L12 M12 S12" />
+		</layoutData>	
+		<VBox visible="{Content>/Editable}">
+			<Link visible="{ 
+				parts : [ {path : 'Selection/DimensionType'}, {path : 'Selection/HierarchyNodeId'}, {path : 'Selection/HierarchyId'}, {path : 'ProductTextValue'} ], 
+				formatter : '.productGroupController.createLinkVisiblityFormatter'
+			}" text="{i18n>ProductGroupActions.Create}" press=".productGroupController.onCreateProductGroup"/>
+			<Link visible="{ 
+				parts : [ {path : 'Selection/DimensionType'}, {path : 'Selection/HierarchyNodeId'}, {path : 'Selection/HierarchyId'}, {path : 'ProductTextValue'} ], 
+				formatter : '.productGroupController.editLinkVisiblityFormatter'
+			}" text="{i18n>ProductGroupActions.Edit}" press=".productGroupController.onEditProductGroup"/>
+		</VBox>
+		<Link 
+		 visible="{= ${Content>/Editable} === false  &amp;&amp; ${ProductTextValue} !== null}"
+		 text="{i18n>ProductGroupActions.Display}" press=".productGroupController.onDisplayProductGroup"/>
+	</VBox>		
+	
+	<Input
+		ariaLabelledBy="productComboLabel"
+		showValueHelp="true"
+		id="productComboProductHierarchy"
+		showSuggestion="true"
+		value="{ProductTextValue}"
+		description="{ProductDescriptionValue}"
+		valueState="{ProductErrorState}"
+		busy="{ProductBusy}"
+		editable="{
+			parts : [ {path : 'ProductConfig/HierarchyId/Editable'}, { path : 'Content>/Editable'}],
+			formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter'
+		}"
+		valueHelpRequest=".productHierarchyController.openValueHelpSearch"
+		suggest=".productHierarchyController.openSuggest"
+		suggestionItemSelected=".productHierarchyController.onSuggestionSelected"
+		startSuggestion="3"
+		change=".productHierarchyController.onChange" 
+		visible="{= ${Selection/DimensionType} === '03'}">
+		<layoutData>
+			<l:GridData span="L12 M12 S12" />
+		</layoutData>										
+	</Input>
+	
+	<Input
+		ariaLabelledBy="productComboLabel"
+		id="productComboGenericProduct"
+		showValueHelp="true"
+		showSuggestion="true"
+		value="{ProductTextValue}"
+		description="{ProductDescriptionValue}"
+		valueState="{ProductErrorState}"
+		busy="{ProductBusy}"
+		editable="{
+			parts : [ {path : 'ProductConfig/ProductId/Editable'}, { path : 'Content>/Editable'}],
+			formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter'
+		}"
+		valueHelpRequest=".genericProductController.openValueHelpSearch"
+		suggest=".genericProductController.openSuggest"
+		suggestionItemSelected=".genericProductController.onSuggestionSelected"
+		startSuggestion="3"
+		change=".genericProductController.onChange" 
+		visible="{= ${Selection/DimensionType} === '11'}">
+		<layoutData>
+			<l:GridData span="L12 M12 S12" />
+		</layoutData>										
+	</Input>
+	
+	<Input
+		ariaLabelledBy="productComboLabel"
+		id="productComboDisplayProduct"
+		showValueHelp="true"
+		showSuggestion="true"
+		value="{ProductTextValue}"
+		description="{ProductDescriptionValue}"
+		valueState="{ProductErrorState}"
+		busy="{ProductBusy}"
+		editable="{
+			parts : [ {path : 'ProductConfig/ProductId/Editable'}, { path : 'Content>/Editable'}],
+			formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter'
+		}"
+		valueHelpRequest=".displayProductController.openValueHelpSearch"
+		suggest=".displayProductController.openSuggest"
+		suggestionItemSelected=".displayProductController.onSuggestionSelected"
+		startSuggestion="3"
+		change=".displayProductController.onChange" 
+		visible="{= ${Selection/DimensionType} === '12'}">
+		<layoutData>
+			<l:GridData span="L12 M12 S12" />
+		</layoutData>										
+	</Input>
+</core:FragmentDefinition>

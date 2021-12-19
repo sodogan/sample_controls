@@ -1,0 +1,183 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:core="sap.ui.core">
+	<Dialog
+		title="{i18n>MassEdit.Title}"
+		afterClose="onAfterClose"
+		class="sapUiContentPadding sapUiSizeCompact"
+		resizable="true"
+		draggable="true">
+		<content>
+			<!-- Invisible labels for Aria support -->
+			<core:InvisibleText id="MassEdit_MassEdit_l1" text="{i18n>MassEdit.ChangeOfferSet}"/>
+			<core:InvisibleText id="MassEdit_l1" text="{i18n>MassEdit.ChangeOfferSet}"/>
+			<core:InvisibleText id="MassEdit_l2" text="{i18n>MassEdit.ChangePurchasingGroup}"/>
+			<core:InvisibleText id="MassEdit_l3" text="{i18n>MassEdit.ChangePromotionType}"/>
+			<core:InvisibleText id="MassEdit_l4" text="{i18n>MassEdit.ChangeLeadingCategory}"/>
+			<core:InvisibleText id="MassEdit_l5" text="{i18n>MassEdit.ChangeStartOfOffer}"/>
+			<core:InvisibleText id="MassEdit_l6" text="{i18n>MassEdit.ChangeEndOfOffer}"/>
+			
+			<!-- Offer Set -->
+			<l:VerticalLayout  width="100%">
+				<Label class="sapUiSmallMarginBegin" text="{i18n>MassEdit.OfferSet}:" labelFor="generalOfferSet" />
+				<l:Grid width="100%" defaultSpan="L12 M12 S12" hSpacing="1" class="gridInVerticalLayout">
+					<l:content>
+						<ComboBox width="100%" id="generalOfferSet"
+							selectedKey="{Data>/OfferSetId/Id}"  change="offerSetValueChanged"
+							items="{/OfferSets}">
+							<core:Item key="{Id}" text="{Text}" />
+							<layoutData>
+								<l:GridData span="L10 M10 S10" />
+							</layoutData>
+						</ComboBox>		
+						<CheckBox class="sapUiContentPadding" selected="{Data>/OfferSetId/Selected}" ariaLabelledBy="MassEdit_l1">
+						<layoutData>
+							<l:GridData span="L2 M2 S2" />
+						</layoutData>
+						</CheckBox>
+					</l:content>
+				</l:Grid>
+				
+				<!-- Purchasing Group -->
+				<Label class="sapUiSmallMarginBegin sapUiSmallMarginTop"  text="{i18n>MassEdit.PurchasingGroup}:" labelFor="generalPurchasingGroup" />
+				<l:Grid width="100%" defaultSpan="L12 M12 S12" hSpacing="1" class="gridInVerticalLayout">
+					<l:content>
+						<ComboBox width="100%" id="generalPurchasingGroup"
+							change="purchasingGroupValueChanged"
+							enabled="{Data>/PurchasingGroup/Enabled}"
+							selectedKey="{Data>/PurchasingGroup/Id}"
+							items="{
+								path: 'Data>/PurchasingGroupSet',
+								sorter: { path: 'Name' }
+							}">
+							<core:Item key="{Data>Key}" text="{Data>Value}" />
+							<layoutData>
+								<l:GridData span="L10 M10 S10" />
+							</layoutData>
+						</ComboBox>		
+						<CheckBox class="sapUiContentPadding" enabled="{Data>/PurchasingGroup/Enabled}" 
+								  selected="{Data>/PurchasingGroup/Selected}" ariaLabelledBy="MassEdit_l2" >
+						<layoutData>
+							<l:GridData span="L2 M2 S2" />
+						</layoutData>
+						</CheckBox>
+					</l:content>
+				</l:Grid>
+				
+				<!-- Promotion Type -->
+				<Label class="sapUiSmallMarginBegin sapUiSmallMarginTop"  text="{i18n>MassEdit.PromotionType}:" labelFor="generalPromotionType" />
+				<l:Grid width="100%" defaultSpan="L12 M12 S12" hSpacing="1" class="gridInVerticalLayout">
+					<l:content>
+						<ComboBox 
+							width="100%" 
+							id="generalPromotionType"
+							change="promotionTypeValueChanged"							
+							selectedKey="{Data>/PromotionType/Id}"
+							enabled="{Data>/PromotionType/Enabled}"
+							items="{
+								path: 'Data>/PromotionTypeSet',
+								sorter: { path: 'Name' }
+					        }">
+							<core:Item key="{Data>PromoType}" text="{Data>Description}" />
+							<layoutData>
+								<l:GridData span="L10 M10 S10" />
+							</layoutData>
+						</ComboBox>	
+						<CheckBox class="sapUiContentPadding" enabled="{Data>/PromotionType/Enabled}" 
+						          selected="{Data>/PromotionType/Selected}"  ariaLabelledBy="MassEdit_l3">
+						<layoutData>
+							<l:GridData span="L2 M2 S2" />
+						</layoutData>
+						</CheckBox>
+					</l:content>
+				</l:Grid>
+				
+				<!-- Leading Category -->
+				<Label class="sapUiSmallMarginBegin sapUiSmallMarginTop" text="{i18n>MassEdit.LeadingCategory}:" labelFor="generalLeadingCategory" />
+				<l:Grid width="100%" defaultSpan="L12 M12 S12" hSpacing="1" class="gridInVerticalLayout">
+					<l:content>
+						<Input
+							id="generalLeadingCategory"
+							showSuggestion="true"
+							showValueHelp="true"
+							valueHelpRequest="handleLeadingCategoryComplexSearch"
+							suggestionItems="{Data>/LeadingCategoriesSet}"
+							change="leadingCategoryValueChanged"
+							enabled="{Data>/LeadingCategory/Enabled}"
+							busy="{Data>/LeadingCategory/Busy}"
+							value="{Data>/LeadingCategory/Value}">
+							<suggestionItems>
+								<core:Item 
+									text="{parts: [{path:'Data>ExtId'},{path:'i18n>CreateOffer.General.EmptySpace'},{path:'Data>Name'}], formatter: 'jQuery.sap.formatMessage'}" />
+							</suggestionItems>
+							<layoutData>
+								<l:GridData span="L10 M10 S10" />
+							</layoutData>
+						</Input>
+						<CheckBox class="sapUiContentPadding" enabled="{Data>/LeadingCategory/Enabled}" busy="{Data>/LeadingCategory/Busy}"
+						          selected="{Data>/LeadingCategory/Selected}"  ariaLabelledBy="MassEdit_l4">
+						<layoutData>
+							<l:GridData span="L2 M2 S2" />
+						</layoutData>
+						</CheckBox>
+					</l:content>
+				</l:Grid>
+				
+				<!-- Validity Date From -->
+				<Label class="sapUiSmallMarginBegin sapUiSmallMarginTop" text="{i18n>MassEdit.StartOfOffer}:" labelFor="generalValidFrom" />
+				<l:Grid width="100%" defaultSpan="L12 M12 S12" hSpacing="1" class="gridInVerticalLayout">
+					<l:content>
+	                  <DatePicker 
+	                	id="generalValidFrom"
+                        dateValue="{Data>/StartOfOffer/Id}"
+                        change="onOfferTimeChange" >
+	                        <layoutData>
+								<l:GridData span="L10 M10 S10" />
+							</layoutData>
+                        </DatePicker>
+						<CheckBox class="sapUiContentPadding" selected="{Data>/StartOfOffer/Selected}"  ariaLabelledBy="MassEdit_l5">
+						<layoutData>
+							<l:GridData span="L2 M2 S2" />
+						</layoutData>
+						</CheckBox>
+					</l:content>
+				</l:Grid>
+				
+				<!-- Validity Date To -->
+				<Label class="sapUiSmallMarginBegin sapUiSmallMarginTop" text="{i18n>MassEdit.EndOfOffer}:" labelFor="generalValidTo" />
+				<l:Grid width="100%" defaultSpan="L12 M12 S12" hSpacing="1" class="gridInVerticalLayout">
+					<l:content>
+	                  <DatePicker 
+	                	id="generalValidTo"
+                        dateValue="{Data>/EndOfOffer/Id}"
+                        change="onOfferTimeChange" >
+	                        <layoutData>
+								<l:GridData span="L10 M10 S10" />
+							</layoutData>
+                        </DatePicker>
+						<CheckBox text="" class="sapUiContentPadding" selected="{Data>/EndOfOffer/Selected}" ariaLabelledBy="MassEdit_l6">
+						<layoutData>
+							<l:GridData span="L2 M2 S2" />
+						</layoutData>
+						</CheckBox>
+					</l:content>
+				</l:Grid>
+				
+			</l:VerticalLayout>					
+		</content>
+		
+		<beginButton>
+			<Button id="massChangeOk" press="onOkPress" text="{i18n>CreateOffer.Confirm}" />
+		</beginButton>
+		<endButton>
+			<Button press="onCancelPress" text="{i18n>CreateOffer.Cancel}" />
+		</endButton>
+		
+	</Dialog>
+</core:FragmentDefinition>

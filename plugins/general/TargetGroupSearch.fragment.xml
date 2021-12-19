@@ -1,0 +1,25 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<ResponsivePopover
+		class="sapUiPopupWithPadding" 
+		showHeader="false">
+		<content>			
+			<List
+				items="{/TargetGroups}"
+				growing="true"
+				growingThreshold="10"
+				growingScrollToLoad="true"
+				mode="SingleSelectMaster"
+				selectionChange="handleTargetGroupPopoverItemPress"
+				rememberSelections="false">
+				<StandardListItem
+					title="{Name}"
+					description="({Id}) {Description}" />
+			</List>
+		</content>
+	</ResponsivePopover>
+</core:FragmentDefinition>

@@ -1,0 +1,121 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition xmlns:core="sap.ui.core" 
+	xmlns="sap.m"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:table="sap.ui.table"
+	xmlns:layout="sap.ui.layout"
+	xmlns:controls="retail.pmr.promotionaloffers.plugins.productGroup.controls">
+	<Dialog 
+		title="{/DialogTitle}"
+		afterClose="onAfterClose" 
+		contentWidth="90%" 
+		contentHeight="50%"
+		class="sapUiSizeCompact">
+		<content>
+		 	<layout:VerticalLayout width="100%">
+				<layout:content>
+				<controls:SmartProducts
+					persistencyKey="ProductsFromPopUp"
+					itemProperty="/ProductGroupItems"
+					rebindTable="onListViewTableRebind"
+					>
+				    <controls:table>
+				    	<Table
+				    	id="onDemandProductsTable"
+				    	items="{/ProductGroupItems}"
+				    	noDataText="{i18n>ProductGroupPage.Preview.NoData}"
+				    	updateStarted="onPopUpUpdateStarted"
+						growingThreshold="20"
+						growing="true"
+				    	mode="None">
+				    	<headerToolbar>
+							<OverflowToolbar>
+								<Title text="{parts : [{path : 'i18n>ProductGroupPage.ProductsTable.TableTitle'}, {path : '/Cardinality'}], formatter : 'jQuery.sap.formatMessage'}" level="H2"/>
+								<ToolbarSpacer/>
+								<SearchField id="popUpSearchField" class="sapUiSmallMargin" placeholder="{i18n>ProductGroupPage.ProductSearch}" 
+									search="onPopUpSearch"
+									width="400px" 
+									selectOnFocus="false"
+									visible="{Content>/Editable}"/>
+							</OverflowToolbar>
+						</headerToolbar>
+					
+						<columns>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<customData> 
+						          	<core:CustomData key="cellData" value="ExtId"/>
+						     	</customData>
+								<Text text="{i18n>ProductGroupPage.ProductsTable.ID}" />
+							</Column>
+							<Column>
+								<customData> 
+						          	<core:CustomData key="cellData" value="Name"/>
+						     	</customData>
+								<Text text="{i18n>ProductGroupPage.ProductsTable.Name}" />
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<customData> 
+						          	<core:CustomData key="cellData" value="TypeName"/>
+						     	</customData>
+								<Text text="{i18n>ProductGroupPage.ProductsTable.Type}" />
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<customData> 
+						          	<core:CustomData key="cellData" value="MerchandiseCategory"/>
+						     	</customData>
+								<Text text="{i18n>ProductGroupPage.ProductsTable.MerchandiseCategory}" />
+							</Column>
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<customData> 
+						          	<core:CustomData key="cellData" value="Size"/>
+						     	</customData>
+								<Text text="{i18n>ProductGroupPage.ProductsTable.Size}" />
+							</Column>	
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<customData> 
+						          	<core:CustomData key="cellData" value="Color"/>
+						     	</customData>
+								<Text text="{i18n>ProductGroupPage.ProductsTable.Color}" />
+							</Column>	
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<customData> 
+						          	<core:CustomData key="cellData" value="BrandId"/>
+						     	</customData>
+								<Text text="{i18n>ProductGroupPage.ProductsTable.Brand}" />
+							</Column>	
+							<Column minScreenWidth="Tablet" demandPopin="true">
+								<customData> 
+						          	<core:CustomData key="cellData" value="BaseUom"/>
+						     	</customData>
+								<Text text="{i18n>ProductGroupPage.ProductsTable.BaseUom}" />
+							</Column>		
+						</columns>
+						<items templateShareable="true">
+							<ColumnListItem>
+								<cells>		
+									<ObjectIdentifier title="{ExtId}" />	
+									<Text text="{Name}" />
+									<Text text="{TypeName}" />
+									<Text text="{MerchandiseCategory}" />
+									<Text text="{Size}" />
+									<Text text="{Color}" />
+									<Text text="{BrandId}" />
+									<Text text="{BaseUom}" />	
+								</cells>					
+							</ColumnListItem>
+						</items>
+						</Table>
+					 </controls:table>
+					</controls:SmartProducts>
+				 </layout:content>
+				</layout:VerticalLayout>
+		</content>
+		<beginButton>
+			<Button  press="onClose" text="{i18n>Offer.Close}" />
+		</beginButton>
+	</Dialog>
+</core:FragmentDefinition>

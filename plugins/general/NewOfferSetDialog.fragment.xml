@@ -1,0 +1,37 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:core="sap.ui.core">
+    
+	<Dialog
+		afterClose="onAfterClose"
+		title="{i18n>Offer.General.NewOfferSet}">
+		<content>
+			<l:Grid width="100%" defaultSpan="L6 M6 S12" hSpacing="1" class="gridInVerticalLayout">
+				<Label text="{i18n>CreateOffer.General.NewOfferSetName}" wrapping="true" required="true" class="sapUiSmallMarginTop sapUiSmallMarginBottom" labelFor="newOfferSet">
+					<layoutData>
+						<l:GridData span="L4 M4 S12" />
+					</layoutData>
+				</Label>			
+				<Input id="newOfferSet" width="100%" type="Text" value="{/Name}" change="validateNewOfferSetText" maxLength="40">
+					<layoutData>
+						<l:GridData span="L8 M8 S12" />
+					</layoutData>
+				</Input>
+			</l:Grid>
+		</content>
+		
+		<beginButton>
+			<Button press="onOkPress" text="{i18n>Offer.OK}" />
+		</beginButton>
+		<endButton>
+			<Button press="onCancelPress" text="{i18n>CreateOffer.Cancel}" />
+		</endButton>
+		
+	</Dialog>
+</core:FragmentDefinition>

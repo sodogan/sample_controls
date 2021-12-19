@@ -1,0 +1,53 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition 
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:core="sap.ui.core">
+	<Dialog title="{i18n>General.LocationGroups.ProcessingPurposeTitle}"
+		class="sapUiContentPadding sapUiSizeCompact"
+		contentWidth="400px"
+		resizable="true"
+		draggable="true">
+		<content>
+			<VBox items="{
+				path: 'Content>/PurposesGlobal',
+				templateShareable: 'true'
+			}"
+			width="100%">
+				<l:VerticalLayout width="100%" class="sapUiSmallMarginBottom">
+					<Label class="sapUiSmallMarginBegin" text="{Content>Name}:"  />
+					<l:Grid width="100%" defaultSpan="L12 M12 S12" hSpacing="1" class="gridInVerticalLayout">
+						<l:content>
+							<Select
+								width="100%"
+							   selectedKey="{Content>SelectedKey}"
+								items="{
+									path: 'Content>Items',
+									templateShareable: 'true'}">
+								<core:Item key="{Content>Id}" text="{Content>Name}" />
+								<layoutData>
+									<l:GridData span="L12 M12 S12" />
+								</layoutData>
+							</Select>		
+						</l:content>
+					</l:Grid>
+				</l:VerticalLayout>
+			</VBox>
+		</content>
+		<beginButton>
+			<Button 
+				visible="{= ${Content>/Editable} === true}"
+				text="{i18n>Offer.OK}"
+				press="handleAddPurpose" />
+		</beginButton>
+		<endButton>
+			<Button 
+				text="{i18n>CreateOffer.General.CancelBtn}"
+				press="handleClosePurposeDialog" />
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

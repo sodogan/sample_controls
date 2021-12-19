@@ -1,0 +1,126 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:View xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:ux="sap.uxap"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:l="sap.ui.layout"
+	xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+	xmlns:smartTable="sap.ui.comp.smarttable"
+	xmlns:semantic="sap.m.semantic"
+	xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	displayBlock="true"
+	controllerName="retail.pmr.promotionaloffers.view.VendorFunds"	
+	height="100%">
+	<semantic:FullscreenPage
+		id="page"
+		title="{i18n>CreateOffer.FromFunds.PageTitle}"
+		showNavButton="true"
+		navButtonPress="cancel">
+		<semantic:content>
+			<l:FixFlex minFlexSize="200" vertical="true">
+				<l:fixContent>
+					<smartFilterBar:SmartFilterBar
+						id="smartFilterBarId_vendorFunds"
+						entityType="VendorFund"						
+						persistencyKey="smartFilterBarKey_VendorFunds"
+						customData:dateFormatSettings='\{"UTC":true\}'
+						enableBasicSearch="true">
+						<smartFilterBar:controlConfiguration>
+							<smartFilterBar:ControlConfiguration key="ExtVendorId" visibleInAdvancedArea="true"/>
+							<smartFilterBar:ControlConfiguration key="AssociatedWithOffers" visibleInAdvancedArea="true"/>
+						</smartFilterBar:controlConfiguration>
+						
+					</smartFilterBar:SmartFilterBar>
+				</l:fixContent>
+				<l:flexContent height="100%">
+					<smartTable:SmartTable 
+						id="vendorFunds"
+						demandPopin="true"
+						entitySet="VendorFunds"
+						useExportToExcel="false"
+						smartFilterId="smartFilterBarId_vendorFunds"
+						useVariantManagement="true" 
+						useTablePersonalisation="true"
+						tableType="ResponsiveTable"
+						persistencyKey="VENDOR_TABLE_PERSISTENT_KEY"
+						beforeRebindTable="onBeforeRebindTable"
+						dataReceived="onDataReceived"
+						showRowCount="true"
+						header="{i18n>CreateOffer.VendorFund.Title}"
+						ignoredFields="EndDate"
+						class="sapUiMediumMarginBegin sapUiMediumMarginEnd">
+						
+						<smartTable:customData>
+							<core:CustomData key="p13nDialogSettings" value='\{"filter": \{ "visible": false}, 
+																			   "group": \{ "visible": false}}'/>
+						</smartTable:customData>
+						
+						<smartTable:layoutData>
+							<FlexItemData growFactor="1" />
+						</smartTable:layoutData>
+						<Table
+							id="vendorTable"
+							mode="SingleSelectLeft"
+							selectionChange="updateButtons"
+							growing="true"
+							growingThreshold="20">
+							<columns>
+								<Column>
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnKey": "Name", "leadingProperty": ["Id", "Name"],"sortProperty": "Name","filterProperty": "Name"}'/>
+							     	</customData>
+									<Text text="{i18n>CreateOffer.FromFunds.Name}" />
+								</Column>
+								<Column hAlign="End">
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "4", "columnKey": "Summary", "leadingProperty": "Summary", "sortProperty": "Summary" }'/>
+							     	</customData>
+									<Text text="{i18n>CreateOffer.FromFunds.Summary}" />
+								</Column>
+								<Column>
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "5", "columnKey": "StartDate", "leadingProperty": ["StartDate", "EndDate"],"sortProperty": "StartDate","filterProperty": "EndDate"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.TimeFrame}" tooltip="{i18n>ManageOffers.TimeFrame}"/>
+								</Column>								
+							</columns>
+							<items>
+								<ColumnListItem>
+									<cells>
+										<ObjectIdentifier
+											title="{Name}"
+											text="{Id}"/>
+										<Text text="{Summary}"/>
+										<Text text="{
+											parts : [
+												{path: 'StartDate' },
+												{path: 'EndDate' }
+											],
+											formatter:'retail.pmr.promotionaloffers.utils.Formatter.datesFormatterForManageOffer'
+										}" />
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>
+					</smartTable:SmartTable>
+				</l:flexContent>
+			</l:FixFlex>
+		</semantic:content>
+		
+		<semantic:customFooterContent>
+			<Button
+				id="create"
+				text="{i18n>CreateOffer.FromFunds.CreateButton}"
+				enabled="{ContentModel>/CreateButtonEnabled}"
+				press="createOffer" />
+			<Button
+				id="cancel"
+				text="{i18n>CreateOffer.Cancel}"
+				press="cancel" />				
+		</semantic:customFooterContent>
+		
+	</semantic:FullscreenPage>
+</core:View>

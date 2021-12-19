@@ -1,0 +1,20 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:View controllerName="retail.pmr.promotionaloffers.plugins.productGroup.preview.Preview"
+	xmlns:core="sap.ui.core" 
+	xmlns="sap.m" 
+	xmlns:layout="sap.ui.layout" 
+	xmlns:mvc="sap.ui.core.mvc"
+	height="auto"
+	xmlns:table="sap.ui.table">
+	<layout:VerticalLayout id="mainLayout" width="100%">
+		<layout:content>
+		<!--  <core:Fragment fragmentName="retail.pmr.promotionaloffers.plugins.productGroup.preview.ListView" type="XML" />-->
+		<!-- <mvc:XMLView id="listView"
+			viewName="retail.pmr.promotionaloffers.plugins.productGroup.preview.ListView" />	-->
+ 		</layout:content>
+	</layout:VerticalLayout>
+</core:View>

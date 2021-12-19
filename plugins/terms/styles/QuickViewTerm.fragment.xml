@@ -1,0 +1,20 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<QuickView class="sapSmartTemplatesObjectPageContactsQuickView" placement="Auto">
+		<QuickViewPage>
+			<QuickViewGroup heading="{i18n>ManageOffers.ProductDetails.TermSummary}" elements="{/Term/Items}">
+				<QuickViewGroupElement label="{label}" type="text" value="{text}" />
+			</QuickViewGroup>
+			<QuickViewGroup heading="{i18n>ManageOffers.ProductDetails.Financials}"
+				visible="{= ${featuresAvailable>/Financials} === 'X'}"
+				elements="{/Financials}">
+				<QuickViewGroupElement label="{label}" type="text" value="{text}" />
+			</QuickViewGroup>
+		</QuickViewPage>
+	</QuickView>
+</core:FragmentDefinition>

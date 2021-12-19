@@ -1,0 +1,138 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<mvc:View
+	controllerName="retail.pmr.promotionaloffers.plugins.Attributes"
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core" 
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:layout="sap.ui.layout">
+	
+	<!-- Invisible labels for Aria support -->
+	<core:InvisibleText id="attributeTypeLabel" text="{i18n>CreateOffer.Attributes.ColType}"/>
+	<core:InvisibleText id="attributeNameLabel" text="{i18n>CreateOffer.Attributes.ColName}"/>
+	<core:InvisibleText id="attributeValueLabel" text="{i18n>CreateOffer.Attributes.ColValue}"/>
+	<core:InvisibleText id="attributeLanguageLabel" text="{i18n>CreateOffer.Attributes.ColLanguage}"/>
+	
+ 	<layout:VerticalLayout>
+		<layout:content>
+		    <Table 
+		    	id="attrTable"
+		    	items="{/Attributes}"
+		    	delete="handleDeletePress"
+		    	noDataText="{i18n>CreateOffer.Attributes.NoData}"
+		    	mode="{= ${Content>/Editable} === true ? 'Delete' : 'None'}">
+		    	<headerToolbar>
+					<Toolbar>
+						<Title text="{parts : [{path : 'i18n>CreateOffer.Attributes.TableTitle'}, {path : '/Attributes/length'}], formatter : 'jQuery.sap.formatMessage'}" level="H2"/>
+						<ToolbarSpacer/>
+						<Button
+							icon="sap-icon://add"
+	    	 				type="Transparent"
+	    	 				press="handleAddPress"
+	    	 				tooltip="{i18n>CreateOffer.General.TargetGroup.Add}"
+	    	 				visible="{Content>/Editable}"
+	    	 				>
+						</Button>
+					</Toolbar>
+				</headerToolbar>
+			
+				<columns>
+					<Column>
+						<Text text="{i18n>CreateOffer.Attributes.ColType}"/>
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<Text text="{i18n>CreateOffer.Attributes.ColName}"/>
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<Text text="{i18n>CreateOffer.Attributes.ColValue}"/>
+					</Column>
+					<Column minScreenWidth="Tablet" demandPopin="true">
+						<Text text="{i18n>CreateOffer.Attributes.ColLanguage}"/>
+					</Column>					
+				</columns>
+				<items>
+					<ColumnListItem id="attrTableTemplate">
+					<cells>		
+							<ComboBox 
+							id="attributeType"
+							ariaLabelledBy="attributeTypeLabel"
+							width="200px" 
+							items="{path: 'AttributeTypes', templateShareable : 'true'}"
+							selectionChange="handleAttrTypeChange"
+							editable="{Content>/Editable}"
+							selectedKey="{AttributeTypeSelKey}">
+								<core:Item key="{AttributeType}" text="{AttributeTypeDesc}"/>
+							</ComboBox>
+							
+							<ComboBox
+							id="attributeName"
+							ariaLabelledBy="attributeNameLabel"
+							width="200px"
+							items="{path: 'AttributeTypeDescriptions', templateShareable : 'true'}"
+							change="handleTypeDescriptionChange"
+							selectedKey="{AttributeTypeDescSelKey}"
+							editable="{Content>/Editable}">
+								<core:Item key="{AttributeId}" text="{AttributeDesc}"/>
+							</ComboBox>
+							<layout:HorizontalLayout>								
+									<Input 
+										id="attributeValue"
+										ariaLabelledBy="attributeValueLabel"
+										visible="{=${AttributeTypeSelKey}=== '01'}"
+										type="{typeText}"
+										change="validateForm"
+										value="{AttributeValue}"
+										width="200px"
+										editable="{Content>/Editable}"/>
+										
+										
+									<ComboBox
+										id="attributeListValue"
+										ariaLabelledBy="attributeNameLabel"
+										width="200px"
+										items="{path: 'attributeValueList', templateShareable : 'true'}"
+										change="validateForm"
+										visible="{=${AttributeTypeSelKey}=== '05'}"
+										selectedKey="{AttributeValue}"
+										busy="{BusyList}"
+										editable="{Content>/Editable}">
+											<core:Item key="{Value}" text="{Description}"/>
+										</ComboBox>
+										
+									<Link
+										id="attributeImageSelector"
+										text="{i18n>Attributes.SelectImage}"
+										visible="{=${AttributeTypeSelKey}=== '02' &amp;&amp; ${AttributeValue}===''}"
+										press="openAttributeImageDialog">
+									</Link>	
+									<Image 
+										id="attributeImage"
+										alt="{AttributeImageName}"
+										width="50px"
+										press="openAttributeImageDialog"
+										visible="{=${AttributeTypeSelKey}=== '02' &amp;&amp; ${AttributeValue}!==''}"
+										src="{AttributeImageUrl}"
+										decorative="false"/>
+							</layout:HorizontalLayout>
+							<ComboBox
+								id="attributeLanguage"
+								ariaLabelledBy="attributeLanguageLabel"
+								visible="{=${AttributeTypeSelKey}=== '01' || ${AttributeTypeSelKey}=== '02'}"
+								items="{path: 'AttributeLanguageSet', templateShareable : 'true'}"								
+								selectedKey="{AttributeLanguageSelKey}"
+								editable="{Content>/Editable}"
+								width="200px"
+								change="validateForm"
+								>								
+								<core:Item key="{Key}" text="{Value}"/>
+							</ComboBox>
+						</cells>					
+					</ColumnListItem>
+				</items>
+			 </Table>
+		 </layout:content>
+		</layout:VerticalLayout>
+</mvc:View>

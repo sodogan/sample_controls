@@ -1,0 +1,24 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition 
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<SelectDialog
+		class="sapUiSizeCompact"
+		title="{i18n>General.LocationGroups.DeletePurposeTitle}"
+		multiSelect="true"
+		contentHeight="auto"
+		noDataText="{i18n>General.LocationGroups.ProcessingPurpose.NoData}"
+		confirm="handleRemovePurpose"
+		cancel="handleCloseDialog"
+		search="handleSearchPurpose"
+		items="{Content>/ProcessingPurposesRemove}">
+		<StandardListItem
+			title="{Content>Name}"
+			description="{Content>Id}"
+			selected="false" />
+	</SelectDialog>
+</core:FragmentDefinition>

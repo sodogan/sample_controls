@@ -1,0 +1,758 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" 
+	xmlns:core="sap.ui.core" 
+	xmlns="sap.m" 
+	xmlns:table="sap.ui.table"
+	xmlns:freestyle="retail.pmr.promotionaloffers.plugins.terms.controls.freestyle"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:variant="sap.ui.comp.smartvariants">
+	<!-- Invisible labels for Aria support -->
+	<core:InvisibleText id="productDetailsDiscountValue" text="{= ${GeneralModel>/PackageOffer} ? ${i18n>CreateOffer.Terms.FreestyleOffer.AppropriationValue} : ${i18n>ManageOffers.ProductDetails.DiscountValue} }"/>
+	<core:InvisibleText id="productDetailsSubDiscountValue" text="{= ${GeneralModel>/PackageOffer} ? ${i18n>CreateOffer.Terms.FreestyleOffer.AppropriationPercentage} : ${i18n>ManageOffers.ProductDetails.SubsequentValue} }"/>
+	<core:InvisibleText id="productDetailsUserProjection" text="{i18n>ManageOffers.ProductDetails.UserProjection}"/>
+	<core:InvisibleText id="productLockUserProjection" text="{i18n>ManageOffers.ProductDetails.LockUserProjection}"/>
+	<core:InvisibleText id="productDetailsPromotedUoM" text="{i18n>ManageOffers.ProductDetails.PromotedUoM}"/>
+	<core:InvisibleText id="productDetailsPromoCostPrice" text="{i18n>ManageOffers.ProductDetails.PromoCostPrice}"/>
+	<core:InvisibleText id="productDetailsPromoCostPriceCurrency" text="{i18n>ManageOffers.ProductDetails.PromoCostPriceCurrency}"/>
+	<core:InvisibleText id="productDetailsDisplayUoMValue" text="{i18n>ManageOffers.ProductDetails.DisplayUoMValue}"/>
+	<core:InvisibleText id="productDetailsDisplayUoM" text="{i18n>ManageOffers.ProductDetails.DisplayUoM}"/>
+	
+	<freestyle:SmartProductDetails
+		id="smartProductDetailsTable"
+		persistencyKey="ProductDetails"
+		financialsAvailable="{= ${featuresAvailable>/Financials} === 'X' }"
+		itemProperty="/ProductDetailsVisible"
+		filterItems="/ProductDetailsFilter"
+		termFinancialItems="{/TermFinancialFields}"
+		editable="{Content>/Editable}"
+		massEditClicked="openDetailsMassEditDialog"
+		showMoreProductsOk="addMoreProducts"
+		hideProductsConfirm="hideProducts"
+		purposeColumns="{TermsContentModel>/Purposes}"
+		purposeChecked="onLocationSubGroupsChecked"
+		>
+		<freestyle:table>
+		<table:Table
+			id="productDetailsTable"
+			sort="handleSort"
+			fixedColumnCount="2"
+			enableColumnFreeze="true"
+			filter="handleFilter"
+			visibleRowCountMode="Fixed"	
+			minAutoRowCount="1"
+			threshold="10"
+			visibleRowCount="{parts : [{path : '/ProductDetailsVisible/length'}], formatter : 'retail.pmr.promotionaloffers.utils.Formatter.numberOfProductRows'}"
+			noData="{i18n>ManageOffers.ProductDetails.NoData}">		
+			<table:columns>
+				<table:Column
+					width="8rem"
+					filterProperty="ExtProductId"
+					sortProperty="ExtProductId">
+					<Label text="{i18n>ManageOffers.ProductDetails.Id}" 
+						   tooltip="{i18n>ManageOffers.ProductDetails.Id}"/>	
+					<table:template>
+						<Text text="{ExtProductId}"/>
+					</table:template>								
+				</table:Column>
+				
+				<table:Column
+					width="12rem"
+					filterProperty="Name"
+					sortProperty="Name">
+					<Label tooltip="{i18n>ManageOffers.ProductDetails.Description}"
+						   text="{i18n>ManageOffers.ProductDetails.Description}" />
+					<table:template>
+						<Text text="{Name}"/>
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					width="4rem"
+					filterProperty="Terms"
+					sortProperty="Terms">
+					<Label text="{i18n>ManageOffers.ProductDetails.Terms}"
+						   tooltip="{i18n>ManageOffers.ProductDetails.Terms}"/>
+					<table:template>
+						<Link text="{Terms}" press="openQuickView" />
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					width="6rem"
+					filterProperty="DiscountTypeLabel"
+					sortProperty="DiscountType">
+					<Label text="{i18n>ManageOffers.ProductDetails.DiscountType}"
+						   tooltip="{i18n>ManageOffers.ProductDetails.DiscountType}"/>
+					<table:template>
+						<Text text="{DiscountTypeLabel}"/>
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					sortProperty="DiscountValue"
+					filterProperty="DiscountValue"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right"
+					width="6em">
+					<Label text="{= ${GeneralModel>/PackageOffer} ? ${i18n>CreateOffer.Terms.FreestyleOffer.AppropriationValue} : ${i18n>ManageOffers.ProductDetails.DiscountValue} }" 
+					       tooltip="{= ${GeneralModel>/PackageOffer} ? ${i18n>CreateOffer.Terms.FreestyleOffer.AppropriationValue} : ${i18n>ManageOffers.ProductDetails.DiscountValue} }"/>
+					<table:template>
+						<Input value="{path : 'DiscountValue',
+										type: 'sap.ui.model.type.Float',
+										constraints: {maximum: 99999999999999},
+										formatOptions: {
+											style: 'standard',
+											groupingEnabled: false,
+											minIntegerDigits: 0,
+											maxIntegerDigits: 14,
+											minFractionDigits: 0,
+											maxFractionDigits: 5,
+											emptyString : null
+										}}"
+							editable="{
+							 	parts : [ {path : 'Content>/Editable'},{path : 'DiscountTypeLabel'}, {path : 'GeneralModel>/PackageOffer'}, {path : 'DiscountType'}, {path : 'Config/DiscountValue'} ],
+							 	formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.detailsDiscountFormatter'
+							 }"
+							 ariaLabelledBy="productDetailsDiscountValue"
+							 change="validateProductDetailsDiscountValue"
+							 textAlign="Right"/>
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					sortProperty="SubDiscountValue"
+					filterProperty="SubDiscountValue"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right"
+					width="6em">
+					<Label text="{= ${GeneralModel>/PackageOffer} ? ${i18n>CreateOffer.Terms.FreestyleOffer.AppropriationPercentage} : ${i18n>ManageOffers.ProductDetails.SubsequentValue} }"
+					       tooltip="{= ${GeneralModel>/PackageOffer} ? ${i18n>CreateOffer.Terms.FreestyleOffer.AppropriationPercentage} : ${i18n>ManageOffers.ProductDetails.SubsequentValue} }"/>
+					<table:template>
+						<Input value="{path : 'SubDiscountValue',
+									type: 'sap.ui.model.type.Float',
+									constraints: {maximum: 99999999999999},
+									formatOptions: {
+										style: 'standard',
+										groupingEnabled: false,
+										minIntegerDigits: 0,
+										maxIntegerDigits: 14,
+										minFractionDigits: 0,
+										maxFractionDigits: 5,
+										emptyString : null
+									}}"
+							editable="{
+							 	parts : [ {path : 'Content>/Editable'}, {path : 'DiscountTypeLabel'}, {path : 'TermsContentModel>/EnforceMultipleValue'}, {path : 'GeneralModel>/PackageOffer'}, {path : 'DiscountType'}, {path : 'Config/SubDiscountValue'} ],
+							 	formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.detailsSubDiscountFormatter'
+							 }"
+							 ariaLabelledBy="productDetailsSubDiscountValue"
+							 change="validateProductDetailsSubDiscountValue"
+							 textAlign="Right"/>
+					</table:template>								
+				</table:Column>
+				<table:Column
+					visible= "true"
+					width="8rem"
+					sortProperty="Financials/ProductCost"
+					filterProperty="Financials/ProductCost"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">
+					<Label text="{i18n>ManageOffers.ProductDetails.ProductCost}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.ProductCost}"/>
+					<table:template>
+						<Text text="{parts : [ {path: 'Financials/ProductCost'}, {path: 'Financials/Currency'}], type: 'sap.ui.model.type.Currency', formatOptions: { showMeasure: false } }" />
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					width="8rem"
+					sortProperty="UserProjection"
+					filterProperty="UserProjection"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">
+					<Label text="{i18n>ManageOffers.ProductDetails.UserProjection}" />
+					<table:template>
+						<Input value="{path : 'UserProjection',
+										type: 'sap.ui.model.type.Float',
+										constraints: {maximum: 999999999999},
+										formatOptions: {
+											style: 'standard',
+											groupingEnabled: false,
+											minIntegerDigits: 0,
+											maxIntegerDigits: 12,
+											minFractionDigits: 0,
+											maxFractionDigits: 5,
+											emptyString : null
+										}}"
+							change="validateProductDetailsUserProjection"
+							ariaLabelledBy="productDetailsUserProjection"
+							editable="{
+							 	parts : [{path : 'Content>/Editable'}, {path : 'Config/UserProjection/Visible'}, {path : 'Config/UserProjection/Editable'}],
+							 	formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter'
+							 }"
+							 textAlign="Right"/>
+					</table:template>									
+				</table:Column>
+				
+				<table:Column
+					width="3rem"
+					filterProperty="LockUserProjection"
+					sortProperty="LockUserProjection"
+					filterType="sap.ui.model.type.Boolean"
+					hAlign="Center">
+					<Label text="{i18n>ManageOffers.ProductDetails.LockUserProjection}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.LockUserProjection}"/>
+					<table:template>
+						<CheckBox selected="{LockUserProjection}"
+							ariaLabelledBy="productLockUserProjection"
+							enabled="{
+							 	parts : [{path : 'Content>/Editable'}, {path : 'Config/UserProjection/Visible'}, {path : 'Config/UserProjection/Editable'}],
+							 	formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter'
+							 }"/>
+					</table:template>								
+				</table:Column>
+				
+				<table:Column
+					width="8rem"
+					filterProperty="PromotedUoM"
+					sortProperty="PromotedUoM">
+					<table:customData> 
+			          	<core:CustomData key="property" value="PromotedUoM"/>
+			     	</table:customData>
+					<Label text="{i18n>ManageOffers.ProductDetails.PromotedUoM}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.PromotedUoM}"/>
+					
+					<table:template>
+						<ComboBox width="100%" id="promotedUoMType"
+							editable="{
+							 	parts : [{path : 'Content>/Editable'}, {path : 'Config/PromotedUoM/Visible'}, {path : 'Config/PromotedUoM/Editable'}],
+							 	formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter'
+							 }"
+							ariaLabelledBy="productDetailsPromotedUoM"
+							selectedKey="{PromotedUoM}"
+							change="validateProductDetailsPromotedUoM"
+							items="{
+								path: 'UnitOfMeasures',
+								sorter: { path: 'Name' },
+								templateShareable : 'true'
+					        }">
+							<core:Item key="{Id}" text="{Id}" />
+						</ComboBox>	
+					</table:template>										
+				</table:Column>
+
+				<table:Column
+					sortProperty="PromoCostPrice"
+					filterProperty="PromoCostPrice"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right"
+					width="6em">
+					<Label text="{i18n>ManageOffers.ProductDetails.PromoCostPrice}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.PromoCostPrice}"/>
+					<table:template>
+						<Input value="{path : 'PromoCostPrice',
+										type: 'sap.ui.model.type.Float',
+										constraints: {maximum: 99999999999999},
+										formatOptions: {
+											style: 'standard',
+											groupingEnabled: false,
+											minIntegerDigits: 0,
+											maxIntegerDigits: 14,
+											minFractionDigits: 0,
+											maxFractionDigits: 5,
+											emptyString : null
+										}}"
+							change="validateProductDetailsPromoCostPrice"
+							ariaLabelledBy="productDetailsPromoCostPrice"
+							editable="{
+							 	parts : [{path : 'Content>/Editable'}, {path : 'Config/PromoCostPrice/Visible'}, {path : 'Config/PromoCostPrice/Editable'}],
+							 	formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter'
+							 }"
+							 textAlign="Right"/>
+					</table:template>										
+				</table:Column>
+
+				<table:Column
+				    visible="{= ${UIVisiblity>/Version} > 3 }"
+					width="8rem"
+					filterProperty="PromoCostPriceCurrency"
+					sortProperty="PromoCostPriceCurrency">
+					<table:customData> 
+			          	<core:CustomData key="property" value="PromoCostPriceCurrency"/>
+			     	</table:customData>
+					<Label text="{i18n>ManageOffers.ProductDetails.PromoCostPriceCurrency}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.PromoCostPriceCurrency}"/>
+					<table:template>
+						<ComboBox 
+						    width="100%" 
+						    id="promoCostPriceCurrency"
+						    showSecondaryValues= "true"
+							filterSecondaryValues= "true"
+							editable="{
+							 	parts : [{path : 'Content>/Editable'}, 
+							 	         {path : 'Config/PromoCostPrice/Visible'}, 
+							 	         {path : 'Config/PromoCostPrice/Editable'}],
+							 	formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter'
+							 }"
+							selectedKey="{PromoCostPriceCurrency}"
+							value="{PromoCostPriceCurrency}"
+							change="validateProductDetailsPromoCostPriceCurrency"
+							ariaLabelledBy="productDetailsPromoCostPriceCurrency"
+							items="{
+								path: 'Content>/CurrencyList',
+								length: 300,
+								sorter: { path: 'Key' },
+								templateShareable : 'true',
+								suspended: true
+					        }"
+					        loadItems="handleLoadItems">
+							<core:ListItem key="{Content>Key}" text="{Content>Key}" additionalText="{Content>Value}" />
+						</ComboBox>	
+					</table:template>									
+				</table:Column>	
+				
+				<table:Column
+					width="8rem"
+					sortProperty="DisplayUoMValue"
+					filterProperty="DisplayUoMValue"
+					filterType="sap.ui.model.type.Float">
+					<Label text="{i18n>ManageOffers.ProductDetails.DisplayUoMValue}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.DisplayUoMValue}"/>
+					<table:template>
+						<Input value="{path : 'DisplayUoMValue',
+										type: 'sap.ui.model.type.Float',
+										constraints: {maximum: 9999999999},
+										formatOptions: {
+											style: 'standard',
+											groupingEnabled: false,
+											minIntegerDigits: 0,
+											maxIntegerDigits: 10,
+											minFractionDigits: 0,
+											maxFractionDigits: 3,
+											emptyString : null
+										}}"
+							change="validateProductDetailsDisplayUoMValue"
+							ariaLabelledBy="productDetailsDisplayUoMValue"
+							editable="{
+							 	parts : [{path : 'Content>/Editable'}, {path : 'Config/DisplayUoMValue/Visible'}, {path : 'Config/DisplayUoMValue/Editable'}],
+							 	formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter'
+							 }"
+							 textAlign="Right"/>
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					width="8rem"
+					filterProperty="DisplayUoM"
+					sortProperty="DisplayUoM">
+					<table:customData> 
+			          	<core:CustomData key="property" value="DisplayUoM"/>
+			     	</table:customData>
+					<Label text="{i18n>ManageOffers.ProductDetails.DisplayUoM}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.DisplayUoM}"/>
+					<table:template>
+						<ComboBox width="100%" id="displayUoM"
+							editable="{
+							 	parts : [{path : 'Content>/Editable'}, {path : 'Config/DisplayUoM/Visible'}, {path : 'Config/DisplayUoM/Editable'}],
+							 	formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter'
+							 }"
+							selectedKey="{DisplayUoM}"
+							change="validateProductDetailsDisplayUoM"
+							ariaLabelledBy="productDetailsDisplayUoM"
+							items="{
+								path: 'UnitOfMeasures',
+								sorter: { path: 'Name' },
+								templateShareable : 'true'
+					        }">
+							<core:Item key="{Id}" text="{Id}" />
+						</ComboBox>	
+					</table:template>									
+				</table:Column>	
+
+				<table:Column
+					visible= "false"
+					width="8rem"
+					filterProperty="Financials/Currency"
+					sortProperty="Financials/Currency">
+					<Label text="{i18n>ManageOffers.ProductDetails.Currency}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.Currency}"/>
+					
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>      
+					 
+					<table:template>
+						<Label text="{Financials/Currency}"/>
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/CalculatedPrice"
+					filterProperty="Financials/CalculatedPrice"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">
+					<Label text="{i18n>ManageOffers.ProductDetails.CalculatedPrice}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.CalculatedPrice}"/>
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>       
+					
+					<table:template>
+						<Text text="{parts : [ {path: 'Financials/CalculatedPrice'}, {path: 'Financials/Currency'}], type: 'sap.ui.model.type.Currency', formatOptions: { showMeasure: false } }" />
+					</table:template>										
+				</table:Column>
+
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/CalculatedPriceVat"
+					filterProperty="Financials/CalculatedPriceVat"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">
+					<Label text="{i18n>ManageOffers.ProductDetails.CalculatedPriceVat}"/>
+					
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>
+					
+					<table:template>
+						<Text text="{parts : [ {path: 'Financials/CalculatedPriceVat'}, {path: 'Financials/Currency'}], type: 'sap.ui.model.type.Currency', formatOptions: { showMeasure: false } }" />
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/Margin"
+					filterProperty="Financials/Margin"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">
+					<Label text="{i18n>ManageOffers.ProductDetails.Margin}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.Margin}"/>
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>
+					<table:template>
+						<Label text="{parts : [ {path : 'Financials/Margin'}], formatter : 'retail.pmr.promotionaloffers.utils.Utils.decimalFormatter'}"/>
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/RegularPrice"
+					filterProperty="Financials/RegularPrice"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">
+					<Label text="{i18n>ManageOffers.ProductDetails.RegularPrice}" />
+					
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>
+					<table:template>
+						<Text text="{parts : [ {path: 'Financials/RegularPrice'}, {path: 'Financials/Currency'}], type: 'sap.ui.model.type.Currency', formatOptions: { showMeasure: false } }" />
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/RegularPriceVat"
+					filterProperty="Financials/RegularPriceVat"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">
+					<Label text="{i18n>ManageOffers.ProductDetails.RegularPriceVat}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.RegularPriceVat}"/>
+					       
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>
+					<table:template>
+						<Text text="{parts : [ {path: 'Financials/RegularPriceVat'}, {path: 'Financials/Currency'}], type: 'sap.ui.model.type.Currency', formatOptions: { showMeasure: false } }" />
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/RegularPriceMargin"
+					filterProperty="Financials/RegularPriceMargin"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">					
+					<Label text="{i18n>ManageOffers.ProductDetails.RegularPriceMargin}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.RegularPriceMargin}"/>
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>
+					<table:template>
+						<Label text="{parts : [ {path : 'Financials/RegularPriceMargin'}], formatter : 'retail.pmr.promotionaloffers.utils.Utils.decimalFormatter'}"/>
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/DisplayPrice"
+					filterProperty="Financials/DisplayPrice"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">
+					<Label text="{i18n>ManageOffers.ProductDetails.DisplayPrice}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.DisplayPrice}"/>
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>
+					<table:template>
+						<Text text="{parts : [ {path: 'Financials/DisplayPrice'}, {path: 'Financials/Currency'}], type: 'sap.ui.model.type.Currency', formatOptions: { showMeasure: false } }" />
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/DisplayPriceVat"
+					filterProperty="Financials/DisplayPriceVat"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">
+					<Label text="{i18n>ManageOffers.ProductDetails.DisplayPriceVat}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.DisplayPriceVat}"/>
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>
+					<table:template>
+						<Text text="{parts : [ {path: 'Financials/DisplayPriceVat'}, {path: 'Financials/Currency'}], type: 'sap.ui.model.type.Currency', formatOptions: { showMeasure: false } }" />
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/NetContentPromotionPrice"
+					filterProperty="Financials/NetContentPromotionPrice"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">
+					<Label text="{i18n>ManageOffers.ProductDetails.NetContentPromotionPrice}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.NetContentPromotionPrice}"/>
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>
+					<table:template>
+						<Text text="{parts : [ {path: 'Financials/NetContentPromotionPrice'}, {path: 'Financials/Currency'}], type: 'sap.ui.model.type.Currency', formatOptions: { showMeasure: false } }" />
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/NetContentPromotionPriceVat"
+					filterProperty="Financials/NetContentPromotionPriceVat"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">					
+					<Label text="{i18n>ManageOffers.ProductDetails.NetContentPromotionPriceVat}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.NetContentPromotionPriceVat}"/>
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>
+					<table:template>
+						<Text text="{parts : [ {path: 'Financials/NetContentPromotionPriceVat'}, {path: 'Financials/Currency'}], type: 'sap.ui.model.type.Currency', formatOptions: { showMeasure: false } }" />
+					</table:template>										
+				</table:Column>
+				
+				
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/CalculatedProjection"
+					filterProperty="Financials/CalculatedProjection"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">
+					<Label text="{i18n>ManageOffers.ProductDetails.CalculatedProjection}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.CalculatedProjection}"/>
+					       
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>
+					<table:template>
+						<Label text="{parts : [ {path : 'Financials/CalculatedProjection'}], formatter : 'retail.pmr.promotionaloffers.utils.Utils.decimalFormatter'}"/>
+					</table:template>										
+				</table:Column>
+
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/SystemForecast"
+					filterProperty="Financials/SystemForecast"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">					
+					<Label text="{i18n>ManageOffers.ProductDetails.SystemForecast}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.SystemForecast}"/>
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>
+					<table:template>
+						<ObjectAttribute text="{parts : [ {path : 'Financials/SystemForecast'}], formatter : 'retail.pmr.promotionaloffers.utils.Utils.decimalFormatter'}" 
+						      active="{= ${Financials/SystemForecast} > 0  &amp;&amp; ${UIVisiblity>/Version} > 2 }"
+						      press="showForecast"/>
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/SystemForecastBaseline"
+					filterProperty="Financials/SystemForecastBaseline"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">					
+					<Label text="{i18n>ManageOffers.ProductDetails.SystemForecastBaseline}"
+						   tooltip="{i18n>ManageOffers.ProductDetails.SystemForecastBaseline}"/>
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>
+					<table:template>
+						<Label text="{parts : [ {path : 'Financials/SystemForecastBaseline'}], formatter : 'retail.pmr.promotionaloffers.utils.Utils.decimalFormatter'}"/>
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/ForecastUplift"
+					filterProperty="Financials/ForecastUplift"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">					
+					<Label text="{i18n>ManageOffers.ProductDetails.ForecastUplift}"
+						   tooltip="{i18n>ManageOffers.ProductDetails.ForecastUplift}"/>
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>
+					<table:template>
+						<ObjectNumber number="{path : 'Financials/ForecastUplift',
+											  type: 'sap.ui.model.type.Float',
+											  formatOptions: {
+												maxFractionDigits: 0,
+												emptyString : null}
+												}"
+										emphasized="false" textAlign="Right"/>
+					</table:template>										
+				</table:Column>	
+				
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/ForecastUpliftPer"
+					filterProperty="Financials/ForecastUpliftPer"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">					
+					<Label text="{i18n>ManageOffers.ProductDetails.ForecastUpliftPer}"
+						   tooltip="{i18n>ManageOffers.ProductDetails.ForecastUpliftPer}"/>
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>
+					<table:template>
+						<ObjectNumber number="{path : 'Financials/ForecastUpliftPer',
+											  type: 'sap.ui.model.type.Float',
+											  formatOptions: {
+												maxFractionDigits: 2,
+												emptyString : null}
+												}" unit="%"
+										emphasized="false" textAlign="Right"/>
+					</table:template>										
+				</table:Column>				
+				
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/SystemForecastLow"
+					filterProperty="Financials/SystemForecastLow"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">					
+					<Label text="{i18n>ManageOffers.ProductDetails.SystemForecastLow}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.SystemForecastLow}"/>
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>
+					<table:template>
+						<Label text="{parts : [ {path : 'Financials/SystemForecastLow'}], formatter : 'retail.pmr.promotionaloffers.utils.Utils.decimalFormatter'}"/>
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/SystemForecastHigh"
+					filterProperty="Financials/SystemForecastHigh"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">					
+					<Label text="{i18n>ManageOffers.ProductDetails.SystemForecastHigh}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.SystemForecastHigh}"/>
+					 <table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>
+					<table:template>
+						<Label text="{parts : [ {path : 'Financials/SystemForecastHigh'}], formatter : 'retail.pmr.promotionaloffers.utils.Utils.decimalFormatter'}"/>
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/ForecastConfidence"
+					filterProperty="ForecastConfidenceLabel"
+					filterType="{= ${UIVisiblity>/Version} > 2 ? 'sap.ui.model.type.String' : 'sap.ui.model.type.Float'}">					
+					<Label text="{i18n>ManageOffers.ProductDetails.ForecastConfidence}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.ForecastConfidence}"/>
+		       		<table:customData> 
+		          		<core:CustomData key="financialColumn" value="true"/>
+		     		</table:customData>
+					<table:template>
+						<ObjectStatus 
+							text="{ForecastConfidenceLabel}"
+							state="{parts : [ {path : 'Financials/ForecastConfidence'}], formatter : 'retail.pmr.promotionaloffers.utils.Formatter.forecastConfidenceState'}"
+							tooltip="{Financials/ForecastConfidence}"/>
+					</table:template>										
+				</table:Column>
+				
+				<table:Column
+					visible= "false"
+					width="8rem"
+					sortProperty="Financials/BusinessRulesForecast"
+					filterProperty="Financials/BusinessRulesForecast"
+					filterType="sap.ui.model.type.Float"
+					hAlign="Right">					
+					<Label text="{i18n>ManageOffers.ProductDetails.BusinessRulesForecast}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.BusinessRulesForecast}"/>
+					<table:customData> 
+			          	<core:CustomData key="financialColumn" value="true"/>
+			     	</table:customData>
+					<table:template>
+						<Label text="{parts : [ {path : 'Financials/BusinessRulesForecast'}], formatter : 'retail.pmr.promotionaloffers.utils.Utils.decimalFormatter'}"/>
+					</table:template>										
+				</table:Column>
+
+				<table:Column
+			        visible="false"
+					width="3rem"
+					filterProperty="Visibility"
+					sortProperty="Visibility"
+					filterType="sap.ui.model.type.Boolean"
+					hAlign="Center">
+					<Label text="{i18n>ManageOffers.ProductDetails.Visibility}"
+					       tooltip="{i18n>ManageOffers.ProductDetails.Visibility}"/>
+					<table:template>
+						<CheckBox selected="{Visibility}"
+						    select="addMoreProducts"
+							ariaLabelledBy="productVisibility"
+							enabled="{Content>/Editable}"/>
+					</table:template>								
+				</table:Column>
+				<core:ExtensionPoint name="extProductDetailsColumns" />
+			</table:columns>
+		</table:Table>
+		</freestyle:table>
+	</freestyle:SmartProductDetails>
+</core:FragmentDefinition>

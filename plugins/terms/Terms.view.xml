@@ -1,0 +1,143 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:View displayBlock="true"
+	controllerName="retail.pmr.promotionaloffers.plugins.terms.Terms"
+	xmlns:f="sap.ui.layout.form" xmlns:core="sap.ui.core" xmlns="sap.m"
+	xmlns:ux="sap.uxap" xmlns:l="sap.ui.layout"
+	xmlns:controls ="retail.pmr.promotionaloffers.utils.controls"
+	width="100%">
+
+	<l:Grid>
+		<VBox>
+			<Label text="{i18n>CreateOffer.TermStyles}"/>
+			<controls:HierarchicalComboBox
+				width="100%"
+				id="termsTermStyles"
+				placeholder="{i18n>CreateOffer.TermStylesComboPlaceHolder}"
+				selectedKey="{TermStyles>/Selected}" value="{TermStyles>/TermStyleValue}"
+				change="validateTermStyleValue"
+				editable="{ContentModel>/Editable}" selectionChange="termsStyleComboSelectionChanged"
+				termStyles="{
+					path : 'TermStyles>/TermStyles',
+					sorter : { path : 'Description' },
+					templateShareable : 'true'	
+				}">
+				<controls:termStyles>
+					<core:Item key="{TermStyles>Id}" text="{TermStyles>Description}" />
+				</controls:termStyles>
+			</controls:HierarchicalComboBox>
+			<layoutData>
+					<l:GridData span="L4 M4 S12"/>
+			</layoutData>
+		</VBox>
+		<VBox>
+			<Label text="{
+				parts : [{path : 'ContentModel>/EnforceMultipleVisible'}, 
+						 { path : 'i18n>CreateOffer.TermStyles.EnforceMultiple'},
+						 {path : 'ContentModel>/LimitVisible'}, 
+						 { path : 'i18n>CreateOffer.TermStyles.Limit'}],
+				formatter : '.labelFormatter'
+			}"/>
+			<HBox width="100%">
+				<ComboBox
+					placeholder="{= ${Content>/Editable} === true ? ${i18n>CreateOffer.TermStyles.EnforceMultiple} : ''}"
+					selectedKey="{ContentModel>/EnforceMultipleValue}" 
+					change="enforceMultipleChanged"
+					items="{
+						path : 'ContentModel>/EnforceMultiple',
+						templateShareable : 'true'	
+					}"
+					id="termsEnforceMultiple"
+					editable="{
+						parts : [ {path : 'Content>/Editable'}, { path : 'ContentModel>/EnforceMultipleEditable'}],
+						formatter : '.formatterBool'
+					}"
+					visible="{ContentModel>/EnforceMultipleVisible}"
+					enabled="{ContentModel>/EnforceMultipleEnabled}" >
+					<core:Item key="{ContentModel>Key}" text="{ContentModel>Value}" />
+				</ComboBox>
+				<Input type="Text"
+					enabled="{ContentModel>/LimitEnabled}"
+					editable="{
+						parts : [ {path : 'Content>/Editable'}, { path : 'ContentModel>/LimitEditable'}],
+						formatter : '.formatterBool'
+					}"
+					id="termsLimit"
+					visible="{ContentModel>/LimitVisible}"
+					placeholder="{= ${Content>/Editable} === true ? ${i18n>CreateOffer.TermStyles.Limit} : ''}"
+					value="{path: 'ContentModel>/LimitValue',
+							type: 'sap.ui.model.type.Float',
+							constraints: {maximum: 999999999},
+							formatOptions: {
+								style: 'standard',
+								groupingEnabled: false,
+								minIntegerDigits: 0,
+								maxIntegerDigits: 9,
+								minFractionDigits: 0,
+								maxFractionDigits: 0,
+								emptyString : null
+							}}"										
+					liveChange="handlePositiveNumeric"/>
+			</HBox>
+			<layoutData>
+				<l:GridData span="L4 M4 S12"/>
+			</layoutData>
+		</VBox>
+		
+		<VBox visible="{GeneralModel>/PackageOffer}">
+			<Label text="{i18n>CreateOffer.TermStyles.PackageOffer}"/>
+			<HBox>
+				<Input type="Text"
+					id="termsPackageOffer"
+					value="{path : 'ContentModel>/PackageValue',
+							type: 'sap.ui.model.type.Float',
+							constraints: {maximum: 99999999999999},
+							formatOptions: {
+								style: 'standard',
+								groupingEnabled: false,
+								minIntegerDigits: 0,
+								maxIntegerDigits: 14,
+								minFractionDigits: 0,
+								maxFractionDigits: 2,
+								emptyString : null
+							}}"
+					visible="{ContentModel>/PackageValueVisible}"
+					editable="{
+						parts : [ {path : 'Content>/Editable'}, { path : 'ContentModel>/PackageValueEditable'}],
+						formatter : '.formatterBool'
+					}"
+					change="updatePackagePrice"/>
+				<Input type="Text"
+					id="termsUserProjection"
+					value="{path : 'ContentModel>/UserProjectionValue',
+							type: 'sap.ui.model.type.Float',
+							constraints: {maximum: 999999999},
+							formatOptions: {
+								style: 'standard',
+								groupingEnabled: false,
+								minIntegerDigits: 0,
+								maxIntegerDigits: 14,
+								minFractionDigits: 0,
+								maxFractionDigits: 2,
+								emptyString : null
+							}}"
+					editable="{
+						parts : [ {path : 'Content>/Editable'}, { path : 'ContentModel>/UserProjectionEditable'}],
+						formatter : '.formatterBool'
+					}"
+					visible="{ContentModel>/UserProjectionVisible}"
+					change="updatePackageTotal"/>
+			</HBox>
+			<layoutData>
+				<l:GridData span="L4 M4 S12"/>
+			</layoutData>
+		</VBox>
+	</l:Grid>
+	<l:VerticalLayout id="termStyleLayoutContainer"
+		width="100%" class="sapUiNoContentPadding">
+	</l:VerticalLayout>
+
+</core:View>

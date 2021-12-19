@@ -1,0 +1,65 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:l="sap.ui.layout"
+	xmlns:smartTable="sap.ui.comp.smarttable"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<Dialog title="{i18n>General.LocationGroups.Overview.DialogTitle}" 
+		afterClose="onOverviewAfterClose"
+		contentWidth="60%"
+		class="sapUiSizeCompact"
+		resizable="true"
+		draggable="true">
+		<content>
+			<l:HorizontalLayout class="sapUiSmallMarginEnd sapUiSmallMarginTop" 
+				content="{
+					path: 'Content>/Overview/Groups',
+					templateShareable: 'true'
+				}">
+				<VBox class="sapUiSmallMarginBegin sapUiMediumMarginEnd">
+					<Text text="{Content>Name}:"/>
+					<Text text="{Content>NrLocs}"/>
+				</VBox>
+			</l:HorizontalLayout>
+			<VBox class="sapUiSmallMargin">
+				<Table
+					items="{Content>/Overview/Stores}"
+					id="overviewTable"
+					growing="true" growingThreshold="20">
+					<headerToolbar>
+						<Toolbar>
+							<content>
+								<Title text="{parts : [{path : 'i18n>General.LocationGroups.TableTitle'}, {path : 'Content>/Overview/StoresLength'}], formatter : 'jQuery.sap.formatMessage'}" level="H2"/>
+								<SegmentedButton class="sapUiMediumMarginBegin">
+									<items>
+										<SegmentedButtonItem text="{i18n>General.LocationGroups.Overview.IncludedStores}" press="showOnlyIncludedStores" />
+										<SegmentedButtonItem text="{i18n>General.LocationGroups.Overview.AllStores}" press="showAllStores"  />
+									</items>
+								</SegmentedButton>
+								<ToolbarSpacer/>
+								<SearchField width="20rem" id="searchOverview" liveChange="onOverviewSearch"/>
+							</content>
+						</Toolbar>
+					</headerToolbar>
+					<columns>
+					</columns>
+					<items>
+						<ColumnListItem id="columnsOverviewTemplate">
+						</ColumnListItem>
+					</items>
+				</Table>
+			</VBox>
+		</content>
+		<endButton>
+			<Button 
+				text="{i18n>Offer.Close}"
+				press="onOverviewClosePressed" />
+		</endButton>
+		 
+	</Dialog>
+</core:FragmentDefinition>

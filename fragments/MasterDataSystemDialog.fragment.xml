@@ -1,0 +1,22 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<SelectDialog
+		title="{i18n>CreateOffer.MasterDataSystem}"
+		search="handleSearch"
+		confirm="onMasterDataSystemSelect"		
+		items="{/}"
+		cancel="onCancelPress"
+		rememberSelections="true">
+		<StandardListItem
+			title="{System}"
+			description="{Description}"
+			selected="{Selected}"
+			type="Active" />
+	</SelectDialog>
+</core:FragmentDefinition>

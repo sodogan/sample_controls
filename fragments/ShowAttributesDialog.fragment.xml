@@ -1,0 +1,59 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition 
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:core="sap.ui.core">
+	<Dialog 
+		title="{
+				parts: [{path: 'i18n>Terms.Advanced.Product.AdditionalAttributesTitle'},
+					{path:'Name'},
+					{path:'ExtNodeId'}],
+					 formatter: 'jQuery.sap.formatMessage'}"
+		afterClose="onAfterClose" 
+		contentWidth="auto" 
+		contentHeight="50%"
+		class="sapUiSizeCompact">
+		<content>
+			<List
+				items="{
+					path: 'Attributes'
+				}"
+				noDataText="{i18n>Terms.Advanced.Product.AdditionalAttributes.NoData}" >
+				<CustomListItem>
+					<l:Grid 
+						width="100%" 
+						defaultSpan="L12 M12 S12" 
+						hSpacing="1" 
+						vSpacing="1">
+					<HBox justifyContent="Center" class="sapUiSmallMarginTop">
+						<Text text="{
+							path : 'Label',
+							formatter : '.formatLabel'}"
+						class="sapUiSmallMarginEnd">
+						<layoutData>
+								<l:GridData span="L6 M6 S6" />
+							</layoutData>
+						</Text>
+						<Text text="{
+							parts: [
+								{path:'Value'},
+								{path:'Description'}],
+							formatter: '.formatValue'}">
+						<layoutData>
+								<l:GridData span="L6 M6 S6" />
+							</layoutData>
+						</Text>
+					</HBox>
+					</l:Grid>
+				</CustomListItem>
+			</List>
+		</content>
+		<beginButton>
+			<Button  press="onClose" text="{i18n>Offer.Close}" />
+		</beginButton>
+	</Dialog>
+</core:FragmentDefinition>

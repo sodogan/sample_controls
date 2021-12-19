@@ -1,0 +1,37 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:smartTable="sap.ui.comp.smarttable"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+		<TableSelectDialog
+			class="sapUiSizeCompact"
+			multiSelect="true"
+			noDataText="{i18n>General.LocationGroups.AddLocation.NoData}"
+			title="{i18n>General.LocationGroups.AddLocationTitle}"
+			search="handleAddLocationSearch"
+			confirm="onAddManualStoreConfirm"
+			cancel="handleCloseDialog"
+			id="addManualStoresTable"
+			growingThreshold="20"
+			contentHeight="100%"
+			contentWidth="40%"
+			items="{Content>/AllStores}" >
+			<ColumnListItem>
+				<cells>
+					<ObjectIdentifier
+						title="{Content>Name}"
+						text="{Content>ExtLocationId}" />
+				</cells>
+			</ColumnListItem>
+			<columns>
+				<Column minScreenWidth="Tablet" demandPopin="true">
+					<Label text="{i18n>General.LocationGroups.ManualStoreSelection.Location}" />
+				</Column>
+			</columns>
+		</TableSelectDialog>
+</core:FragmentDefinition>

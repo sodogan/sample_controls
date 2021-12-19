@@ -1,0 +1,268 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:View xmlns="sap.uxap" xmlns:l="sap.ui.layout" xmlns:m="sap.m"
+	xmlns:controls="retail.pmr.promotionaloffers.utils.controls"
+	xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:semantic="sap.m.semantic"
+	xmlns:u="sap.ui.unified" controllerName="retail.pmr.promotionaloffers.view.LocationGroups"
+	height="100%" xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+	xmlns:smartTable="sap.ui.comp.smarttable">
+	<semantic:FullscreenPage id="page" showNavButton="true"
+		showFooter="false"
+		title="{i18n>Purposes.Title}" navButtonPress="onNavButtonPress">
+		<semantic:content>
+			<ObjectPageLayout id="ObjectPageLayout" visible="{UIVisiblity>/Visible}">
+				<headerTitle>
+					<ObjectPageHeader objectImageShape="Square"
+						objectTitle="{
+							parts: [
+								{path:'i18n>Purposes.SubTitle'},
+								{path:'TreeModel>/Purpose'},
+								{path:'TreeModel>/LocationHierarchyNode'},
+								{path:'TreeModel>/CurrentNumberOfStores'},
+								{path:'TreeModel>/TotalNumberOfStores'}],
+							formatter: '.formatTitle'
+						}">
+					</ObjectPageHeader>
+				</headerTitle>
+				<sections>
+					<ObjectPageSection showTitle="false">
+						<subSections>
+							<ObjectPageSubSection>
+								<blocks>
+									<m:VBox>
+										<m:HBox width="100%" visible="{= ${featuresAvailable>/LocationSubgroups} === 'X' }">
+											<m:Label id="selectLabel" text="{i18n>General.LocationGroups.LocationSubGroups}:" class="sapUiTinyMargin" labelFor="locationGroupsSelect"/>
+											<m:Select
+												id="locationGroupsSelect"
+												change="handleLocationSubgroupChange"
+												selectedKey="{TreeModel>/SelectedPurpose}"
+												class="sapUiSmallMarginEnd"
+												items="{
+													path: 'TreeModel>/ProcessingPurposes'
+												}">
+												<core:Item key="{TreeModel>Id}" text="{TreeModel>Name}" />
+											</m:Select>
+											<m:Link id="add"
+												text="{i18n>General.LocationGroups.Add}" 
+												class="sapUiTinyMargin"
+												visible="{= ${TreeModel>/Editable} === true}"
+												press="onAddPressed" />
+											<m:Link id="remove"
+												text="{i18n>General.LocationGroups.Remove}"
+												enabled="{= ${TreeModel>/ProcessingPurposes/length} > 1}"
+												visible="{= ${TreeModel>/Editable} === true}"
+												class="sapUiTinyMargin"
+												press="onRemovePressed" />
+											<m:Text id="sep1" 
+												text="{TreeModel>/Separator}"
+												class="sapUiTinyMargin"
+													visible="{
+													parts: [
+														{path:'TreeModel>/Editable'},
+														{path:'TreeModel>/SelectedPurpose'},
+														{path:'TreeModel>/GroupByPurpose'}],
+													formatter: '.CopyLocalLink'
+												}"/>
+											<m:Link id="copy" 
+												text="{i18n>General.LocationGroups.CopyAsLocal}" 
+												class="sapUiTinyMargin"
+												press="onCopyAsLocalPressed"
+												visible="{
+													parts: [
+														{path:'TreeModel>/Editable'},
+														{path:'TreeModel>/SelectedPurpose'},
+														{path:'TreeModel>/GroupByPurpose'}],
+													formatter: '.CopyLocalLink'
+												}"/>
+											<m:Text id="sep2"
+												text="{TreeModel>/Separator}"
+												visible="{= ${TreeModel>/Editable} === true}"
+												class="sapUiTinyMargin"/>
+											<m:Link id="overview" 
+												text="{i18n>General.LocationGroups.Overview}" 
+												class="sapUiTinyMargin"
+												press="onOverviewPressed" />
+											<m:Text id="sep3"
+												text="{TreeModel>/Separator}"
+												class="sapUiTinyMargin"/>
+											<m:Link id="manual"
+												text="{= ${TreeModel>/Editable} === true ? ${i18n>General.LocationGroups.ManualStoreSelection} : ${i18n>General.LocationGroups.AlwaysIncludedLocations}}"
+												class="sapUiTinyMargin"
+												press="onManualStoreSelectionPressed" />
+										</m:HBox>
+										<controls:BorderlessSmartFilterBar
+											entityType="Location" id="locationPurposeStoresSmartTableFilter" persistencyKey="LOCATIONGROUPS_DYNAMIC_LOCATION_FILTER"
+											enableBasicSearch="false" initialise="filterBarInitialized"
+											search="searchDynamicLocation" filterChange="onDynamicLocationFilterChange"
+											visible="{
+												parts: [
+													{path:'TreeModel>/Editable'},
+													{path:'TreeModel>/SelectedPurpose'},
+													{path:'TreeModel>/GroupByPurpose'}],
+												formatter: '.smartFilterBarVisible'
+											}">
+											<controls:controlConfiguration>
+												<smartFilterBar:ControlConfiguration
+													index="0" key="ExtLocationId" visibleInAdvancedArea="true" />
+												<smartFilterBar:ControlConfiguration
+													index="1" key="City" visibleInAdvancedArea="true" />
+												<smartFilterBar:ControlConfiguration
+													index="2" key="Country" visibleInAdvancedArea="true" />
+											</controls:controlConfiguration>
+										</controls:BorderlessSmartFilterBar>
+										<m:Table id="tableFilters"
+											visible="{= ${
+												parts: [
+													{path:'TreeModel>/Editable'},
+													{path:'TreeModel>/SelectedPurpose'},
+													{path:'TreeModel>/GroupByPurpose'}],
+												formatter: '.smartFilterBarVisible'
+											} === false}"
+											items="{
+												path: 'TreeModel>/TableFilters'
+											}"
+											class="sapUiMediumMarginBottom"
+											noDataText="{i18n>General.LocationGroups.FiltersTable.NoFilters}">
+											<m:headerToolbar>
+												<m:Toolbar>
+													<m:Title text="{i18n>General.LocationGroups.FiltersTable.Title}" level="H2" />
+												</m:Toolbar>
+											</m:headerToolbar>
+											<m:columns>
+												<m:Column
+													minScreenWidth="Tablet"
+													demandPopin="true">
+													<m:Text text="{/#AttributeValue/Id/@sap:label}" />
+												</m:Column>
+												<m:Column
+													minScreenWidth="Tablet"
+													demandPopin="true">
+													<m:Text text="{i18n>General.LocationGroups.FiltersTable.Include}" />
+												</m:Column>
+												<m:Column
+													minScreenWidth="Tablet"
+													demandPopin="true">
+													<m:Text text="{i18n>General.LocationGroups.FiltersTable.Exclude}" />
+												</m:Column>
+											</m:columns>
+											<m:items>
+												<m:ColumnListItem>
+													<m:cells>
+														<m:ObjectIdentifier title="{TreeModel>Attribute}"/>
+														<m:Text text="{TreeModel>Include}" />
+														<m:Text text="{TreeModel>Exclude}" />
+													</m:cells>
+												</m:ColumnListItem>
+											</m:items>
+										</m:Table>
+										<smartTable:SmartTable id="locationPurposeStoresSmartTable"
+											entitySet="Locations" initialise="initialize" class="sapUiTinyMarginTop"
+											noData="{i18n>General.LocationGroups.AddLocation.NoData}"
+											smartFilterId="locationPurposeStoresSmartTableFilter"
+											beforeRebindTable="cancelRebind" useExportToExcel="false"
+											enableAutoBinding="false" useTablePersonalisation="true"
+											useVariantManagement="true" persistencyKey="locations" tableType="ResponsiveTable">
+											<smartTable:customToolbar>
+												<m:OverflowToolbar design="Transparent">
+														<m:Title text="{parts : [{path : 'i18n>General.LocationGroups.TableTitle'}, {path : 'TreeModel>/StoresLength'}], formatter : 'jQuery.sap.formatMessage'}" level="H2"/>
+														<m:ToolbarSpacer/>
+														<m:SearchField width="20rem" id="searchStore" liveChange="onStoreSearch" />
+												</m:OverflowToolbar>
+											</smartTable:customToolbar>
+											<smartTable:customData>
+												<core:CustomData key="p13nDialogSettings"
+													value='\{"filter": \{ "visible": false}, 
+																					   "group": \{ "visible": false},
+																					   "sort": \{ "visible": true}}' />
+											</smartTable:customData>
+											<m:Table busy="{TreeModel>/Busy}"
+												noDataText="{i18n>General.LocationGroups.AddLocation.NoData}"
+												items="{TreeModel>/Stores}"
+												id="locationStoresTable" selectionChange="toggleToolbarButtons"
+												growing="true" growingThreshold="20">
+												<m:columns>
+													<m:Column minScreenWidth="Tablet" demandPopin="true">
+														<m:customData>
+															<core:CustomData key="p13nData"
+																value='\{"columnIndex": "0", "columnKey": "Name","leadingProperty": ["ExtLocationId", "Name"],"sortProperty": "Name","filterProperty": "Name"}' />
+														</m:customData>
+														<m:Label
+															tooltip="{i18n>CreateOffer.General.RestrictStoresPrompt.ColName}"
+															text="{i18n>CreateOffer.General.RestrictStoresPrompt.ColName}" />
+													</m:Column>
+													<m:Column minScreenWidth="Tablet" demandPopin="true">
+														<m:customData>
+															<core:CustomData key="p13nData"
+																value='\{"columnIndex": "1", "columnKey": "City","leadingProperty": "City","sortProperty": "City","filterProperty": "City"}' />
+														</m:customData>
+														<m:Label
+															tooltip="{i18n>CreateOffer.General.RestrictStoresPrompt.ColCity}"
+															text="{i18n>CreateOffer.General.RestrictStoresPrompt.ColCity}" />
+													</m:Column>
+													<m:Column minScreenWidth="Tablet" demandPopin="true">
+														<m:customData>
+															<core:CustomData key="p13nData"
+																value='\{"columnIndex": "2", "columnKey": "RegionName","leadingProperty": "RegionName","sortProperty": "RegionName","filterProperty": "RegionName"}' />
+														</m:customData>
+														<m:Label
+															tooltip="{i18n>CreateOffer.General.RestrictStoresPrompt.ColRegionName}"
+															text="{i18n>CreateOffer.General.RestrictStoresPrompt.ColRegionName}" />
+													</m:Column>
+													<m:Column minScreenWidth="Tablet" demandPopin="true">
+														<m:customData>
+															<core:CustomData key="p13nData"
+																value='\{"columnIndex": "3", "columnKey": "CountryName","leadingProperty": "CountryName","sortProperty": "CountryName","filterProperty": "CountryName"}' />
+														</m:customData>
+														<m:Label
+															tooltip="{i18n>CreateOffer.General.RestrictStoresPrompt.ColCountryName}"
+															text="{i18n>CreateOffer.General.RestrictStoresPrompt.ColCountryName}" />
+													</m:Column>
+													<m:Column minScreenWidth="Tablet" demandPopin="true">
+														<m:customData>
+															<core:CustomData key="p13nData"
+																value='\{"columnIndex": "4", "columnKey": "DistributionChannel","leadingProperty": "DistributionChannel","sortProperty": "DistributionChannel","filterProperty": "DistributionChannel"}' />
+														</m:customData>
+														<m:Label
+															tooltip="{i18n>CreateOffer.General.RestrictStoresPrompt.ColDistributionChannelDescription}"
+															text="{i18n>CreateOffer.General.RestrictStoresPrompt.ColDistributionChannelDescription}" />
+													</m:Column>
+													<m:Column minScreenWidth="Tablet" demandPopin="true">
+														<m:customData>
+															<core:CustomData key="p13nData"
+																value='\{"columnIndex": "4", "columnKey": "DistributionChannelDescription","leadingProperty": "DistributionChannelDescription","sortProperty": "DistributionChannelDescription","filterProperty": "DistributionChannelDescription"}' />
+														</m:customData>
+														<m:Label
+															tooltip="{i18n>CreateOffer.General.RestrictStoresPrompt.ColDistributionChannel}"
+															text="{i18n>CreateOffer.General.RestrictStoresPrompt.ColDistributionChannel}" />
+													</m:Column>
+												</m:columns>
+
+												<m:items>
+													<m:ColumnListItem id="columnsTemplate">
+														<m:cells>
+															<m:ObjectIdentifier title="{TreeModel>Name}"
+																text="{TreeModel>ExtLocationId}" />
+															<m:Text text="{TreeModel>City}" />
+															<m:Text text="{TreeModel>RegionName}" />
+															<m:Text text="{TreeModel>CountryName}" />
+															<m:Text text="{TreeModel>DistributionChannel}" />
+															<m:Text text="{TreeModel>DistributionChannelDescription}" />
+														</m:cells>
+													</m:ColumnListItem>
+												</m:items>
+											</m:Table>
+										</smartTable:SmartTable>
+
+									</m:VBox>
+								</blocks>
+							</ObjectPageSubSection>
+						</subSections>
+					</ObjectPageSection>
+				</sections>
+			</ObjectPageLayout>
+		</semantic:content>
+	</semantic:FullscreenPage>
+</core:View>

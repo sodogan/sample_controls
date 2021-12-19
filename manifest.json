@@ -1,0 +1,189 @@
+{
+	"_version": "1.4.0",
+	"start_url": "ShellIndex.html",
+	"sap.app": {
+		"id": "retail.pmr.promotionaloffers",
+		"type": "application",
+		"i18n": "i18n/i18n.properties",
+		"title": "{{manageoffer.AppTitle}}",
+		"applicationVersion": {
+			"version": "7.0.28"
+		},
+		"tags": {
+			"keywords": []
+		},
+		"ach": "CA-DMF-PRM",
+		"dataSources": {
+			"mainService": {
+				"uri": "/sap/opu/odata/DMF/OFFER_MANAGEMENT_V2_SRV/",
+				"type": "OData",
+				"settings": {
+					"odataVersion": "2.0",
+					"localUri": ""
+				}
+			}
+		},
+		"resources": "resources.json"
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		},
+		"supportedThemes": ["sap_hcb", "sap_bluecrystal"]
+	},
+	"sap.ui5": {
+		"resources": {
+			"css": [{
+				"uri": "css/main.css"
+			}]
+		},
+		"dependencies": {
+			"minUI5Version": "1.52.5",
+			"libs": {
+				"sap.m": {
+					"minVersion": "1.30"
+				},
+				"sap.ui.table": {
+					"minVersion": "1.30",
+					"lazy": false
+				},
+				"sap.ui.comp": {
+					"minVersion": "1.30",
+					"lazy": false
+				},
+				"sap.ui.layout": {
+					"minVersion": "1.30",
+					"lazy": false
+				},
+				"sap.uxap": {
+					"minVersion": "1.30",
+					"lazy": false
+				},
+				"sap.ui.unified": {
+					"minVersion": "1.30",
+					"lazy": false
+				},
+				"sap.viz": {
+					"minVersion": "1.38",
+					"lazy": false
+				}
+			},
+			"components": {}
+		},
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "retail.pmr.promotionaloffers.i18n.i18n"
+				},
+				"preload": true
+			},
+			"": {
+				"dataSource": "mainService",
+				"type": "sap.ui.model.odata.v2.ODataModel",
+				"settings": {
+					"metadataUrlParams": {
+						"sap-documentation": "heading"
+					},
+					"defaultCountMode": "Inline"
+				},
+				"preload": true
+			}
+		},
+		"rootView": "retail.pmr.promotionaloffers.Main",
+		"handleValidation": true,
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewType": "XML",
+				"viewPath": "retail.pmr.promotionaloffers",
+				"controlId": "idContainer",
+				"targetControl": "fioriContent",
+				"controlAggregation": "pages"
+			},
+			"routes": [{
+				"pattern": "",
+				"name": "default",
+				"viewName": "view.ManageOffers"
+			}, {
+				"pattern": "manage",
+				"name": "manage",
+				"viewName": "view.ManageOffers"
+			}, {
+				"pattern": "create",
+				"name": "create",
+				"viewName": "view.MainPageTabs"
+			}, {
+				"pattern": "edit/{path}",
+				"name": "edit",
+				"viewName": "view.MainPageTabs"
+			}, {
+				"pattern": "copy/{path}",
+				"name": "copy",
+				"viewName": "view.MainPageTabs"
+			}, {
+				"pattern": "vendor-funds",
+				"name": "vendorFunds",
+				"viewName": "view.VendorFunds"
+			}, {
+				"pattern": "vendor-funds/{path}",
+				"name": "vendorFundsCreate",
+				"viewName": "view.MainPageTabs"
+			}, {
+				"pattern": "display/{path}",
+				"name": "display",
+				"viewName": "view.MainPageTabs"
+			}, {
+				"pattern": "versionCreate",
+				"name": "versionCreate",
+				"viewName": "view.VersionTabs"
+			}, {
+				"pattern": "display/{path}/version/{id}",
+				"name": "versionDisplay",
+				"viewName": "view.VersionTabs"
+			}, {
+				"pattern": "edit/{path}/version/{id}",
+				"name": "versionEdit",
+				"viewName": "view.VersionTabs"
+			}, {
+				"pattern": "productGroup",
+				"name": "productGroup",
+				"viewName": "view.ProductGroupTabs"
+			}, {
+				"pattern": "locationGroups/{path}",
+				"name": "locationGroups",
+				"viewName": "view.LocationGroups"
+			}, {
+				"pattern": "locationGroupsCreate/{locationId}",
+				"name": "locationGroupsCreate",
+				"viewName": "view.LocationGroups"
+			}]
+		},
+		"config": {
+			"displayOfferUrl": "Promotion-manage&/display/",
+			"fullWidth": true,
+			"resourceBundle": "i18n/messageBundle.properties",
+			"offerSemanticObject": "Promotion",
+			"contentAction": "assignContent",
+			"termStyles": {
+				"005": {
+					"ViewType": "XML",
+					"ViewName": "retail.pmr.promotionaloffers.plugins.terms.styles.Freestyle"
+				}
+			},
+			"productSearchMultipleCalls": true,
+			"sapFiori2Adaptation": true
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		}
+	},
+	"sap.fiori": {
+		"archeType": "transactional",
+		"registrationIds": ["F2053"]
+	}
+}

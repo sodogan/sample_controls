@@ -1,0 +1,185 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition 
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:l="sap.ui.layout"
+	xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+	xmlns:fb="sap.ui.comp.filterbar"
+	xmlns:pmr="retail.pmr.promotionaloffers.utils.controls">
+	<Dialog
+		title="{i18n>Terms.Advanced.Product.Title}"
+		contentHeight="75%"
+		contentWidth="100%"
+		draggable="true"
+		resizable="true"
+		afterClose="onClose"
+		class="sapUiSizeCompact">
+		<content>
+			<smartFilterBar:SmartFilterBar
+				id="productSearchSmartFilterBar"
+				entityType="ProductFilter"			
+				search="searchFunction"
+				initialise="onInitialise"
+				beforeVariantSave="beforeVariantSave"
+				afterVariantLoad="afterVariantLoad"	
+				persistencyKey="smartFilterBarProductSerarch">
+				<smartFilterBar:controlConfiguration>
+					<smartFilterBar:ControlConfiguration index="1" key="AoR" visibleInAdvancedArea="false" visible="false"/>
+					<smartFilterBar:ControlConfiguration index="2" key="ExtId" visibleInAdvancedArea="true"/>
+					<smartFilterBar:ControlConfiguration index="3" key="Name" visibleInAdvancedArea="true"/>
+					<smartFilterBar:ControlConfiguration index="4" key="MerchandiseCategory" visibleInAdvancedArea="true"/>
+					<smartFilterBar:ControlConfiguration index="5" key="Type" visible="{Content>/HideTypeFilter}"/>
+					<smartFilterBar:ControlConfiguration index="6" key="HierarchyNode" visibleInAdvancedArea="true">
+						<smartFilterBar:customControl>
+							<MultiInput
+								id="hierarchyNodeFilter"
+								showSuggestion="true"
+								showValueHelp="true"
+								valueHelpRequest="handleHierarchyComplexSearch"
+								enableMultiLineMode="true"
+								valueHelpOnly = "true"
+								tokenChange="onHierarchyTokensChange" />						
+						</smartFilterBar:customControl>		
+					</smartFilterBar:ControlConfiguration>
+					<smartFilterBar:ControlConfiguration groupId="_BASIC" index="1" key="PageSize" label="{i18n>Terms.Advanced.Product.PageSize}" visible="true">
+						<smartFilterBar:customControl>
+							<Input
+								id="pageSize" 
+								value="100"
+								type="Number" />						
+						</smartFilterBar:customControl>		
+					</smartFilterBar:ControlConfiguration>					
+				</smartFilterBar:controlConfiguration>
+			</smartFilterBar:SmartFilterBar>
+			<VBox class="sapUiSmallMargin">
+				<pmr:TableWithCount
+					noDataText="{i18n>Terms.Advanced.Product.NoData}"
+					toolbarLoadingIndicator="{Data>/TermObjects/results/0/isLoadingVisible}"
+					id="productSearchTable"
+					selectionChange="onSelectRow"
+					mode="SingleSelectMaster"
+					updateStarted="onUpdateStarted"
+					growingThreshold="100"
+					persistencyKey="productSearchTablet"
+					itemProperty="Data>/TermObjects/results"
+					growing="true">
+					<pmr:columns>
+						<Column minScreenWidth="Tablet" demandPopin="true">
+							<customData> 
+					          	<core:CustomData key="cellData" value="ExtId"/>
+					     	</customData>
+						</Column>
+						<Column minScreenWidth="Tablet" demandPopin="true">
+							<customData> 
+					          	<core:CustomData key="cellData" value="Name"/>
+					     	</customData>
+						</Column>
+						<Column minScreenWidth="Tablet" demandPopin="true">
+							<customData> 
+					          	<core:CustomData key="cellData" value="ImagePath"/>
+					     	</customData>
+						</Column>						
+						<Column minScreenWidth="Tablet" demandPopin="true">
+							<customData> 
+					          	<core:CustomData key="cellData" value="TypeName"/>
+					     	</customData>
+						</Column>
+						<Column minScreenWidth="Tablet" demandPopin="true">
+							<customData> 
+					          	<core:CustomData key="cellData" value="MerchandiseCategory"/>
+					     	</customData>
+						</Column>
+						<Column minScreenWidth="Tablet" demandPopin="true">
+							<customData> 
+					          	<core:CustomData key="cellData" value="BaseUom"/>
+					     	</customData>
+						</Column>
+						<Column minScreenWidth="Tablet" demandPopin="true" hAlign="Right" vAlign="Middle">
+							<customData> 
+					          	<core:CustomData key="cellData" value="RetailPrice"/>
+					     	</customData>
+						</Column>
+						<Column minScreenWidth="Tablet" demandPopin="true" hAlign="Right" vAlign="Middle">
+							<customData> 
+					          	<core:CustomData key="cellData" value="PurchasePrice"/>
+					     	</customData>
+						</Column>
+						<Column minScreenWidth="Tablet" demandPopin="true" hAlign="Right" vAlign="Middle">
+							<customData> 
+					          	<core:CustomData key="cellData" value="RetailPriceWithVAT"/>
+					     	</customData>
+						</Column>
+						<Column minScreenWidth="Tablet" demandPopin="true" hAlign="Center" vAlign="Middle">
+							<customData> 
+					          	<core:CustomData key="cellData" value="Attributes"/>
+					     	</customData>
+							<Text text="{i18n>Terms.Advanced.Product.AdditionalAttributes}" />
+						</Column>
+					</pmr:columns>
+					<pmr:template>
+						<ColumnListItem>
+							<cells>
+								<ObjectIdentifier title="{Data>ProductDetail/ExtId}" />
+								<Text text="{Data>Name}" />
+								<Image width="50px" 
+									   src="{Data>ProductDetail/ImagePath}"  
+									   alt="{Data>Name}"
+									   decorative="{= ${Data>ProductDetail/ImagePath} ? false : true}"/>
+								<Text text="{Data>ProductDetail/TypeName}" />
+								<Text text="{Data>ProductDetail/MerchandiseCategory}" />
+								<Text text="{Data>ProductDetail/BaseUom}" />
+								<ObjectNumber number="{
+									parts : [
+										{path: 'Data>ProductDetail/RetailPrice'},												
+										{path: 'Data>ProductDetail/Currency'}],
+									type: 'sap.ui.model.type.Currency',
+									formatOptions: {
+										showMeasure: false
+									}
+								}" unit="{Data>ProductDetail/Currency}" emphasized="false" visible="{= ${Data>isLoadingVisible} === true ? false : true}"/>
+								<ObjectNumber number="{
+									parts : [
+										{path: 'Data>ProductDetail/PurchasePrice'},												
+										{path: 'Data>ProductDetail/Currency'}],
+									type: 'sap.ui.model.type.Currency',
+									formatOptions: {
+										showMeasure: false
+									}
+								}" unit="{Data>ProductDetail/Currency}" emphasized="false" visible="{= ${Data>isLoadingVisible} === true ? false : true}"/>
+								<ObjectNumber number="{
+									parts : [
+										{path: 'Data>ProductDetail/RetailPriceWithVAT'},												
+										{path: 'Data>ProductDetail/Currency'}],
+									type: 'sap.ui.model.type.Currency',
+									formatOptions: {
+										showMeasure: false
+									}
+								}" unit="{Data>ProductDetail/Currency}" emphasized="false" visible="{= ${Data>isLoadingVisible} === true ? false : true}"/>
+								<Link text="{i18n>Terms.Advanced.Product.Show}"  press="onShowAttributePressed" />
+							</cells>
+						</ColumnListItem>
+					</pmr:template> 
+				</pmr:TableWithCount>
+							
+				
+				<layoutData>
+						<FlexItemData growFactor="1"/>
+				</layoutData>
+			</VBox>
+		</content>
+		<buttons>
+			<Button
+				type="Emphasized"
+				text="{i18n>CreateOffer.Confirm}"
+				visible="{Content>/ShowOkButton}"
+				press="onOkPress" />
+			<Button
+				text="{i18n>CreateOffer.General.CancelBtn}"
+				press="onCancelPress" />
+		</buttons>
+	</Dialog>
+</core:FragmentDefinition>

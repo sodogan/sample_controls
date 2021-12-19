@@ -1,0 +1,44 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition 
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:l="sap.ui.layout"
+	xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+	xmlns:fb="sap.ui.comp.filterbar">
+<Dialog
+		contentHeight="50%"
+		contentWidth="600px"
+		class="sapUiSizeCompact">
+		<content>
+			<smartFilterBar:SmartFilterBar				
+				entityType="ProductFilter"
+				initialise="onInitialise"	
+				persistencyKey="smartFilterBarProductSerarch"
+				assignedFiltersChanged="assignFiltersChanged"
+				visible="false"
+				>
+				<smartFilterBar:controlConfiguration>
+					<smartFilterBar:ControlConfiguration index="0" key="BrandId" visibleInAdvancedArea="true"/>
+					<smartFilterBar:ControlConfiguration index="1" key="Size" visibleInAdvancedArea="true"/>
+					<smartFilterBar:ControlConfiguration index="2" key="Color" visibleInAdvancedArea="true"/>
+					<smartFilterBar:ControlConfiguration index="3" key="Vendor" visibleInAdvancedArea="true"/>
+				</smartFilterBar:controlConfiguration>
+			</smartFilterBar:SmartFilterBar>
+		</content>
+		<buttons>
+			<Button
+				text="{i18n>CreateOffer.Confirm}"
+				visible="{Content>/ShowOkButton}"
+				press="onDefineFilterOkPress" />
+			<Button
+				text="{i18n>CreateOffer.General.CancelBtn}"
+				press="onDefineFilterCancelPress"
+				/>
+		</buttons>
+</Dialog>
+
+</core:FragmentDefinition>

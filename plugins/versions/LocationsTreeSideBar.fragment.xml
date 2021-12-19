@@ -1,0 +1,66 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition  xmlns:mvc="sap.ui.core.mvc" xmlns:l="sap.ui.layout"
+	xmlns:core="sap.ui.core" xmlns:forms="sap.ui.layout.form" xmlns="sap.m"
+	displayBlock="true" xmlns:tree="sap.ui.table">
+	
+			<tree:TreeTable
+				id="SideBarTreeTable"
+				selectionMode="Single"
+				selectionBehavior="RowSelector"
+				showColumnVisibilityMenu="false" 
+				visibleRowCount="50"
+				visibleRowCountMode="Interactive" 
+				rootLevel="1" 
+				expandFirstLevel="true"
+				rowSelectionChange="onRowSelectionChange"
+				toggleOpenState="toggleOpenState"
+				rows="{/}">
+
+				<tree:Column grouped="false" autoResizable="true"  tooltip="{i18n>Versions.Location}">
+					<Label text="{i18n>Versions.Location}" />
+					<tree:template>
+						<HBox>
+							<QuickView class="sapSmartTemplatesObjectPageContactsQuickView" placement="Auto" id="quickViewNode">
+								<QuickViewPage  title="{i18n>Versions.Tooltip.Header}">
+									<QuickViewGroup>
+										<QuickViewGroupElement label="{i18n>Versions.Tooltip.Name}" type="text" value="{parts: [{path: 'ExtNodeId'}, {path: 'ExtLocationId'}, {path: 'NodeName'}, {path: 'VersionName'}, {path: 'Name'}, {path: 'isClosed'}], formatter: 'retail.pmr.promotionaloffers.utils.Formatter.locationPickerHideIfEmpty'}" />
+										<QuickViewGroupElement label="{i18n>Versions.Tooltip.OpenFromTo}" type="text" value="{parts: [{path: 'OpeningDate'}, {path: 'ClosingDate'}], formatter: 'retail.pmr.promotionaloffers.utils.Formatter.formatBlockDate'}" />						
+										<QuickViewGroupElement label="{i18n>Versions.Tooltip.Block}" type="text" value="{parts: [{path: 'BlockingStartDate'}, {path: 'BlockingEndDate'}], formatter: 'retail.pmr.promotionaloffers.utils.Formatter.formatBlockDate'}" />
+										<QuickViewGroupElement label="{i18n>Versions.Tooltip.SalesOrg}" type="text" value="{parts: [{path: 'SalesOrgDescription'}, {path: 'SalesOrg'}], formatter: 'retail.pmr.promotionaloffers.utils.Formatter.formatDescripTionIdType'}" />
+										<QuickViewGroupElement label="{i18n>Versions.Tooltip.DistributionChannel}" type="text" value="{parts: [{path: 'DistributionChannelDescription'}, {path: 'DistributionChannel'}], formatter: 'retail.pmr.promotionaloffers.utils.Formatter.formatDescripTionIdType'}" />
+										<QuickViewGroupElement label="{i18n>Versions.Tooltip.PurchaseOrg}" type="text" value="{parts: [{path: 'PurchaseOrgDescription'}, {path: 'PurchaseOrg'}], formatter: 'retail.pmr.promotionaloffers.utils.Formatter.formatDescripTionIdType'}" />
+										<QuickViewGroupElement label="{i18n>Versions.Tooltip.CityRegion}" type="text" value="{parts: [{path: 'City'}, {path: 'RegionName'}], formatter: 'retail.pmr.promotionaloffers.utils.Formatter.mergeWithComma'}" />
+										<QuickViewGroupElement label="{i18n>Versions.Tooltip.Country}" type="text" value="{CountryName}" />	
+									</QuickViewGroup>
+								</QuickViewPage>
+							</QuickView>
+							<core:Icon
+								src="sap-icon://message-information"
+								class="sapUiSmallMarginEnd"
+								visible="{= ${showTooltip} === true}"
+								press="openQuickView">
+								<core:layoutData>
+									<FlexItemData growFactor="1" />
+								</core:layoutData>
+							</core:Icon>
+							
+							<ObjectStatus
+								text="{parts: [{path: 'ExtNodeId'}, {path: 'ExtLocationId'}, {path: 'NodeName'}, {path: 'VersionName'}, {path: 'Name'}, {path: 'isClosed'}], formatter: 'retail.pmr.promotionaloffers.utils.Formatter.locationPickerHideIfEmpty'}"
+								state="{= ${excluded} === false ? 'None' : 'Warning'}"> 							
+							</ObjectStatus>
+						</HBox>
+					</tree:template>		
+				</tree:Column>
+				<tree:Column grouped="false" autoResizable="true" width="15%" tooltip="{i18n>Versions.Location.Count}">
+					<Label text="{i18n>Versions.Location.Count}"/>
+					<tree:template>
+						<Text text="{versionCount}" />
+					</tree:template>
+				</tree:Column>				
+			</tree:TreeTable>
+
+</core:FragmentDefinition>

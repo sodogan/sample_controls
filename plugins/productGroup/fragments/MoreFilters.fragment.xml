@@ -1,0 +1,53 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition 
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:l="sap.ui.layout"
+	xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+	xmlns:fb="sap.ui.comp.filterbar"
+	>
+<Dialog
+		contentHeight="50%"
+		contentWidth="600px"
+		class="sapUiSizeCompact">
+		<content>
+			<VBox class="sapUiSmallMargin">
+				<SearchField 
+				liveChange="handleSearch"
+				width="100%"
+				placeholder="{i18n>Product.Groups.Dialog.Search.For.Filters}">
+				<layoutData>
+						<l:GridData span="L12 M12 S12" />
+					</layoutData>
+				</SearchField>
+				<List
+					items="{/CheckboxFilters}"
+					selectionChange="moreFiltersItemChange"
+					mode="MultiSelect"
+					includeItemInSelection="true" >
+					<items>
+						<StandardListItem
+							title="{Label}"
+							selected="{isSelected}"
+						/>
+					</items>
+				</List>
+			</VBox>	
+		</content>
+		<buttons>
+			<Button
+				text="{i18n>Product.Groups.Dialog.Search.For.Filters.Ok}"
+				visible="{Content>/ShowOkButton}"
+				press="onMoreFiltersOk" />
+			<Button
+				text="{i18n>Product.Groups.Dialog.Search.For.Filters.Cancel}"
+				press="onMoreFiltersCancel"
+				/>
+		</buttons>
+</Dialog>
+
+</core:FragmentDefinition>

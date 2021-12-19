@@ -1,0 +1,15 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:u="sap.ui.unified">
+		<u:Menu
+			itemSelect="selectTermOption"
+			items="{Content>/TermOptions}">
+			<u:MenuItem key="{Content>Id}" text="{Content>Description}" additionalText="{Content>Type}" />
+		</u:Menu>
+</core:FragmentDefinition>

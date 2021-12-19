@@ -1,0 +1,10 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:View xmlns:core="sap.ui.core" xmlns="sap.m"
+		   controllerName="retail.pmr.promotionaloffers.Main" displayBlock="true" height="100%"
+		   class="sapUiSizeCompact">
+	<App id="fioriContent" />
+</core:View>

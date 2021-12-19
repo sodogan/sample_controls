@@ -1,0 +1,111 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+	xmlns:smartTable="sap.ui.comp.smarttable"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<Dialog title="{i18n>Attributes.SelectImage}" afterClose="onAfterClose" contentWidth="100%" class="sapUiSizeCompact">
+		<content>
+			<smartFilterBar:SmartFilterBar
+						id="smartFilterBarId"
+						entityType="Image"
+						entitySet="Images"						
+						persistencyKey="ImageSearchFilterBar">
+						<smartFilterBar:controlConfiguration>
+							<smartFilterBar:ControlConfiguration index="0" key="Name" visibleInAdvancedArea="true"/>
+							<smartFilterBar:ControlConfiguration index="1" key="ExtProductId" visibleInAdvancedArea="true"/>
+							<smartFilterBar:ControlConfiguration index="2" key="ProductName" visibleInAdvancedArea="true"/>			
+						</smartFilterBar:controlConfiguration>
+					</smartFilterBar:SmartFilterBar>
+					<smartTable:SmartTable 
+						id="images"
+						demandPopin="true"
+						enableAutoBinding="true"
+						entitySet="Images"
+						useExportToExcel="false"
+						smartFilterId="smartFilterBarId"
+						useVariantManagement="true" 
+						useTablePersonalisation="true"
+						tableType="ResponsiveTable"
+						persistencyKey="IMAGES_TABLE_PERSISTENT_KEY"
+						beforeRebindTable="onBeforeRebindTable"
+						header="{i18n>Attributes.ImageDialog.TableTitle}"
+                        showRowCount="true"
+						class="sapUiMediumMarginBegin sapUiMediumMarginEnd"
+						requestAtLeastFields="Id,Name"
+						ignoredFields="Type,SalesOrganization,DistributionChannel,BusinessPartnerId,BusinessPartnerName,PartnerRoleCatCode,ExtImageId,ImageType,ImageWidth,ImageHeight,ExtProductId,ProductName,CreatedOn">
+						
+						<smartTable:customData>
+							<core:CustomData key="p13nDialogSettings" value='\{"filter": \{ "visible": false}, 
+																			   "group": \{ "visible": false}}'/>
+						</smartTable:customData>
+						
+						<Table
+							id="imagesTable"
+							mode="SingleSelectMaster"
+							selectionChange="selectRow"
+							growing="true"
+							growingThreshold="20">
+							
+							<columns>
+								<Column demandPopin="true">
+									<customData>
+							          	<core:CustomData key="p13nData"  value='\{"columnIndex": "0", "columnKey": "Url","leadingProperty": "Url","filterProperty": "Url"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.Image}"/>
+								</Column>
+							</columns>
+							<columns>
+								<Column demandPopin="true">
+									<customData>
+							          	<core:CustomData key="p13nData"  value='\{"columnIndex": "1", "columnKey": "Name","leadingProperty": "Name","filterProperty": "Name"}'/>
+							     	</customData>
+									<Text text="{/#Image/Name/@sap:label}"/>
+								</Column>
+							</columns>
+							<columns>
+								<Column demandPopin="true">
+									<customData>
+							          	<core:CustomData key="p13nData"  value='\{"columnIndex": "2", "columnKey": "HighResolutionUrl","leadingProperty": "HighResolutionUrl","filterProperty": "HighResolutionUrl"}'/>
+							     	</customData>
+									<Text text="{/#Image/HighResolutionUrl/@sap:label}"/>
+								</Column>
+							</columns>
+							
+							<items templateShareable="true">
+								<ColumnListItem>
+									<cells>
+										<Image
+											width="50px"
+											src="{Url}" 
+											alt="{Name}"
+											decorative="{= ${Url} ? false : true}"/>
+										<ObjectIdentifier
+											text="{Name}" />
+										<Link 
+											href="{HighResolutionUrl}"
+											text="{HighResolutionUrl}"
+											target="_blank"/>
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>	
+						<smartTable:layoutData>
+							<FlexItemData growFactor="1" />
+						</smartTable:layoutData>								 
+					</smartTable:SmartTable>
+
+		</content>
+		<beginButton>
+			<Button 
+				text="{i18n>CreateOffer.Cancel}"
+				press="closeAttributeImageDialog" />
+		</beginButton>
+		 
+	</Dialog>
+</core:FragmentDefinition>

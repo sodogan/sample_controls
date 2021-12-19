@@ -1,0 +1,39 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition  xmlns:mvc="sap.ui.core.mvc" xmlns:l="sap.ui.layout"
+	xmlns:core="sap.ui.core" xmlns:forms="sap.ui.layout.form" xmlns="sap.m"
+	xmlns:dialog="sap.ui.comp.valuehelpdialog" displayBlock="true"
+	xmlns:tree="sap.ui.table">
+	
+			<tree:TreeTable 
+				selectionMode="MultiToggle"
+				showColumnVisibilityMenu="false" 
+				visibleRowCount="50"
+				visibleRowCountMode="Interactive" 
+				rootLevel="1" 
+				expandFirstLevel="true"
+				class="sapUiTinyMarginTop"
+				enableSelectAll="false"
+				rows="{/}">
+
+				<tree:Column grouped="false" autoResizable="true">
+					<Label text="{i18n>Versions.Location}" />
+					<tree:template>
+					
+						<ObjectStatus
+							text="{parts: [{path: 'ExtNodeId'}, {path: 'ExtLocationId'}, {path: 'NodeName'}, {path: 'VersionName'}, {path: 'Name'}, {path: 'isClosed'}], formatter: 'retail.pmr.promotionaloffers.utils.Formatter.locationPickerHideIfEmpty'}"
+							state="{= ${excluded} === false ? 'None' : 'Warning'}" />											
+					</tree:template>
+				</tree:Column>
+				<tree:Column grouped="false" autoResizable="true">
+					<Label text="{i18n>Versions.Location.Count}" />
+					<tree:template>
+						<Text text="{versionCount}" />
+					</tree:template>
+				</tree:Column>				
+			</tree:TreeTable>
+
+</core:FragmentDefinition>

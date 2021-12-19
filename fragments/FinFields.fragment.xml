@@ -1,0 +1,28 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+	<P13nDialog ok="okFinFields" cancel="closeFinFields" class="sapUiSizeCompact">
+		<panels>
+			<P13nColumnsPanel title="{i18n>Freestyle.Financials.FinancialFileds}" visible="true"
+				type="columns"
+				items="{
+                    path: '/Fields'
+                }"
+                columnsItems="{
+                    path: '/Fields'
+                }" >
+				<items>
+					<P13nItem columnKey="{path}" text="{text}" visible="{visible}" />
+				</items>
+				<columnsItems>
+				  <P13nColumnsItem columnKey="{path}" index ="{index}" text="{text}" visible="{visible}"/>
+				</columnsItems>
+			</P13nColumnsPanel>
+		</panels>
+	</P13nDialog>
+</core:FragmentDefinition>

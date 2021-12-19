@@ -1,0 +1,4 @@
+/*
+ * Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+ */
+sap.ui.define([],function(){function b(v){return function(i){return i.Control===v;};}function a(v){return function(i){return i.Name===v;};}function m(r){var d={};for(var i=0;i<r.length;i++){var e=r[i];d[e.Property]=e.Value;}return d;}function c(r){var d={};for(var i=0;i<r.length;i++){var e=r[i];var f=r.filter(b(e.Control));d[e.Control]=m(f);}return d;}function t(i){var r=c(i.Rules);return Object.keys(r).reduce(function(d,e){d[e]={Visible:r[e].hidden==="true"?false:true,DefaultValue:r[e].value?r[e].value.trim():null,Editable:r[e].readOnly==="true"?false:true};return d;},{});}function C(o){this.options=o||{};}C.prototype={parse:function(s){var o=this.options;if(!s){return Object.keys(o).reduce(function(r,v){r[v]=[];return r;},{});}return Object.keys(o).reduce(function(p,d){var e=o[d];p[d]=s.filter(a(e)).map(t);return p;},{});}};return C;});

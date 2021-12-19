@@ -1,0 +1,35 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:l="sap.ui.layout"
+	xmlns:core="sap.ui.core">
+	<Dialog
+		title="{i18n>MultipleFilterDialog.Title}"
+		class="sapUiContentPadding sapUiSizeCompact"
+		resizable="true"
+		draggable="true">
+		<content>			
+			<Panel 
+				width="100%"
+				expandable="false"
+				expanded="true">
+				<RadioButtonGroup>
+					<RadioButton text="{i18n>Product.Groups.Radion.Btn.All.Unmodified.Subnodes}" selected="{Data>/AllUnmodifiedSubnodes}"/>
+					<RadioButton text="{i18n>Product.Groups.Radion.Btn.All.Subnodes}" selected="{Data>/Subnodes}"/>
+					<RadioButton text="{i18n>Product.Groups.Radion.Btn.Only.This.Node}" selected="{Data>/OnlyThisNode}"/>
+				</RadioButtonGroup>
+			</Panel>
+		</content>
+		<beginButton>
+			<Button id="MultipleFilterDialogOk" press="onOkPress" text="{i18n>MultipleFilterDialog.Confirm}"/>
+		</beginButton>
+		<endButton>
+			<Button id="MultipleFilterDialogCancel" press="onCancelPress" text="{i18n>MultipleFilterDialog.Cancel}"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>
+				

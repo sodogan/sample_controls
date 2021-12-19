@@ -1,0 +1,92 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:View xmlns="sap.uxap" xmlns:l="sap.ui.layout" xmlns:m="sap.m"
+	xmlns:mvc="sap.ui.core.mvc" xmlns:core="sap.ui.core" xmlns:semantic="sap.m.semantic" xmlns:u="sap.ui.unified"
+	controllerName="retail.pmr.promotionaloffers.view.ProductGroupTabs" height="100%">
+	<semantic:FullscreenPage 
+		showNavButton="true"
+		navButtonPress="onNavButtonPress"
+		title="{= ${Content>/IsNew} === true ? ${i18n>ProductGroupPage.NewTitle} : ${i18n>ProductGroupPage.EditTitle} }">
+		<semantic:content>
+			<ObjectPageLayout id="ObjectPageLayout" visible="{UIVisiblity>/Visible}">
+				<headerTitle>
+					<ObjectPageHeader
+						id="headerPGPage"
+						objectTitle="{= ${/Name} === '' ? ${i18n>ProductGroupPage.NewTitle} : ${/Name} }"
+						objectSubtitle="{/ExtOfferId}" />
+				</headerTitle>
+				<headerContent>
+					<m:ObjectAttribute
+						title="{i18n>ProductGroupPage.MasterDataSystem}"
+						text="{Content>/CurrentMasterDataSystem}"/>
+					<l:VerticalLayout>
+						<m:Label text="{i18n>ProductGroupPage.CardinalityUnit}" />
+						<m:ObjectNumber number="{/Cardinality}"/>
+					</l:VerticalLayout>		
+				</headerContent> 
+				<sections>
+					<ObjectPageSection id="basicData" title="{i18n>ProductGroupPage.BasicData.Title}">
+						<subSections>
+							<ObjectPageSubSection>
+								<blocks>
+									<mvc:XMLView id="basicDataView"
+										viewName="retail.pmr.promotionaloffers.plugins.productGroup.BasicData" />
+								</blocks>
+							</ObjectPageSubSection>
+						</subSections>
+					</ObjectPageSection>
+
+					<ObjectPageSection id="defineInclusions" title="{i18n>ProductGroupPage.DefineIncludes.Title}">
+						<subSections>
+							<ObjectPageSubSection>
+								<blocks>
+									<mvc:XMLView id="defineInclusionsView"
+										viewName="retail.pmr.promotionaloffers.plugins.productGroup.defineInclusions.DefineInclusions" />
+								</blocks>
+							</ObjectPageSubSection>
+						</subSections>
+					</ObjectPageSection>
+					
+					<ObjectPageSection id="defineExclusions" title="{i18n>ProductGroupPage.DefineExcludes.Title}">
+						<subSections>
+							<ObjectPageSubSection>
+								<blocks>
+									<mvc:XMLView id="defineExclusionsView"
+										viewName="retail.pmr.promotionaloffers.plugins.productGroup.defineExclusions.DefineExclusions" />
+								</blocks>
+							</ObjectPageSubSection>
+						</subSections>
+					</ObjectPageSection>
+
+					<ObjectPageSection id="preview" title="{i18n>ProductGroupPage.Preview.Title}">
+						<subSections>
+							<ObjectPageSubSection id="previewSubsection">
+								<blocks>
+									<mvc:XMLView id="previewView"
+										viewName="retail.pmr.promotionaloffers.plugins.productGroup.preview.Preview" />
+								</blocks>
+							</ObjectPageSubSection>
+						</subSections>
+					</ObjectPageSection>
+				</sections>
+
+			</ObjectPageLayout>
+		</semantic:content>
+
+		<semantic:messagesIndicator>
+			<semantic:MessagesIndicator press="onMessagesIndicatorPress" />
+		</semantic:messagesIndicator>
+
+		<semantic:customFooterContent>
+		
+			<m:Button text="{i18n>Offer.SaveButton}" type="Emphasized"
+				visible="{Content>/NavButtonsEnabled}" press="onSave" />
+			<m:Button text="{i18n>CreateOffer.General.CancelBtn}"
+				visible="{Content>/NavButtonsEnabled}" press="onCancel" />				
+		</semantic:customFooterContent>
+
+	</semantic:FullscreenPage>
+</core:View>

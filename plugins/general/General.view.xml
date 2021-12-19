@@ -1,0 +1,684 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:View controllerName="retail.pmr.promotionaloffers.plugins.general.General"
+	xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:controls ="retail.pmr.promotionaloffers.utils.controls"
+	xmlns:l="sap.ui.layout" height="auto">
+
+	<!-- Invisible labels for Aria support -->
+	<core:InvisibleText id="tacticDateFromLabel" text="{i18n>CreateOffer.General.ValidityDateFrom}"/>
+	<core:InvisibleText id="tacticDateToLabel" text="{i18n>CreateOffer.General.ValidityDateTo}"/>
+
+		<f:Form editable="true">
+			<f:layout>
+				<f:ResponsiveGridLayout
+					columnsL="{= ${Content>/Editable} === false ? 2 : 3}"
+					columnsM="{= ${Content>/Editable} === false ? 2 : 3}"
+					labelSpanL="{= ${Content>/Editable} === false ? 4 : 12}"
+					labelSpanM="{= ${Content>/Editable} === false ? 4 : 12}" />
+			</f:layout>
+			<f:formContainers>
+				<f:FormContainer visible="{Content>/Editable}">
+					<f:formElements>
+						<f:FormElement>
+							<f:label>
+								<Label
+									text="{i18n>CreateOffer.General.OfferName}" labelFor="generalName"
+									required="{Content>/Editable}"/>
+							</f:label>
+							<f:fields>
+								<Input width="100%" type="Text" value="{/Name}" id="generalName"
+									change="validateName" maxLength="40"/>
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="{i18n>CreateOffer.General.Description}">
+							<f:fields>
+								<TextArea rows="4"
+									width="100%"
+									id="generalDescription"
+									value="{/Description}" 
+									maxLength="255"/>
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="{i18n>CreateOffer.General.Status}">
+							<f:fields>
+								<ComboBox width="100%" id="generalStatus"
+									value="{/StatusName}" selectedKey="{/Status}"
+									items="{
+										path: 'Content>/Statuses',
+										sorter: { path: 'Text' }
+							        }">
+									<core:Item key="{Content>Key}" text="{Content>Value}" />
+								</ComboBox>
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="{i18n>CreateOffer.General.ReferenceEvent}"
+							visible="{= ${featuresAvailable>/Events} === 'X' }">
+							<controls:MetadataBackedInput
+								target=".Offer/RefEventId"
+								id="generalRefEvent"
+								title="{i18n>CreateOffer.General.ReferenceEvent}"
+								suggestionItemSelected="referenceSuggestionSelected"
+								editable="{Content>/Editable}"
+								change="referenceEventChanged"
+								value="{Content>/ReferenceEventText}"/>
+						</f:FormElement>
+						<f:FormElement 
+							visible="{= ${UIVisiblity>/Version} > 2}"
+						    label="{i18n>CreateOffer.General.MarketingArea}">
+							<ComboBox
+								id="generalMarketingArea"
+								selectedKey="{Data>/MarketingArea}"
+								change="marketingAreaChanged">
+							</ComboBox>
+						</f:FormElement>					
+						<f:FormElement>
+							<f:fields>
+								<CheckBox
+									id="generalPackageOffer"
+									text="{i18n>CreateOffer.General.PackageOffer}"
+									selected="{/PackageOffer}"
+									editable="{Content>/Editable}" 
+									select="togglePackageOffer"/>
+							</f:fields>
+						</f:FormElement>
+											
+					</f:formElements>
+				</f:FormContainer>
+				<f:FormContainer title="{= ${Content>/Editable} === false ? ${i18n>Offer.Display.Information} : ''}">
+					<f:formElements>
+						<f:FormElement visible="{Content>/Editable}">
+							<f:label>
+								<Label
+									text="{i18n>CreateOffer.General.Location}"
+									labelFor="generalLocation"
+									required="{Content>/Editable}" />
+							</f:label>						
+							<f:fields>
+								<Input
+									id="generalLocation"
+									showSuggestion="true"
+									showValueHelp="true"
+									editable="{Content>/Editable}"
+									valueHelpRequest="handleLocationComplexSearch"
+									suggest="onLocationSuggest"
+									suggestionItemSelected="locationSuggestionItemSelected"
+									description="{Content>/LocationStores}"
+									startSuggestion="3"
+									value="{Content>/LocationText}"
+									change="onLocationChange"/>
+							</f:fields>
+						</f:FormElement>
+						
+						<f:FormElement visible="{= !${Content>/Editable} }">
+							<f:label>
+								<Label
+									text="{i18n>CreateOffer.General.Location}"
+									required="{Content>/Editable}" />
+							</f:label>						
+							<f:fields>
+								<VBox>
+									<Text text="{
+										parts: [{path:'Content>/LocationText'}, {path:'Content>/LocationStores'}],
+										formatter:'retail.pmr.promotionaloffers.utils.Formatter.fullLocationNodeDescription'
+										}" />
+									<Link  enabled="{
+											path:'/LocationNodeId',
+											formatter: '.notNull'
+										}" text="{i18n>Purposes.Title}" press="advancedLocationSettings"/>
+								</VBox>
+							</f:fields>
+						</f:FormElement>
+						
+
+						<f:FormElement visible="{Content>/Editable}">
+							<f:fields>
+								<Link  enabled="{
+											path:'/LocationNodeId',
+											formatter: '.notNull'
+										}" text="{i18n>Purposes.Title}" press="advancedLocationSettings"/>
+							</f:fields>
+						</f:FormElement>
+						
+						<f:FormElement label="{i18n>CreateOffer.General.PromotionType}">
+							<f:fields>
+								<ComboBox width="100%" id="generalPromotionType"
+									editable="{Content>/Editable}"
+									enabled="{Content>/PromotionTypeEnabled}"
+									selectedKey="{/PromotionType}"
+									change="promotionTypeChanged"
+									items="{
+										path: 'Content>/PromotionTypeSet',
+										sorter: { path: 'Name' }
+							        }">
+									<core:Item key="{Content>PromoType}" text="{Content>Description}" />
+								</ComboBox>
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="{i18n>CreateOffer.General.PurchasingGroup}">
+							<f:fields>
+								<ComboBox width="100%"
+									id="generalPurchasingGroup"
+									editable="{Content>/Editable}"
+									enabled="{Content>/PurchasingGroupEnabled}"
+									selectedKey="{/PurchasingGroup}"
+									change="purchasingGroupChanged"
+									items="{
+										path: 'Content>/PurchasingGroupSet',
+										sorter: { path: 'Name' }
+							        }">
+									<core:Item key="{Content>Key}" text="{Content>Value}" />
+								</ComboBox>
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="{i18n>CreateOffer.General.OfferSet}">
+							<controls:MetadataBackedInput
+								id="generalOfferSet"
+								target=".Offer/OfferSetName"
+								title="{i18n>CreateOffer.General.OfferSet}"
+								editable="{= ${Content>/Editable} &amp;&amp; ${Content>/OfferSetEnabled} }"
+								suggestionItemSelected="offerSetChanged"
+								change="offerSetChanged"
+								value="{Content>/OfferSetValue}"/>
+						</f:FormElement>
+						<f:FormElement visible="{Content>/Editable}">
+							<f:fields>
+								<Link  text="{i18n>Offer.General.ManageOfferSets}" press="onManageOfferPress"/>
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="{i18n>CreateOffer.General.LeadingCategory}">
+							<Input
+								id="generalLeadingCategory"
+								showSuggestion="true"
+								suggest="onLeadingCategorySuggest"
+								showValueHelp="true"
+								valueHelpRequest="handleLeagingCategoryComplexSearch"
+								suggestionItems="{Content>/LeadingCategoriesSet}"
+								suggestionItemSelected="onLeadingCategorySuggestionSelect"
+								change="leadingCategoryValueChanged"
+								busy="{Content>/LeadingCategoryBusy}"
+								editable="{Content>/Editable}"
+								value="{/LeadingCategoryName}">
+								<suggestionItems>
+									<core:Item
+										key="{Content>Id}"
+										text="{
+											parts: [
+												{path:'Content>ExtId'},
+												{path:'i18n>CreateOffer.General.EmptySpace'},
+												{path:'Content>Name'}],
+											formatter: 'jQuery.sap.formatMessage'}" />
+								</suggestionItems>
+							</Input>
+						</f:FormElement>
+						<f:FormElement visible="{Content>/Editable}">
+							<f:fields>
+								<CheckBox
+									id="generalRegularPriceOnly"
+									text="{i18n>CreateOffer.General.RegularPriceOnly}"
+									selected="{/RegularPriceOnly}"/>
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement visible="{= !${Content>/Editable}}">
+							<f:label>
+								<Label
+									labelFor="generalRegularPriceOnlyDisplay"
+									text="{i18n>CreateOffer.General.RegularPriceOnly}"/>
+							</f:label>	
+							<f:fields>
+								<CheckBox
+									id="generalRegularPriceOnlyDisplay"
+									selected="{/RegularPriceOnly}"
+									editable="false" />
+							</f:fields>
+						</f:FormElement>						
+						<f:FormElement visible="{= ${Content>/Editable} === false &amp;&amp; ${featuresAvailable>/Events} === 'X' ? true : false}">
+							<f:label>
+								<Label
+									text="{i18n>CreateOffer.General.ReferenceEvent}"
+									labelFor="referenceEventDisplayText" />
+							</f:label>						
+							<f:fields>
+								<Input
+								id="referenceEventDisplayText"
+								editable="false"
+								value="{Content>/ReferenceEventText}">
+							</Input>
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement visible="{= ${UIVisiblity>/Version} > 2 &amp;&amp; !${Content>/Editable}}">
+							<f:label>
+								<Label
+									text="{i18n>CreateOffer.General.MarketingArea}"
+									labelFor="marketingAreaDisplayText" />
+							</f:label>						
+							<f:fields>
+								<Input
+								id="marketingAreaDisplayText"
+								editable="false"
+								value="{/MarketingArea}">
+							</Input>
+							</f:fields>
+						</f:FormElement>
+					</f:formElements>
+				</f:FormContainer>
+				<f:FormContainer title="{= ${Content>/Editable} === false ? ${i18n>Offer.Display.Validity} : ''}">
+					<f:formElements>
+						<f:FormElement visible="{Content>/Editable}">
+							<f:label>
+								<Label
+									text="{i18n>CreateOffer.General.ValidityStart}"
+									required="{Content>/Editable}" 
+									labelFor="generalValidityStartDatePicker"/>
+							</f:label>						
+							<f:fields>
+								<DatePicker
+									id="generalValidityStartDatePicker"
+									width="100%"
+									dateValue="{/StartOfOffer}"
+									editable="{Content>/Editable}" 
+									change="onOfferStartDateChange"
+									value="{Time>/StartOfOfferValue}" >
+									<layoutData>
+										<l:GridData span="{
+												path : 'Time>/Selected',
+												formatter : '.timePickerVisible'
+											}"/>
+									</layoutData>
+									</DatePicker>
+								<TimePicker
+									id="generalValidityStartTimePicker"
+		         					width="100%"
+									dateValue="{Time>/StartTime}"
+									value="{
+										path : 'Time>/StartTime',
+										formatter : '.timeLabelValueFormatter'
+									}"
+									visible="{= ${Time>/Selected} !== true }"
+									editable="{Content>/Editable}"
+									change="onOfferStartTimeChange">
+										<layoutData>
+												<l:GridData span="L6 M6 S6"/>
+										</layoutData>
+								</TimePicker>
+							</f:fields>
+						</f:FormElement>
+						
+						<f:FormElement visible="{Content>/Editable}">
+							<f:label>
+								<Label
+									text="{i18n>CreateOffer.General.ValidityEnd}"
+									required="{Content>/Editable}" 
+									labelFor="generalValidityEndDatePicker"/>
+							</f:label>								
+							<f:fields>
+					       		<DatePicker 
+					       			id="generalValidityEndDatePicker"
+					         		width="100%"
+									dateValue="{/EndOfOffer}"
+									editable="{Content>/Editable}" 
+									change="onOfferEndDateChange"
+									value="{Time>/EndOfOfferValue}" >
+									<layoutData>
+											<l:GridData span="{
+												path : 'Time>/Selected',
+												formatter : '.timePickerVisible'
+											}"/>
+									</layoutData>
+									</DatePicker>
+								<TimePicker
+									id="generalValidityEndTimePicker"
+									width="100%"
+									dateValue="{Time>/EndTime}"
+									value="{
+										path : 'Time>/EndTime',
+										formatter : '.timeLabelValueFormatter'
+									}"									
+									visible="{= ${Time>/Selected} !== true }"
+									editable="{Content>/Editable}"
+									change="onOfferEndTimeChange">
+									<layoutData>
+											<l:GridData span="L6 M6 S6"/>
+									</layoutData>
+								</TimePicker>
+								
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement visible="{Content>/Editable}">
+							<f:fields>
+								<CheckBox
+									id="generalAllDayOffer"
+									text="{= ${Content>/Editable} === true ? ${i18n>CreateOffer.General.AllDayOffer} : ''}"
+									selected="{Time>/Selected}"
+									select="onAllDaySelect" 
+									editable="{Content>/Editable}"/>
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement label="{i18n>CreateOffer.General.Summary}">
+							<f:fields>
+								<Text id="generalSummary" 
+									text="{
+										parts: [
+											{path: 'i18n>CreateOffer.General.Summary.From'},
+											{path: '/StartOfOffer',
+											 type: 'sap.ui.model.type.DateTime',
+											 formatOptions: { style: 'medium' }},
+											{path: 'Time>/StartWeek'}
+										],
+										formatter: 'retail.pmr.promotionaloffers.utils.Formatter.summaryLine'
+										}\n
+										{
+										parts: [
+											{path: 'i18n>CreateOffer.General.Summary.To'},
+											{path: '/EndOfOffer',
+											 type: 'sap.ui.model.type.DateTime',
+											 formatOptions: { style: 'medium'}},
+											{path: 'Time>/EndWeek'}
+										],
+										formatter: 'retail.pmr.promotionaloffers.utils.Formatter.summaryLine'
+										}"
+										/>
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement visible="{= ${UIVisiblity>/Version} > 5  &amp;&amp; !${Content>/Editable}}" label="" />
+						<f:FormElement visible="{= ${UIVisiblity>/Version} > 5 }" label="{i18n>CreateOffer.General.Redemption}" />
+						<f:FormElement visible="{= ${UIVisiblity>/Version} > 5 }" label="{i18n>CreateOffer.General.Redemption.ValidFor}">
+							<f:fields>
+								<Input id="EligibilityDays"
+								       value="{path: '/EligibilityDays', type: 'sap.ui.model.type.Integer', constraints:{minimum:0, maximum: 999999999}}" 
+							    	   fieldWidth="70%" 
+									   editable="{Content>/Editable}" 
+								       description="{i18n>CreateOffer.General.Redemption.Unit}" />
+						    </f:fields>
+					    </f:FormElement>
+					    <f:FormElement visible="{= ${UIVisiblity>/Version} > 5 }" label="{i18n>CreateOffer.General.Redemption.DelayedUse}">
+						    <f:fields>
+							    <Input id="EligibilityOffset"
+							           value="{path: '/EligibilityOffset', type: 'sap.ui.model.type.Integer', constraints:{minimum:0, maximum: 999999999}}" 
+							           fieldWidth="70%"  
+								       editable="{Content>/Editable}"
+								       description="{i18n>CreateOffer.General.Redemption.Unit}" />
+						    </f:fields>
+					    </f:FormElement>						
+					</f:formElements>
+				</f:FormContainer>
+			</f:formContainers>
+		</f:Form>
+	
+	<l:VerticalLayout width="100%">
+	<core:ExtensionPoint name="extPropertiesSection" />
+		<Table
+			visible="{= ${featuresAvailable>/Tactics} === 'X' }"
+			id="tacticsTable"
+			items="{/Tactics}"
+			growing="true"
+			noDataText="{i18n>CreateOffer.General.Tactics.NoData}"
+			mode="{= ${Content>/Editable} === true ? 'Delete' : 'None'}"
+			delete="handleDeleteTactic">
+			<headerToolbar>
+				<Toolbar>
+					<Title text="{parts : [{path : 'i18n>CreateOffer.General.Tactics.TableTitle'}, {path : '/Tactics/length'}], formatter : 'jQuery.sap.formatMessage'}" level="H2"/>
+					<ToolbarSpacer/>
+					<Button
+						icon="sap-icon://add"
+    	 				type="Transparent"
+    	 				press="handleAddTacticsPress"
+    	 				visible="{= ${Content>/Editable} !== false }"
+    	 				tooltip="{i18n>CreateOffer.General.Tactics.Add}">
+					</Button>
+				</Toolbar>
+			</headerToolbar>
+
+			<columns>
+				<Column vAlign="Middle">
+					<Label text="{i18n>CreateOffer.General.Tactics.TacticTypes}" 
+					required="{Content>/Editable}"/>
+				</Column>
+				<Column minScreenWidth="Tablet" demandPopin="true" vAlign="Middle">
+					<Text text="{i18n>CreateOffer.General.ValidityDateFrom}" />
+				</Column>
+				<Column minScreenWidth="Tablet" demandPopin="true" vAlign="Middle">
+					<Text text="{i18n>CreateOffer.General.ValidityTimeFrom}" />
+				</Column>
+				<Column minScreenWidth="Tablet" demandPopin="true" vAlign="Middle">
+					<Text text="{i18n>CreateOffer.General.ValidityDateTo}" />
+				</Column>
+				<Column minScreenWidth="Tablet" demandPopin="true" vAlign="Middle">
+					<Text text="{i18n>CreateOffer.General.ValidityTimeTo}" />
+				</Column>
+			</columns>
+			
+			<items>
+				<ColumnListItem>
+					<cells>
+						<controls:MetadataBackedInput
+								target=".Offer/TacticSummary"
+								id="generalTacticSummary"
+								suggestionItemSelected="onTacticSuggestionSelect"
+								title="{i18n>CreateOffer.General.Tactics.Title}"
+								editable="{Content>/Editable}"
+								change="onTacticTypeChange"
+								valueHelpDialogSelection="onTacticSuggestionSelect"
+								value="{Name}"/>
+						<DatePicker 
+							dateValue="{StartOfTactic}"
+							editable="{Content>/Editable}" 
+							change="onTacticTimeChange"
+							ariaLabelledBy="tacticDateFromLabel"/>
+						<TimePicker
+							width="100%"
+							dateValue="{StartTimeOfTactic}"
+							value="{StartTimeOfTacticValue}"
+							editable="{Content>/Editable}"
+							change="onTacticTimeChange" />
+						<DatePicker 
+							dateValue="{EndOfTactic}"
+							editable="{Content>/Editable}" 
+							change="onTacticTimeChange" 
+							ariaLabelledBy="tacticDateToLabel"/>
+						<TimePicker
+							width="100%"
+							dateValue="{EndTimeOfTactic}"
+							value="{EndTimeOfTacticValue}"
+							editable="{Content>/Editable}"
+							change="onTacticTimeChange" />
+					</cells>
+				</ColumnListItem>
+			</items>
+		</Table>
+
+		<Table
+			id="targetGroupTable"
+			visible="{= ${featuresAvailable>/TargetGroups} === 'X' }"
+			items="{/TargetGroups}"
+			growing="true"
+			noDataText="{i18n>CreateOffer.General.TargetGroup.NoData}"
+			mode="{= ${Content>/Editable} === true ? 'Delete' : 'None'}"
+			delete="handleDeleteTargetGroup"
+			class="sapUiSmallMarginTop">
+			<headerToolbar>
+				<Toolbar>
+					<Title text="{parts : [{path : 'i18n>CreateOffer.General.TargetGroups'}, {path : '/TargetGroups/length'}], formatter : 'jQuery.sap.formatMessage'}" level="H2"/>
+					<ToolbarSpacer/>
+					<Button
+						icon="sap-icon://add"
+    	 				type="Transparent"
+    	 				press="handleAddTargetGroupPress"
+    	 				visible="{= ${Content>/Editable} !== false }"
+    	 				tooltip="{i18n>CreateOffer.General.TargetGroup.Add}">
+					</Button>
+				</Toolbar>
+			</headerToolbar>
+
+			<columns>
+				<Column vAlign="Middle">
+					<Text text="{i18n>CreateOffer.General.TargetGroup.Name}"/>
+				</Column>
+				<Column minScreenWidth="Tablet" demandPopin="true" vAlign="Middle">
+					<Text text="{i18n>CreateOffer.General.TargetGroup.Description}"/>
+				</Column>
+				<Column minScreenWidth="Tablet" demandPopin="true" hAlign="Right" vAlign="Middle">
+					<Text text="{i18n>CreateOffer.General.TargetGroup.Members}" />
+				</Column>
+				<Column minScreenWidth="Tablet" demandPopin="true" hAlign="Right" vAlign="Middle">
+					<Text text="{i18n>CreateOffer.General.TargetGroup.Redeem}" />
+				</Column>
+				<Column minScreenWidth="Tablet" demandPopin="true" hAlign="Right" vAlign="Middle">
+					<Text text="{i18n>CreateOffer.General.TargetGroup.ProjectedMembers}"/>
+				</Column>
+			</columns>
+			
+			<items>
+				<ColumnListItem>
+					<cells>
+						<controls:MetadataBackedInput
+								target=".Offer/TargetGroup"
+								suggestionItemSelected="onTargetGroupSuggestionSelect"
+								title="{i18n>CreateOffer.General.TargetGroups.Title}"
+								editable="{Content>/Editable}"
+								change="onTargetGroupChange"
+								parameters="{Content>/MarketingAreaFilter}"
+								valueHelpDialogSelection="onTargetGroupSuggestionSelect"
+								value="{Name}"/>
+						<Text text="{Description}" />
+						<Text text="{Members}" />
+						<Input 
+							value="{path : 'RedeemPercent',
+								type: 'sap.ui.model.type.Float',
+								constraints: {maximum: 9999999},
+								formatOptions: {
+									style: 'standard',
+									groupingEnabled: false,
+									minIntegerDigits: 0,
+									maxIntegerDigits: 7,
+									minFractionDigits: 0,
+									maxFractionDigits: 1,
+									emptyString : null
+								}}" 
+							change="onRedeemPercentChange"
+							textAlign="Right"
+							enabled="{RedeemEnabled}"
+							editable="{Content>/Editable}"
+							/>
+						<Text text="{ProjectedMembers}" />
+					</cells>
+				</ColumnListItem>
+			</items>
+		</Table>
+
+	    <Panel width="100%" visible="{= ${UIVisiblity>/Version} > 5 &amp;&amp; ${featuresAvailable>/CouponOffers} === 'X'}">
+
+			<headerToolbar>
+				<Toolbar height="4rem" style="Clear">
+					<CheckBox id="couponControlDataId"
+					          selected="{/IsCouponOffer}" 
+					          select="isCouponOfferSelect" 
+					          editable="{Content>/Editable}" />
+						<Label
+						   class="labelTitleSize"
+					       labelFor="couponControlDataId" 
+					       text="{i18n>CreateOffer.General.Coupon.Title}" 
+					        />
+				</Toolbar>
+			</headerToolbar>
+			
+			<content>
+				<f:Form  visible="{= ${/IsCouponOffer}}" editable="true" >
+					<f:layout>
+					<f:ResponsiveGridLayout
+						columnsL="3"
+						columnsM="3" 
+						labelSpanL="12"
+					    labelSpanM="12"/>
+					</f:layout>
+					<f:formContainers>
+			
+						<f:FormContainer>
+							<f:formElements>
+								<f:FormElement>
+									<f:fields>
+										<CheckBox
+											text="{i18n>CreateOffer.General.Coupon.EnforceEligibility}"
+											selected="{/EnforceEligibility}"
+											editable="{Content>/Editable}" />
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement>
+									<f:fields>
+										<CheckBox
+ 							    			text="{i18n>CreateOffer.General.Coupon.UniqueIdRequired}"
+											selected="{/UniqueIdRequired}"
+											editable="{Content>/Editable}" />
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="{i18n>CreateOffer.General.Coupon.WebCode}">
+									<f:fields>
+										<TextArea 
+							    			rows="2"
+											width="90%"
+											editable="{Content>/Editable}"
+											value="{/WebCode}" 
+											maxLength="64"/>
+									</f:fields>
+								</f:FormElement>					
+							</f:formElements>
+						</f:FormContainer>
+	
+						<f:FormContainer title="{i18n>CreateOffer.General.Coupon.MultiRedempPrevention}">
+							<f:formElements>
+								<f:FormElement label="{i18n>CreateOffer.General.Coupon.MaxRedemp}">
+									<f:fields>
+										<Input 
+										    id="MaxRedemp"
+											value="{path: '/MaxRedemp', type: 'sap.ui.model.type.Integer', constraints:{minimum:0, maximum: 999999999}}" 
+							    			editable="{Content>/Editable}"
+							    			width="90%" />
+									</f:fields>
+							    </f:FormElement>
+								<f:FormElement label="{i18n>CreateOffer.General.Coupon.PersMaxRedemp}">
+									<f:fields>
+										<Input 
+										    id="PersonalMaxRedemp"
+											value="{path: '/PersonalMaxRedemp', type: 'sap.ui.model.type.Integer', constraints:{minimum:0, maximum: 999999999}}" 
+							    			editable="{Content>/Editable}"
+											width="90%" />
+									</f:fields>
+								</f:FormElement>
+							</f:formElements>
+						</f:FormContainer>
+			
+						<f:FormContainer title="{i18n>CreateOffer.General.Coupon.Member}">
+							<f:formElements>
+								<f:FormElement label="{i18n>CreateOffer.General.Coupon.TotalAudience}" >
+									<f:fields>
+										<Input 
+											value="{Content>/TotalAudience}" 
+							    			editable="false"
+							    			width="90%"  />
+									</f:fields>
+								</f:FormElement>
+								<f:FormElement label="{i18n>CreateOffer.General.Coupon.UniqueIdLimit}">
+									<f:fields>
+										<Input 
+										    id="UniqueIdLimit"
+											value="{path: '/UniqueIdLimit', type: 'sap.ui.model.type.Integer', constraints:{minimum:0, maximum: 999999999}}" 
+											editable="{Content>/Editable}"
+											width="90%" />
+									</f:fields>
+								</f:FormElement>
+							</f:formElements>
+						</f:FormContainer>			
+
+					</f:formContainers>		
+
+				</f:Form>
+			</content>
+		</Panel>
+
+	</l:VerticalLayout>
+
+</core:View>

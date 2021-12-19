@@ -1,0 +1,15 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core"
+	xmlns:u="sap.ui.unified">
+		<u:Menu
+			itemSelect="selectRewardOption"
+			items="{RewardOptions}">
+			<u:MenuItem visible="{Visible}" key="{Id}" text="{Description}" additionalText="{Type}" />
+		</u:Menu>
+</core:FragmentDefinition>

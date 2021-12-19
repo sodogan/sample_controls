@@ -1,0 +1,93 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:FragmentDefinition xmlns:core="sap.ui.core" 
+	xmlns="sap.m"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:table="sap.ui.table"
+	xmlns:layout="sap.ui.layout"
+	xmlns:smartTable="sap.ui.comp.smarttable"	
+	xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"	
+	xmlns:tree="sap.ui.table">
+ 	<layout:VerticalLayout width="100%">
+		<layout:content>
+		<smartTable:SmartTable 
+						header=" "
+						id="previewHierarchySmartTable"
+						entitySet="LeadingCategory"
+						tableType="ResponsiveTable"
+						showRowCount="false"
+                        enableAutoBinding="false"
+                        editable="true"
+                        tableBindingPath="Content>/HierarchyPreview"  
+                        useVariantManagement="true" 
+                        persistencyKey="PREVIEWHIERARCHY_TABLE_PERSISTENT_KEY"
+                        useExportToExcel="false"
+						>
+						
+						<smartTable:customData>
+							<core:CustomData key="p13nDialogSettings" value='\{"filter": \{ "visible": false}, 
+																			   "group": \{ "visible": false}}'/>
+						</smartTable:customData>
+						<smartTable:customToolbar>
+							<OverflowToolbar design="Transparent">								
+								<!-- <ToolbarSpacer /> -->
+								<SegmentedButton
+									id = "segmentedButtonId"
+									selectedKey = "categoryViewButton"
+									select = "onSegmentButtonPress">
+									<items>
+										<SegmentedButtonItem text="{i18n>ProductGroupPage.ListViewButton}"  id="listViewButton"/>
+										<SegmentedButtonItem text="{i18n>ProductGroupPage.CategoryViewButton}" id="categoryViewButton"/>
+									</items>
+								</SegmentedButton>
+								<ToolbarSpacer/>
+								<SearchField id="searchFieldCategory" class="sapUiSmallMargin" placeholder="{i18n>ProductGroupPage.ProductSearch}" 
+									liveChange="onLiveChangeTreeTable" 
+									search="onLiveChangeTreeTable"
+									width="400px" 
+									selectOnFocus="false"
+									visible="{Content>/Editable}"/>	
+							</OverflowToolbar>
+						</smartTable:customToolbar>
+						<!-- showColumnVisibilityMenu="false" -->
+						<tree:TreeTable
+							id="categoryViewTable"
+							visibleRowCountMode="Interactive" 
+							rootLevel="1" 
+							expandFirstLevel="true"
+							visibleRowCount="20"
+							selectionMode="None"
+							rows="{/}"
+							>							
+							<tree:Column grouped="false" autoResizable="true">
+								<Label text="{i18n>ProductHierarchy.Categories}" />
+								<tree:template>
+									<Link text="{
+												parts : [{path: 'Name'},{path: 'ExtId'}],
+												formatter:'retail.pmr.promotionaloffers.utils.Formatter.tableNodeName'
+											}" press="onCategorySelected">
+										<customData> 
+								          	<core:CustomData key="Id" value="{Id}"/>
+								          	<core:CustomData key="Cardinality" value="{Cardinality}"/>
+								     	</customData>
+									</Link>										
+								</tree:template>
+							</tree:Column>
+							<tree:Column grouped="false" autoResizable="true" hAlign="Right">
+								<Label text="{i18n>ProductHierarchy.Count}" />
+								<tree:template>
+									<Text text="{Cardinality}"/>										
+								</tree:template>
+							</tree:Column>							
+						</tree:TreeTable>
+						
+						<smartTable:layoutData>
+							<FlexItemData growFactor="1" />
+						</smartTable:layoutData>								 
+					</smartTable:SmartTable>
+		 </layout:content>
+		</layout:VerticalLayout>
+</core:FragmentDefinition>

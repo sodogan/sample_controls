@@ -1,0 +1,59 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:View controllerName="retail.pmr.promotionaloffers.plugins.productGroup.BasicData"
+	xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:mvc="sap.ui.core.mvc"
+	xmlns:f="sap.ui.layout.form"
+	xmlns:l="sap.ui.layout" height="auto">
+
+		<f:Form editable="true">
+			<f:layout>
+				<f:ResponsiveGridLayout
+					columnsL="2"
+					columnsM="2"
+					labelSpanL="3"
+					labelSpanM="3" />
+			</f:layout>
+			<f:formContainers>
+				<f:FormContainer visible="{Content>/Editable}">
+					<f:formElements>
+						<f:FormElement visible="{Content>/EditableName}">
+							<f:label>
+								<Label text="{i18n>ProductGroup.BasicData.Name}" required="{Content>/Editable}" />
+							</f:label>
+							<f:fields>
+								<Input width="80%" type="Text" value="{/Name}"
+									change="validateForm" maxLength="40"/>
+							</f:fields>
+						</f:FormElement>
+						<f:FormElement visible="{= ${Content>/EditableName} === false ? true : false}">
+							<f:label>
+								<Label text="{i18n>ProductGroup.BasicData.Name}" />
+							</f:label>
+							<f:fields>
+								<Text 
+									text="{/Name}"
+									/>
+							</f:fields>
+						</f:FormElement>		
+					</f:formElements>
+				</f:FormContainer>
+				<f:FormContainer visible="{Content>/Editable}">
+					<f:formElements>
+					<f:FormElement label="{i18n>ProductGroup.BasicData.Description}">
+							<f:fields>
+								<Input width="80%"
+									id="versionGeneralDescription"
+									change="validateForm" 
+									editable="{= ${Content>/ReadOnly} !== true}"
+									value="{/Description}"
+									maxLength="40"/>
+							</f:fields>
+						</f:FormElement>
+					</f:formElements>
+				</f:FormContainer>
+			</f:formContainers>
+		</f:Form>
+</core:View>

@@ -1,0 +1,1119 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:View xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:f="sap.ui.layout.form"
+	xmlns:freestyle="retail.pmr.promotionaloffers.plugins.terms.controls.freestyle"
+	xmlns:controls="retail.pmr.promotionaloffers.plugins.terms.controls" xmlns:variant="sap.ui.comp.smartvariants"
+	xmlns:custom="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1" xmlns:smartTable="sap.ui.comp.smarttable"
+	xmlns:utils="retail.pmr.promotionaloffers.utils.controls" controllerName="retail.pmr.promotionaloffers.plugins.terms.styles.Freestyle"
+	class="sapUiNoContentPadding" width="100%">
+	<!-- Invisible labels for Aria support -->
+	<core:InvisibleText id="freestyleQuantityLabel" text="{i18n>CreateOffer.Terms.FreestyleOffer.IncentiveQuantity}"/>
+	<core:InvisibleText id="freestyleUoMLabel" text="{i18n>CreateOffer.Terms.FreestyleOffer.UoM}"/>
+	<core:InvisibleText id="freestyleCostLabel" text="{i18n>CreateOffer.Terms.FreestyleOffer.IncentiveCost}"/>
+	<core:InvisibleText id="freestyleAdjustedCostLabel" text="{i18n>CreateOffer.Terms.FreestyleOffer.IncentiveAdjustedCost}"/>
+	<core:InvisibleText id="freestyleValueLabel" text="{i18n>CreateOffer.Terms.FreestyleOffer.IncentiveValue}"/>
+	<core:InvisibleText id="freestyleAdjustedValueLabel" text="{i18n>CreateOffer.Terms.FreestyleOffer.IncentiveAdjustedValue}"/>
+	<l:Grid width="100%">
+		<freestyle:BorderedPanel content="{ path: '/Terms', templateShareable: 'true' }">
+			<freestyle:layoutData>
+				<l:GridData
+					span="{ path: 'featuresAvailable>/Financials', formatter: 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.termBlockSize'}"/>
+			</freestyle:layoutData>
+			<freestyle:headerToolbar>
+				<Toolbar height="3rem">
+					<Title text="{i18n>CreateOffer.Terms.Freestyle.BuyWith}"/>
+					<core:InvisibleText id="freestyleBuyWithLabel" text="{i18n>CreateOffer.Terms.Freestyle.BuyWith}"/>
+					<ComboBox items="{ path : 'Content>/Operators/PossibleValues', templateShareable : 'true' }" ariaLabelledBy="freestyleBuyWithLabel"
+						id="freestyleBuyWith" selectionChange="updateTermsLabel" selectedKey="{Content>/Operators/Value}"
+						visible="{/Header/SectionConfig/AndOrSwitch/Visible}"
+						editable="{ parts : [ {path : 'GeneralModel>/PackageOffer' }, {path : '/Header/SectionConfig/AndOrSwitch/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.packageOfferBooleanFormatter' }">
+						<core:Item key="{Content>Key}" text="{Content>Text}"/>
+					</ComboBox>
+				</Toolbar>
+			</freestyle:headerToolbar>
+			<VBox>
+				<freestyle:BorderlessToolbar design="Transparent" height="3rem">
+					<Title
+						text="{ parts : [ {path : 'i18n>CreateOffer.Terms.Freestyle.TermLabel'}, { path : 'OperatorLabel'}, {path : 'Identifier'}], formatter : 'jQuery.sap.formatMessage' }"/>
+					<ToolbarSpacer/>
+					<Button id="openTermOptions" tooltip="{i18n>CreateOffer.Terms.Freestyle.TermOption}" icon="sap-icon://overflow" class="sapUiNoMargin"
+						press="handlePressOpenMenuTerm"
+						visible="{ parts : [ {path : 'SectionConfig/BuyOption/Visible'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"/>
+					<Button icon="sap-icon://sys-add" press="termLevelAddButtonPressed" class="sapUiNoMargin" tooltip="{i18n>CreateOffer.Terms.Freestyle.Add}" 
+						visible="{ parts : [ {path : 'SectionConfig/AddButton/Visible'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"/>
+					<Button icon="sap-icon://sys-cancel" press="termLevelRemoveButtonPressed" class="sapUiNoMargin"
+						tooltip="{i18n>CreateOffer.Terms.Freestyle.Remove.Term}"
+						visible="{ parts : [ {path : 'SectionConfig/DeleteButton/Visible'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"/>
+				</freestyle:BorderlessToolbar>
+				<f:Form editable="true">
+					<f:layout>
+						<f:ResponsiveGridLayout labelSpanL="12" labelSpanM="12" labelSpanS="12"/>
+					</f:layout>
+					<f:formContainers>
+						<!-- 01 -> Product -->
+						<f:FormContainer>
+							<!-- DimensionType -->
+							<f:FormElement visible="{ProductConfig/DimensionType/Visible}">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.terms.Dimension}:" labelFor="freestyleBuyDimension">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S10"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Button
+										visible="{ parts : [ {path : 'ProductConfig/DeleteButton/Visible'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										icon="sap-icon://sys-cancel" press="removeTermSelection" tooltip="{i18n>CreateOffer.Terms.Freestyle.Remove.Product}" type="Transparent">
+										<layoutData>
+											<l:GridData span="L1 M1 S2"/>
+										</layoutData>
+									</Button>
+									<ComboBox
+										editable="{ parts : [ {path : 'ProductConfig/DimensionType/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										id="freestyleBuyDimension" selectedKey="{Selection/DimensionType}" selectionChange="productDimensionChanged"
+										change="onProductDimensionChange" items="{ path : 'Content>/ProductDimensionsSet', templateShareable : 'true' }" width="100%">
+										<core:Item key="{Content>Key}" text="{Content>Value}"/>
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</ComboBox>
+								</f:fields>
+							</f:FormElement>
+							<!-- ProductId -->
+							<f:FormElement
+								visible="{ parts : [ {path : 'Selection/DimensionType'}, { path : 'ProductConfig/ProductId/Visible'}, { path : 'ProductConfig/HierarchyNodeId/Visible'}, { path : 'ProductConfig/HierarchyId/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.productComboFormatter' }">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" labelFor="productComboBuy" text="{DimensionTypeText}:">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<core:Fragment fragmentName="retail.pmr.promotionaloffers.plugins.terms.styles.ProductCombo" type="XML" id="productComboBuy"/>
+								</f:fields>
+							</f:FormElement>
+							<!-- Quantity/UoM -->
+							<f:FormElement
+								visible="{ parts : [ {path : 'Selection/DimensionType'}, {path : 'ProductConfig/Quantity/Visible'}, {path : 'ProductConfig/UnitOfMeasure/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.quantityUoMFormatter' }">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em"
+										text="{ parts : [ {path : 'i18n>CreateOffer.Terms.Freestyle.QuantityAndUnitOfMeasure'}, {path : 'i18n>CreateOffer.Terms.Freestyle.Quantity'}, {path : 'i18n>CreateOffer.Terms.Freestyle.UnitOfMeasure'}, {path : 'ProductConfig/Quantity/Visible'}, {path : 'ProductConfig/UnitOfMeasure/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.quanityUoMLabelFormatter' }">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Text
+										text="{ parts : [ {path : 'Selection/Quantity'}, { path : 'Selection/UnitOfMeasure'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.quantityTextFormatter' }"
+										visible="{= ${Content>/Editable} === false}">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Text>
+									<Input
+										editable="{ parts : [ {path : 'ProductConfig/Quantity/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										value="{path : 'Selection/Quantity', type: 'sap.ui.model.type.Float', constraints: {maximum: 9999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 10, minFractionDigits: 0, maxFractionDigits: 3, emptyString : null } }"
+										ariaLabelledBy="freestyleQuantityLabel" id="freestyleBuyQuantity" liveChange="handleSelectionQuantity"
+										change="handleSelectionQuantityChange"
+										visible="{ parts : [ {path : 'ProductConfig/Quantity/Visible'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }">
+										<layoutData>
+											<l:GridData
+												span="{ parts : [ {path : 'ProductConfig/Quantity/Visible'}, {path : 'ProductConfig/UnitOfMeasure/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.quanitySizeFormatter' }"/>
+										</layoutData>
+									</Input>
+									<ComboBox
+										editable="{ parts : [ {path : 'ProductConfig/UnitOfMeasure/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										busy="{ProductBusy}" selectedKey="{Selection/UnitOfMeasure}" items="{ path : 'UnitOfMeasures', templateShareable : 'true' }"
+										ariaLabelledBy="freestyleUoMLabel" change="onUoMValueChanged"
+										visible="{ parts : [ {path : 'ProductConfig/UnitOfMeasure/Visible'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }">
+										<layoutData>
+											<l:GridData
+												span="{ parts : [ {path : 'ProductConfig/Quantity/Visible'}, {path : 'ProductConfig/UnitOfMeasure/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.uomSizeFormatter' }"/>
+										</layoutData>
+										<core:Item key="{Id}" text="{Name}"/>
+									</ComboBox>
+								</f:fields>
+							</f:FormElement>
+							<!-- MinAmount -->
+							<f:FormElement visible="{ProductConfig/MinAmount/Visible}">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.MinimumAmount}:" labelFor="freestyleBuyMinAmount">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Input
+										editable="{ parts : [ {path : 'Content>/Editable'}, { path : 'ProductConfig/MinAmount/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										id="freestyleBuyMinAmount"
+										value="{path : 'Selection/MinAmount', type: 'sap.ui.model.type.Float', constraints: {maximum: 99999999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 14, minFractionDigits: 0, maxFractionDigits: 5, emptyString : null }}"
+										liveChange="handleSelectionMinAmount">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Input>
+								</f:fields>
+							</f:FormElement>
+							<!-- UserProjection -->
+							<f:FormElement visible="{ProductConfig/UserProjection/Visible}">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.UserProjection}:"
+										labelFor="freestyleBuyUserProjection">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Input
+										editable="{ parts : [ {path : 'Content>/Editable'}, { path : 'ProductConfig/UserProjection/Editable'}, {path : 'GeneralModel>/PackageOffer'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.userProjectionFormatter' }"
+										id="freestyleBuyUserProjection"
+										value="{path: 'Selection/UserProjection', type: 'sap.ui.model.type.Float', constraints: {maximum: 999999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 12, minFractionDigits: 0, maxFractionDigits: 6, emptyString : null }}"
+										liveChange="handleSelectionUserProjection" change="updateUserProjection">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Input>
+								</f:fields>
+							</f:FormElement>
+							<core:ExtensionPoint name="extTermsBuy"/>
+							
+							<!-- PromoCostPrice / Currency -->
+							<f:FormElement visible="{ 
+									parts : [ {path : 'Selection/DimensionType'}, {path : 'featuresAvailable>/Financials'}, { path : 'ProductConfig/PromoCostPrice/Visible'}, {path : 'More/Visible'}],
+									formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.promoCostPriceVisiblityFormatter'
+								}">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" 
+										text="{= ${UIVisiblity>/Version} > 3 ? ${i18n>CreateOffer.Terms.Freestyle.PromotionCostAndCurrency} : ${i18n>CreateOffer.Terms.FreestyleOffer.PromotionCost}.concat(':') }"
+										labelFor="freestyleBuyPromoCostPrice">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11" />
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Text
+										visible="{= ${Content>/Editable} === false }"
+										text="{ 
+											parts : [ {path : 'UIVisiblity>/Version'}, {path : 'Selection/PromoCostPrice'}, {path : 'Selection/PromoCostPriceCurrency'}], 
+											formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.promoCostPriceTextFormatter' 
+										}" >
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Text>
+									<Input 
+										visible="{
+											parts : [ {path : 'ProductConfig/PromoCostPrice/Visible'}, { path : 'Content>/Editable'}],
+											formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter'
+										}"
+										editable="{
+											parts : [ {path : 'Content>/Editable'}, { path : 'ProductConfig/PromoCostPrice/Editable'}],
+											formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter'
+										}" 
+										value="{
+											path: 'Selection/PromoCostPrice',
+											type: 'sap.ui.model.type.Float',
+											constraints: {maximum: 99999999999999},
+											formatOptions: {
+												style: 'standard',
+												groupingEnabled: false,
+												minIntegerDigits: 0,
+												maxIntegerDigits: 14,
+												minFractionDigits: 0,
+												maxFractionDigits: 5,
+												emptyString : null
+											}}"
+										id="freestyleBuyPromoCostPrice"
+										liveChange="handleSelectionPromoCostPrice" 
+										change="updatePromoCostPrice">												
+										<layoutData>
+											<l:GridData span="{= ${UIVisiblity>/Version} > 3 ? 'L9 M9 S9' : 'L12 M12 S12'}" />
+										</layoutData>
+									</Input>
+									<ComboBox
+										visible="{ 
+												parts : [  {path : 'UIVisiblity>/Version'}, {path : 'ProductConfig/PromoCostPrice/Visible'}, {path : 'More/Visible'}, {path : 'Content>/Editable'}], 
+												formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.promoCostPriceCurrencyVisiblityFormatter' 
+										}"
+										editable="{= ${ProductConfig/PromoCostPrice/Editable} &amp;&amp; ${Content>/Editable}}"
+										showSecondaryValues="true" 
+										filterSecondaryValues="true" 
+										busy="{ProductBusy}" 
+										selectedKey="{Selection/PromoCostPriceCurrency}"
+										items="{ path : 'Content>/CurrencyList', length: 300, sorter: { path: 'Key' }, templateShareable : 'true' }"
+										ariaLabelledBy="freestylePromoCostPriceCurrencyLabel" 
+										change="onPromoCostPriceCurrencyChanged">
+										<layoutData>
+											<l:GridData span="L3 M3 S3"/>
+										</layoutData>
+										<core:ListItem key="{Content>Key}" text="{Content>Key}" additionalText="{Content>Value}"/>
+									</ComboBox>
+								</f:fields>
+							</f:FormElement>
+
+							<!-- See More / See Less -->
+							<f:FormElement>
+								<VBox
+									visible="{ parts : [ {path : ''}, {path : 'featuresAvailable>/Financials'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.termsSeeMoreVisible' }">
+									<Link press="toggleVisibity" text="{i18n>CreateOffer.SeeLess}" visible="{More/Visible}"/>
+									<Link press="toggleVisibity" text="{i18n>CreateOffer.SeeMore}" visible="{= ${More/Visible} === false}"/>
+								</VBox>
+							</f:FormElement>
+						</f:FormContainer>
+						<!-- Conditions -->
+						<f:FormContainer formElements="{ path: 'Conditions', templateShareable: 'true' }">
+							<f:FormElement>
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{Description}:" labelFor="freestyleBuySubCondition">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S10"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Button
+										visible="{ parts : [ {path : 'Content>/Editable'}, { path : 'Config/DeleteButton/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										icon="sap-icon://sys-cancel" tooltip="{i18n>CreateOffer.Terms.Freestyle.Remove.Condition}" press="deleteConditions" type="Transparent">
+										<layoutData>
+											<l:GridData span="L1 M1 S2"/>
+										</layoutData>
+									</Button>
+									<ComboBox
+										editable="{ parts : [ {path : 'Config/Type/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										id="freestyleBuySubCondition" selectionChange="selectSubCondition" selectedKey="{Selection/Type}" change="onSubConditionChange"
+										items="{ path : 'SubConditions', templateShareable : 'true' }" width="100%">
+										<core:Item key="{Id}" text="{Description}"/>
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</ComboBox>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.IncentiveProduct}:"
+										visible="{= ${ProductRelevant} === 'X'}">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<controls:ProductCouponCombo editable="{Content>/Editable}" masterdataSystem="{GeneralModel>/MasterdataSystem}"
+										productCouponId="{Selection/ProductId}" visible="{= ${ProductRelevant} === 'X'}">
+										<controls:layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</controls:layoutData>
+									</controls:ProductCouponCombo>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.IncentiveCode}:"
+										labelFor="freestyleBuyProductRelevant" visible="{= ${ProductRelevant} === 'F'}">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Input editable="{Content>/Editable}" value="{Selection/ExtProductId}" id="freestyleBuyProductRelevant"
+										visible="{= ${ProductRelevant} === 'F'}">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Input>
+									
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.IncentiveCouponOffer}:"
+										visible="{= ${UIVisiblity>/Version} > 5 &amp;&amp; ${featuresAvailable>/CouponOffers} === 'X' &amp;&amp; ${ProductRelevant} === 'O01'}">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+								    <freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.IncentiveOffer}:"
+										visible="{= ${UIVisiblity>/Version} > 5 &amp;&amp; ${featuresAvailable>/CouponOffers} === 'X' &amp;&amp; ${ProductRelevant} === 'O09'}">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<controls:CouponOfferCombo editable="{Content>/Editable}" 
+										productRelevant="{ProductRelevant}"
+										couponOfferId="{Selection/OfferId}"
+										visible="{= ${UIVisiblity>/Version} > 5 &amp;&amp; ${featuresAvailable>/CouponOffers} === 'X' &amp;&amp; (${ProductRelevant} === 'O01' || ${ProductRelevant} === 'O09') }">
+										<controls:layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</controls:layoutData>
+									</controls:CouponOfferCombo>
+								
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.IncentiveQuantity}:"
+										labelFor="freestyleBuyQuantityRelevant" visible="{= ${QuantityRelevant} === 'X'}">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Input editable="{Content>/Editable}" id="freestyleBuyQuantityRelevant"
+										value="{path : 'Selection/Quantity', type: 'sap.ui.model.type.Float', constraints: {maximum: 9999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 10, minFractionDigits: 0, maxFractionDigits: 3, emptyString : null }}"
+										visible="{= ${QuantityRelevant} === 'X'}">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Input>
+									<core:ExtensionPoint name="extTermsCondition"/>
+									<freestyle:LabelWithMargin marginTop="0.4em"
+										text="{parts : [{path : 'Config/Cost/Visible'}, {path : 'i18n>CreateOffer.Terms.FreestyleOffer.IncentiveCost'}, {path : 'Config/AdjustedCost/Visible'}, {path : 'i18n>CreateOffer.Terms.FreestyleOffer.IncentiveAdjustedCost'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.labelFormatter'}"
+										visible="{ parts : [ {path : 'featuresAvailable>/Financials'}, { path : 'Config/Cost/Visible'}, {path : 'More/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.featureFormatter' }">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Input
+										visible="{ parts : [ {path : 'featuresAvailable>/Financials'}, { path : 'Config/Cost/Visible'}, {path : 'More/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.featureFormatter' }"
+										id="freestyleBuyCost" ariaLabelledBy="freestyleCostLabel"
+										editable="{ parts : [ {path : 'Config/Cost/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										liveChange="handleSelectedSubIncentiveCost"
+										value="{ path : 'Selection/Cost', type: 'sap.ui.model.type.Float', constraints: {maximum: 9999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 10, minFractionDigits: 0, maxFractionDigits: 3, emptyString : null }}">
+										<layoutData>
+											<l:GridData
+												span="{parts : [ {path : 'featuresAvailable>/Financials'}, {path : 'Config/AdjustedCost/Visible'}], formatter: 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.inputSize6'}"/>
+										</layoutData>
+									</Input>
+									<Input id="freestyleBuyAdjustedCost"
+										visible="{ parts : [ {path : 'featuresAvailable>/Financials'}, { path : 'Config/AdjustedCost/Visible'}, {path : 'More/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.featureFormatter' }"
+										ariaLabelledBy="freestyleAdjustedCostLabel"
+										editable="{ parts : [ {path : 'Config/AdjustedCost/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										liveChange="handleSelectedSubIncentiveAdjustedCost"
+										value="{path: 'Selection/AdjustedCost', type: 'sap.ui.model.type.Float', constraints: {maximum: 9999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 10, minFractionDigits: 0, maxFractionDigits: 3, emptyString : null }}">
+										<layoutData>
+											<l:GridData
+												span="{parts : [ {path : 'featuresAvailable>/Financials'}, {path : 'Config/Cost/Visible'}], formatter: 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.inputSize6'}"/>
+										</layoutData>
+									</Input>
+									<freestyle:LabelWithMargin marginTop="0.4em"
+										text="{parts : [{path : 'Config/Value/Visible'}, {path : 'i18n>CreateOffer.Terms.FreestyleOffer.IncentiveValue'}, {path : 'Config/AdjustedValue/Visible'}, {path : 'i18n>CreateOffer.Terms.FreestyleOffer.IncentiveAdjustedValue'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.labelFormatter'}"
+										visible="{ parts : [ {path : 'featuresAvailable>/Financials'}, {path : 'More/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.featureFormatter' }">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Input id="freestyleBuyValue" ariaLabelledBy="freestyleValueLabel"
+										visible="{ parts : [ {path : 'featuresAvailable>/Financials'}, { path : 'Config/Value/Visible'}, {path : 'More/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.featureFormatter' }"
+										editable="{ parts : [ {path : 'Config/Value/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										liveChange="handleSelectedSubIncentiveValue"
+										value="{path : 'Selection/Value', type: 'sap.ui.model.type.Float', constraints: {maximum: 9999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 10, minFractionDigits: 0, maxFractionDigits: 3, emptyString : null }}">
+										<layoutData>
+											<l:GridData
+												span="{parts : [ {path : 'featuresAvailable>/Financials'}, {path : 'Config/AdjustedValue/Visible'}], formatter: 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.inputSize6'}"/>
+										</layoutData>
+									</Input>
+									<Input id="freestyleBuyAdjustedValue" ariaLabelledBy="freestyleAdjustedValueLabel"
+										visible="{ parts : [ {path : 'featuresAvailable>/Financials'}, { path : 'Config/AdjustedValue/Visible'}, {path : 'More/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.featureFormatter' }"
+										editable="{ parts : [ {path : 'Config/AdjustedValue/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										liveChange="handleSelectedSubIncentiveAdjustedValue"
+										value="{path : 'Selection/AdjustedValue', type: 'sap.ui.model.type.Float', constraints: {maximum: 9999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 10, minFractionDigits: 0, maxFractionDigits: 3, emptyString : null }}">
+										<layoutData>
+											<l:GridData
+												span="{parts : [ {path : 'featuresAvailable>/Financials'}, {path : 'Config/Value/Visible'}], formatter: 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.inputSize6'}"/>
+										</layoutData>
+									</Input>
+									<freestyle:LabelWithMargin marginTop="0.4em" labelFor="freestyleBuyRedemptionRat"
+										visible="{ parts : [ {path : 'featuresAvailable>/Financials'}, { path : 'Config/RedemptionRate/Visible'}, {path : 'More/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.featureFormatter' }"
+										text="{i18n>CreateOffer.Terms.FreestyleOffer.RedemptionRate}">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Input
+										visible="{ parts : [ {path : 'featuresAvailable>/Financials'}, { path : 'Config/RedemptionRate/Visible'}, {path : 'More/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.featureFormatter' }"
+										id="freestyleBuyRedemptionRat"
+										editable="{ parts : [ {path : 'Config/RedemptionRate/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										value="{path : 'Selection/RedemptionRate', type: 'sap.ui.model.type.Float', constraints: {maximum: 9999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 10, minFractionDigits: 0, maxFractionDigits: 3, emptyString : null }}"
+										change="handleSelectedSubIncentiveRedemptionRate">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Input>
+									<VBox
+										visible="{ parts : [ {path : ''}, {path : 'featuresAvailable>/Financials'}], formatter: 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.incentivesSeeMoreVisible' }">
+										<Link press="toggleVisibity" text="{i18n>CreateOffer.SeeLess}" visible="{More/Visible}"/>
+										<Link press="toggleVisibity" text="{i18n>CreateOffer.SeeMore}" visible="{= ${More/Visible} === false}"/>
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</VBox>
+								</f:fields>
+							</f:FormElement>
+						</f:FormContainer>
+					</f:formContainers>
+				</f:Form>
+				<freestyle:Separator visible="{path:'', formatter : '.isTermSeparatorVisible'}"/>
+			</VBox>
+		</freestyle:BorderedPanel>
+		<freestyle:BorderedPanel headerText="{i18n>CreateOffer.Terms.RewardsHeaderText}" content="{ path: '/Rewards', templateShareable: 'true' }">
+			<freestyle:layoutData>
+				<l:GridData
+					span="{ path: 'featuresAvailable>/Financials', formatter: 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.termBlockSize'}"/>
+			</freestyle:layoutData>
+			<VBox>
+				<freestyle:BorderlessToolbar design="Transparent" height="3rem">
+					<Title
+						text="{ parts : [{path : 'i18n>CreateOffer.Terms.FreestyleOffer.Reward'}, {path : 'Identifier'}], formatter : 'jQuery.sap.formatMessage' }"/>
+					<core:InvisibleText id="freestyleGetRewardLabel"
+						text="{ parts : [{path : 'i18n>CreateOffer.Terms.FreestyleOffer.Reward'}, {path : 'Identifier'}], formatter : 'jQuery.sap.formatMessage' }"/>
+					<ComboBox visible="{ProductConfig/RewardScope/Visible}" width="29%"
+						editable="{ parts : [ { path : 'GeneralModel>/PackageOffer'}, {path : 'ProductConfig/RewardScope/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.packageOfferBooleanFormatter' }"
+						id="freestyleGetReward" ariaLabelledBy="freestyleGetRewardLabel" change="validate" selectionChange="rewardForSelected"
+						selectedKey="{Applicability}" value="{ApplicabilityName}" items="{ path : 'Applicabilities', templateShareable : 'true' }"
+						valueState="{Error}">
+						<core:Item key="{Id}" text="{Name}"/>
+					</ComboBox>
+					<ToolbarSpacer/>
+					<Button id="openRewardOptions" class="sapUiNoMargin"
+						visible="{ parts : [ {path : 'SectionConfig/GetOption/Visible'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+						enabled="{= ${Applicability} !== ''}" tooltip="{i18n>CreateOffer.Terms.FreestyleOffer.RewardOptions}" icon="sap-icon://overflow"
+						press="handlePressOpenMenuReward"/>
+					<Button class="sapUiNoMargin"
+						visible="{ parts : [ {path : 'SectionConfig/AddButton/Visible'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+						icon="sap-icon://sys-add" press="rewardLevelAddButtonPressed" tooltip="{i18n>CreateOffer.Terms.Freestyle.Add}"/>
+					<Button class="sapUiNoMargin"
+						visible="{ parts : [ {path : 'SectionConfig/DeleteButton/Visible'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+						icon="sap-icon://sys-cancel" press="rewardLevelRemoveButtonPressed" tooltip="{i18n>CreateOffer.Terms.Freestyle.Remove.Reward}"/>
+				</freestyle:BorderlessToolbar>
+				<f:Form editable="true">
+					<f:layout>
+						<f:ResponsiveGridLayout labelSpanL="12" labelSpanM="12" labelSpanS="12"/>
+					</f:layout>
+					<f:formContainers>
+						<!-- 01 - Discount -->
+						<f:FormContainer visible="{= ${Type} === '01'}">
+							<!-- DiscountType -->
+							<f:FormElement visible="{ProductConfig/DiscountType/Visible}">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.DiscountType}:"
+										labelFor="freestyleGetDiscountType">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S10"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Button
+										visible="{ parts : [ {path : 'ProductConfig/DeleteButton/Visible'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										class="sapUiNoMargin" icon="sap-icon://sys-cancel" press="removeRewardSelection"
+										tooltip="{i18n>CreateOffer.Terms.Freestyle.Remove.Discount}" type="Transparent">
+										<layoutData>
+											<l:GridData span="L1 M1 S2"/>
+										</layoutData>
+									</Button>
+									<ComboBox
+										editable="{ parts : [ {path : 'ProductConfig/DiscountType/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										id="freestyleGetDiscountType" selectedKey="{Selection/DiscountType}" items="{ path : 'Content>/DiscountTypes', templateShareable : 'true' }"
+										selectionChange="discountTypeChanged">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+										<core:Item key="{Content>Key}" text="{Content>Value}"/>
+									</ComboBox>
+								</f:fields>
+							</f:FormElement>
+							<!-- DiscountValue -->
+							<f:FormElement
+								visible="{= ${Selection/DiscountType} !== '05' &amp;&amp; ${Selection/DiscountType} !== '06' &amp;&amp; ${ProductConfig/DiscountValue/Visible} !== false }">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.DiscountValue}:"
+										labelFor="freestyleGetDiscountProduct">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Text
+										text="{ parts : [ {path : 'Selection/DiscountValue'}, {path : 'DiscountDescription'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.discountTextFormatter' }"
+										visible="{= ${Content>/Editable} === false}">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Text>
+									<Input
+										editable="{ parts : [ {path : 'ProductConfig/DiscountValue/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										id="freestyleGetDiscountProduct"
+										value="{path : 'Selection/DiscountValue', type: 'sap.ui.model.type.Float', constraints: {maximum: 99999999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 14, minFractionDigits: 0, maxFractionDigits: 5, emptyString : null }}"
+										description="{DiscountDescription}" liveChange="handleSelectionDiscountValue" change="updateDiscountValue" visible="{Content>/Editable}">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Input>
+								</f:fields>
+							</f:FormElement>
+							<!-- SubDiscountValue -->
+							<f:FormElement
+								visible="{= ${Selection/DiscountType} !== '05' &amp;&amp; ${Selection/DiscountType} !== '06' &amp;&amp; ${TermsContentModel>/EnforceMultipleValue} === 'I' &amp;&amp; ${ProductConfig/SubDiscountValue/Visible} !== false }">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.SubDiscountValue}:"
+										labelFor="freestyleGetSubDiscountValueValueProduct">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Text
+										text="{ parts : [ {path : 'Selection/SubDiscountValue'}, {path : 'DiscountDescription'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.discountTextFormatter' }"
+										visible="{= ${Content>/Editable} === false}">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Text>
+									<Input
+										editable="{ parts : [ {path : 'ProductConfig/SubDiscountValue/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										id="freestyleGetSubDiscountValueValueProduct"
+										value="{path : 'Selection/SubDiscountValue', type: 'sap.ui.model.type.Float', constraints: {maximum: 99999999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 14, minFractionDigits: 0, maxFractionDigits: 5, emptyString : null }}"
+										description="{DiscountDescription}" liveChange="handleSelectionSubDiscountValue" change="updateSubDiscountValue"
+										visible="{Content>/Editable}">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Input>
+								</f:fields>
+							</f:FormElement>
+							<!-- DiscountAssignment -->
+							<f:FormElement visible="{ProductConfig/DiscountAssignment/Visible}">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.Freestyle.DiscountAssignment}:">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<ComboBox
+										editable="{ parts : [ {path : 'ProductConfig/DiscountAssignment/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										selectedKey="{Selection/DiscountAssignment}" change="onDiscountAssignmentChange"
+										items="{ path : 'Content>/DiscountAssignments', templateShareable : 'true' }">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+										<core:Item key="{Content>Key}" text="{Content>Value}"/>
+									</ComboBox>
+								</f:fields>
+							</f:FormElement>
+							<!-- Variety -->
+							<f:FormElement
+								visible="{ parts : [ {path : 'ForTerm/Selection/DimensionType'}, { path : 'ProductConfig/Variety/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.discountVarietyHiddenFormatter' }">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.Freestyle.DiscountVariety}:">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<ComboBox
+										editable="{ parts : [ {path : 'ProductConfig/Variety/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										selectedKey="{Selection/Variety}" change="onDiscountVarietyChange"
+										items="{ path : 'Content>/DiscountVarieties', templateShareable : 'true' }">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+										<core:Item key="{Content>Key}" text="{Content>Value}"/>
+									</ComboBox>
+								</f:fields>
+							</f:FormElement>
+						</f:FormContainer>
+						<!-- 03 - Appropriation -->
+						<f:FormContainer visible="{= ${Type} === '03'}">
+							<!-- Discount Value -->
+							<f:FormElement visible="{ProductConfig/DiscountValue/Visible}">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.AppropriationValue}:"
+										labelFor="freestyleGetPackageValueAppropriation">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Input
+										editable="{ parts : [ {path : 'ProductConfig/DiscountValue/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										id="freestyleGetPackageValueAppropriation"
+										value="{path : 'PackageValue', type: 'sap.ui.model.type.Float', formatOptions: { style: 'standard', emptyString: null }}"
+										valueState="{DiscountValueError}" change="updatePackageAppropiation" visible="{Content>/Editable}">
+										<layoutData>
+											<l:GridData span="L9 M9 S9"/>
+										</layoutData>
+									</Input>
+									<Text text="{path : 'Selection/DiscountValue', type: 'sap.ui.model.type.Float', formatOptions: { style: 'standard', maxFractionDigits: 2 }}">
+										<layoutData>
+											<l:GridData span="L3 M3 S3"/>
+										</layoutData>
+									</Text>
+								</f:fields>
+							</f:FormElement>
+							<!-- SubDiscountValue -->
+							<f:FormElement visible="{ProductConfig/SubDiscountValue/Visible}">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.AppropriationPercentage}:"
+										labelFor="freestyleGetPercentageValueAppropriation">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Input
+										editable="{ parts : [ {path : 'ProductConfig/SubDiscountValue/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										id="freestyleGetPercentageValueAppropriation"
+										value="{path : 'PercentageValue', type: 'sap.ui.model.type.Float', formatOptions: { style: 'standard', emptyString: null }}"
+										valueState="{SubDiscountValueError}" change="updatePackageAppropiation" visible="{Content>/Editable}">
+										<layoutData>
+											<l:GridData span="L9 M9 S9"/>
+										</layoutData>
+									</Input>
+									<Text
+										text="{parts : [ {path : 'Selection/SubDiscountValue'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.percentageFormatter'}">
+										<layoutData>
+											<l:GridData span="L3 M3 S3"/>
+										</layoutData>
+									</Text>
+								</f:fields>
+							</f:FormElement>
+						</f:FormContainer>
+						<!-- 02 - Product at a Discount -->
+						<f:FormContainer visible="{= ${Type} === '02'}">
+							<!-- DimensionType -->
+							<f:FormElement visible="{ProductConfig/DimensionType/Visible}">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.terms.Dimension}:" labelFor="freestyleGetDimension">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S10"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Button
+										visible="{ parts : [ {path : 'ProductConfig/DeleteButton/Visible'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										icon="sap-icon://sys-cancel" tooltip="{i18n>CreateOffer.Terms.Freestyle.Remove.Product}" press="removeRewardSelection" type="Transparent">
+										<layoutData>
+											<l:GridData span="L1 M1 S2"/>
+										</layoutData>
+									</Button>
+									<ComboBox
+										editable="{ parts : [ {path : 'ProductConfig/DimensionType/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										selectedKey="{Selection/DimensionType}" items="{ path : 'Content>/ProductDimensionsSet', templateShareable : 'true' }"
+										id="freestyleGetDimension" selectionChange="productDimensionChanged" change="onProductDimensionChange" width="100%">
+										<core:Item key="{Content>Key}" text="{Content>Value}"/>
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</ComboBox>
+								</f:fields>
+							</f:FormElement>
+							<!-- ProductId -->
+							<f:FormElement
+								visible="{ parts : [ {path : 'Selection/DimensionType'}, { path : 'ProductConfig/ProductId/Visible'}, { path : 'ProductConfig/HierarchyNodeId/Visible'}, { path : 'ProductConfig/HierarchyId/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.productComboFormatter' }">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" labelFor="productComboGet" text="{DimensionTypeText}:">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<core:Fragment fragmentName="retail.pmr.promotionaloffers.plugins.terms.styles.ProductCombo" type="XML" id="productComboGet"/>
+								</f:fields>
+							</f:FormElement>
+							<!-- Quantity/UoM -->
+							<f:FormElement
+								visible="{ parts : [ {path : 'Selection/DimensionType'}, {path : 'ProductConfig/Quantity/Visible'}, {path : 'ProductConfig/UnitOfMeasure/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.quantityUoMFormatter' }">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em"
+										text="{ parts : [ {path : 'i18n>CreateOffer.Terms.Freestyle.QuantityAndUnitOfMeasure'}, {path : 'i18n>CreateOffer.Terms.Freestyle.Quantity'}, {path : 'i18n>CreateOffer.Terms.Freestyle.UnitOfMeasure'}, {path : 'ProductConfig/Quantity/Visible'}, {path : 'ProductConfig/UnitOfMeasure/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.quanityUoMLabelFormatter' }">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Text
+										text="{ parts : [ {path : 'Selection/Quantity'}, { path : 'Selection/UnitOfMeasure'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.quantityTextFormatter' }"
+										visible="{= ${Content>/Editable} === false}">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Text>
+									<Input
+										editable="{ parts : [ {path : 'ProductConfig/Quantity/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										id="freestyleGetQuantityProductDiscount"
+										value="{path : 'Selection/Quantity', type: 'sap.ui.model.type.Float', constraints: {maximum: 9999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 10, minFractionDigits: 0, maxFractionDigits: 3, emptyString : null }}"
+										ariaLabelledBy="freestyleQuantityLabel" liveChange="handleSelectionQuantity"
+										visible="{ parts : [ {path : 'ProductConfig/Quantity/Visible'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }">
+										<layoutData>
+											<l:GridData
+												span="{ parts : [ {path : 'ProductConfig/Quantity/Visible'}, {path : 'ProductConfig/UnitOfMeasure/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.quanitySizeFormatter' }"/>
+										</layoutData>
+									</Input>
+									<ComboBox
+										editable="{ parts : [ {path : 'ProductConfig/UnitOfMeasure/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										busy="{ProductBusy}" selectedKey="{Selection/UnitOfMeasure}" items="{ path : 'UnitOfMeasures', templateShareable : 'true' }"
+										ariaLabelledBy="freestyleUoMLabel" change="onUoMValueChanged"
+										visible="{ parts : [ {path : 'ProductConfig/UnitOfMeasure/Visible'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }">
+										<layoutData>
+											<l:GridData
+												span="{ parts : [ {path : 'ProductConfig/Quantity/Visible'}, {path : 'ProductConfig/UnitOfMeasure/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.uomSizeFormatter' }"/>
+										</layoutData>
+										<core:Item key="{Id}" text="{Name}"/>
+									</ComboBox>
+								</f:fields>
+							</f:FormElement>
+							<!-- DiscountType -->
+							<f:FormElement visible="{ProductConfig/DiscountType/Visible}">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.DiscountType}:"
+										labelFor="freestyleGetProductAtDiscountType">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<ComboBox
+										editable="{ parts : [ {path : 'ProductConfig/DiscountType/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										selectedKey="{Selection/DiscountType}" items="{ path : 'Content>/DiscountTypes', templateShareable : 'true' }"
+										id="freestyleGetProductAtDiscountType" selectionChange="discountTypeChanged">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+										<core:Item key="{Content>Key}" text="{Content>Value}"/>
+									</ComboBox>
+								</f:fields>
+							</f:FormElement>
+							<!-- DiscountValue -->
+							<f:FormElement
+								visible="{= ${Selection/DiscountType} !== '05' &amp;&amp; ${Selection/DiscountType} !== '06' &amp;&amp; ${ProductConfig/DiscountValue/Visible} !== false}">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.DiscountValue}:"
+										labelFor="freestyleGetDiscountValueProductDiscount">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Text
+										text="{ parts : [ {path : 'Selection/DiscountValue'}, {path : 'DiscountDescription'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.discountTextFormatter' }"
+										visible="{= ${Content>/Editable} === false}">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Text>
+									<Input
+										editable="{ parts : [ {path : 'ProductConfig/DiscountValue/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										value="{path : 'Selection/DiscountValue', type: 'sap.ui.model.type.Float', constraints: {maximum: 99999999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 14, minFractionDigits: 0, maxFractionDigits: 5, emptyString : null }}"
+										id="freestyleGetDiscountValueProductDiscount" description="{DiscountDescription}" liveChange="handleSelectionDiscountValue"
+										change="updateDiscountValue" visible="{Content>/Editable}">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Input>
+								</f:fields>
+							</f:FormElement>
+							<!-- SubDiscountValue -->
+							<f:FormElement
+								visible="{= ${Selection/DiscountType} !== '05' &amp;&amp; ${Selection/DiscountType} !== '06' &amp;&amp; ${ContentModel>/EnforceMultipleValue} === 'I' &amp;&amp; ${ProductConfig/SubDiscountValue/Visible} !== false}">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.SubDiscountValue}:"
+										labelFor="freestyleGetSubDiscountValueProductDiscount">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Text
+										text="{ parts : [ {path : 'Selection/DiscountValue'}, {path : 'DiscountDescription'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.discountTextFormatter' }"
+										visible="{= ${Content>/Editable} === false}">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Text>
+									<Input
+										editable="{ parts : [ {path : 'ProductConfig/SubDiscountValue/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										value="{path : 'Selection/SubDiscountValue', type: 'sap.ui.model.type.Float', constraints: {maximum: 999999999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 14, minFractionDigits: 0, maxFractionDigits: 5, emptyString : null }}"
+										id="freestyleGetSubDiscountValueProductDiscount" description="{DiscountDescription}" liveChange="handleSelectionSubDiscountValue"
+										change="updateSubDiscountValue" visible="{Content>/Editable}">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Input>
+								</f:fields>
+							</f:FormElement>
+							<!-- UserProjection -->
+							<f:FormElement visible="{ProductConfig/UserProjection/Visible}">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.UserProjection}:"
+										labelFor="freestyleGetUserProjectionProductDiscount">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Input
+										editable="{ parts : [ {path : 'Content>/Editable'}, { path : 'ProductConfig/UserProjection/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										id="freestyleGetUserProjectionProductDiscount"
+										value="{ path: 'Selection/UserProjection', type: 'sap.ui.model.type.Float', constraints: {maximum: 99999999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 12, minFractionDigits: 0, maxFractionDigits: 6, emptyString : null } }"
+										liveChange="handleSelectionUserProjection" change="updateUserProjection">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Input>
+								</f:fields>
+							</f:FormElement>
+							<core:ExtensionPoint name="extTermsGet"/>
+							<!-- Variety -->
+							<f:FormElement
+								visible="{ parts : [ {path : 'Selection/DimensionType'}, { path : 'ProductConfig/Variety/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.discountVarietyHiddenFormatter' }">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.Freestyle.DiscountVariety}:">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<ComboBox
+										editable="{ parts : [ {path : 'ProductConfig/Variety/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										selectedKey="{Selection/Variety}" change="onDiscountVarietyChange"
+										items="{ path : 'Content>/DiscountVarieties', templateShareable : 'true' }">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+										<core:Item key="{Content>Key}" text="{Content>Value}"/>
+									</ComboBox>
+								</f:fields>
+							</f:FormElement>
+							<!-- PromoCostPrice / Currency-->
+							<f:FormElement visible="{ parts : [ {path : 'Selection/DimensionType'}, {path : 'featuresAvailable>/Financials'}, { path : 'ProductConfig/PromoCostPrice/Visible'}, {path : 'More/Visible'}],
+									formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.promoCostPriceVisiblityFormatter'
+								}">
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" 
+										text="{= ${UIVisiblity>/Version} > 3 ? ${i18n>CreateOffer.Terms.Freestyle.PromotionCostAndCurrency} : ${i18n>CreateOffer.Terms.FreestyleOffer.PromotionCost}.concat(':') }"
+										labelFor="freestyleGetPromoCostPriceProductDiscount">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11" />
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Text
+										visible="{= ${Content>/Editable} === false }"
+										text="{ 
+											parts : [ {path : 'UIVisiblity>/Version'}, {path : 'Selection/PromoCostPrice'}, {path : 'Selection/PromoCostPriceCurrency'}], 
+											formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.promoCostPriceTextFormatter' 
+										}" >
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Text>				
+									<Input 
+										id="freestyleGetPromoCostPriceProductDiscount"
+										visible="{
+											parts : [ {path : 'ProductConfig/PromoCostPrice/Visible'}, { path : 'Content>/Editable'}],
+											formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter'
+										}"
+										editable="{
+											parts : [ {path : 'Content>/Editable'}, { path : 'ProductConfig/PromoCostPrice/Editable'}],
+											formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter'
+										}" 
+										value="{
+											path: 'Selection/PromoCostPrice',
+											type: 'sap.ui.model.type.Float',
+											constraints: {maximum: 99999999999999},
+											formatOptions: {
+												style: 'standard',
+												groupingEnabled: false,
+												minIntegerDigits: 0,
+												maxIntegerDigits: 14,
+												minFractionDigits: 0,
+												maxFractionDigits: 5,
+												emptyString : null
+											}}"  
+										liveChange="handleSelectionPromoCostPrice" 
+										change="updatePromoCostPrice">
+										<layoutData>
+											<l:GridData span="{= ${UIVisiblity>/Version} > 3 ? 'L9 M9 S9' : 'L12 M12 S12'}" />
+										</layoutData>
+									</Input>
+									<ComboBox
+										visible="{ 
+											parts : [  {path : 'UIVisiblity>/Version'}, {path : 'ProductConfig/PromoCostPrice/Visible'}, {path : 'More/Visible'}, {path : 'Content>/Editable'}], 
+											formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.promoCostPriceCurrencyVisiblityFormatter' 
+										}"
+										editable="{= ${ProductConfig/PromoCostPrice/Editable} &amp;&amp; ${Content>/Editable}}"
+										showSecondaryValues="true" 
+										filterSecondaryValues="true" 
+										busy="{ProductBusy}" 
+										selectedKey="{Selection/PromoCostPriceCurrency}"
+										items="{ path : 'Content>/CurrencyList', length: 300, sorter: { path: 'Key' }, templateShareable : 'true' }"
+										ariaLabelledBy="freestylePromoCostPriceCurrencyLabel" 
+										change="onPromoCostPriceCurrencyChanged">
+										<layoutData>
+											<l:GridData span="L3 M3 S3"/>
+										</layoutData>
+										<core:ListItem key="{Content>Key}" text="{Content>Key}" additionalText="{Content>Value}"/>
+									</ComboBox>						
+								</f:fields>
+							</f:FormElement>							
+
+							<!-- See More / See Less -->
+							<f:FormElement>
+								<VBox
+									visible="{ parts : [ {path : ''}, {path : 'featuresAvailable>/Financials'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.termsSeeMoreVisible' }">
+									<Link press="toggleVisibity" text="{i18n>CreateOffer.SeeLess}" visible="{More/Visible}"/>
+									<Link press="toggleVisibity" text="{i18n>CreateOffer.SeeMore}" visible="{= ${More/Visible} === false}"/>
+								</VBox>
+							</f:FormElement>
+						</f:FormContainer>
+						<!-- Incentive Types -->
+						<f:FormContainer formElements="{ path: 'Incentives', templateShareable: 'true' }">
+							<f:FormElement>
+								<f:fields>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{Description}:" labelFor="freestyleGetSubIncentive">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S10"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Button
+										visible="{ parts : [ {path : 'Config/DeleteButton/Visible'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										icon="sap-icon://sys-cancel" tooltip="{i18n>CreateOffer.Terms.Freestyle.Remove.Incentive}" press="deleteIncentives" type="Transparent">
+										<layoutData>
+											<l:GridData span="L1 M1 S2"/>
+										</layoutData>
+									</Button>
+									<ComboBox
+										editable="{ parts : [ {path : 'Config/Type/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										selectionChange="selectSubIncentive" selectedKey="{Selection/Type}" change="onSubIncentiveChange"
+										items="{ path : 'SubIncentives', templateShareable : 'true' }" id="freestyleGetSubIncentive" width="100%">
+										<core:ListItem key="{Id}" text="{Description}"/>
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</ComboBox>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.IncentiveProduct}:"
+										visible="{= ${ProductRelevant} === 'X'}">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<controls:ProductCouponCombo editable="{Content>/Editable}" masterdataSystem="{GeneralModel>/MasterdataSystem}"
+										productCouponId="{Selection/ProductId}" visible="{= ${ProductRelevant} === 'X'}">
+										<controls:layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</controls:layoutData>
+									</controls:ProductCouponCombo>
+
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.IncentiveCouponOffer}:"
+										visible="{= ${UIVisiblity>/Version} > 5 &amp;&amp; ${featuresAvailable>/CouponOffers} === 'X' &amp;&amp; ${ProductRelevant} === 'O01'}">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+								    <freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.IncentiveOffer}:"
+										visible="{= ${UIVisiblity>/Version} > 5 &amp;&amp; ${featuresAvailable>/CouponOffers} === 'X' &amp;&amp; ${ProductRelevant} === 'O09'}">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<controls:CouponOfferCombo editable="{Content>/Editable}" 
+										productRelevant="{ProductRelevant}"
+										couponOfferId="{Selection/OfferId}" 
+										visible="{= ${UIVisiblity>/Version} > 5 &amp;&amp; ${featuresAvailable>/CouponOffers} === 'X' &amp;&amp; (${ProductRelevant} === 'O01' || ${ProductRelevant} === 'O09') }">
+										<controls:layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</controls:layoutData>
+									</controls:CouponOfferCombo>
+									
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.IncentiveCode}:"
+										visible="{= ${ProductRelevant} === 'F'}" labelFor="freestyleGetProductRelevantProductDiscount">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Input editable="{Content>/Editable}" value="{Selection/ExtProductId}" visible="{= ${ProductRelevant} === 'F'}"
+										id="freestyleGetProductRelevantProductDiscount" liveChange="handleSelectedSubIncentiveExtProductId">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Input>
+									<freestyle:LabelWithMargin marginTop="0.4em" text="{i18n>CreateOffer.Terms.FreestyleOffer.IncentiveQuantity}:"
+										visible="{= ${QuantityRelevant} === 'X'}" labelFor="freestyleGetQuantityRelevantProductDiscount">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Input editable="{Content>/Editable}" id="freestyleGetQuantityRelevantProductDiscount"
+										value="{path : 'Selection/Quantity', type: 'sap.ui.model.type.Float', constraints: {maximum: 9999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 10, minFractionDigits: 0, maxFractionDigits: 3, emptyString : null }}"
+										visible="{= ${QuantityRelevant} === 'X'}" liveChange="handleSelectedSubIncentiveQuantity">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Input>
+									<core:ExtensionPoint name="extTermsIncentive"/>
+									<freestyle:LabelWithMargin marginTop="0.4em"
+										text="{parts : [{path : 'Config/Cost/Visible'}, {path : 'i18n>CreateOffer.Terms.FreestyleOffer.IncentiveCost'}, {path : 'Config/AdjustedCost/Visible'}, {path : 'i18n>CreateOffer.Terms.FreestyleOffer.IncentiveAdjustedCost'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.labelFormatter'}"
+										visible="{ parts : [ {path : 'featuresAvailable>/Financials'}, { path : 'Config/Cost/Visible'}, {path : 'More/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.featureFormatter' }">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Input ariaLabelledBy="freestyleCostLabel" id="freestyleGetCostProductDiscount"
+										visible="{ parts : [ {path : 'featuresAvailable>/Financials'}, { path : 'Config/Cost/Visible'}, {path : 'More/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.featureFormatter' }"
+										editable="{ parts : [ {path : 'Config/Cost/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										value="{path : 'Selection/Cost', type: 'sap.ui.model.type.Float', constraints: {maximum: 9999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 10, minFractionDigits: 0, maxFractionDigits: 3, emptyString : null }}"
+										liveChange="handleSelectedSubIncentiveCost">
+										<layoutData>
+											<l:GridData
+												span="{parts : [ {path : 'featuresAvailable>/Financials'}, {path : 'Config/AdjustedCost/Visible'}], formatter: 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.inputSize6'}"/>
+										</layoutData>
+									</Input>
+									<Input id="freestyleGetAdjustedCostProductDiscount"
+										visible="{ parts : [ {path : 'featuresAvailable>/Financials'}, { path : 'Config/AdjustedCost/Visible'}, {path : 'More/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.featureFormatter' }"
+										ariaLabelledBy="freestyleAdjustedCostLabel"
+										editable="{ parts : [ {path : 'Config/AdjustedCost/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										value="{path : 'Selection/AdjustedCost', type: 'sap.ui.model.type.Float', constraints: {maximum: 9999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 10, minFractionDigits: 0, maxFractionDigits: 3, emptyString : null }}"
+										liveChange="handleSelectedSubIncentiveAdjustedCost">
+										<layoutData>
+											<l:GridData
+												span="{parts : [ {path : 'featuresAvailable>/Financials'}, {path : 'Config/Cost/Visible'}], formatter: 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.inputSize6'}"/>
+										</layoutData>
+									</Input>
+									<freestyle:LabelWithMargin marginTop="0.4em"
+										text="{parts : [{path : 'Config/Value/Visible'}, {path : 'i18n>CreateOffer.Terms.FreestyleOffer.IncentiveValue'}, {path : 'Config/AdjustedValue/Visible'}, {path : 'i18n>CreateOffer.Terms.FreestyleOffer.IncentiveAdjustedValue'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.labelFormatter'}"
+										visible="{ parts : [ {path : 'featuresAvailable>/Financials'}, {path : 'More/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.featureFormatter' }">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Input id="freestyleGetValueProductDiscount" ariaLabelledBy="freestyleValueLabel"
+										visible="{ parts : [ {path : 'featuresAvailable>/Financials'}, { path : 'Config/Value/Visible'}, {path : 'More/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.featureFormatter' }"
+										editable="{ parts : [ {path : 'Config/Value/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										value="{path : 'Selection/Value', type: 'sap.ui.model.type.Float', constraints: {maximum: 9999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 10, minFractionDigits: 0, maxFractionDigits: 3, emptyString : null }}"
+										liveChange="handleSelectedSubIncentiveValue">
+										<layoutData>
+											<l:GridData
+												span="{parts : [ {path : 'featuresAvailable>/Financials'}, {path : 'Config/AdjustedValue/Visible'}], formatter: 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.inputSize6'}"/>
+										</layoutData>
+									</Input>
+									<Input id="freestyleGetAdjustedValueProductDiscount" ariaLabelledBy="freestyleAdjustedValueLabel"
+										visible="{ parts : [ {path : 'featuresAvailable>/Financials'}, { path : 'Config/AdjustedValue/Visible'}, {path : 'More/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.featureFormatter' }"
+										editable="{ parts : [ {path : 'Config/AdjustedValue/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										value="{path : 'Selection/AdjustedValue', type: 'sap.ui.model.type.Float', constraints: {maximum: 9999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 10, minFractionDigits: 0, maxFractionDigits: 3, emptyString : null }}"
+										liveChange="handleSelectedSubIncentiveAdjustedValue">
+										<layoutData>
+											<l:GridData
+												span="{parts : [ {path : 'featuresAvailable>/Financials'}, {path : 'Config/Value/Visible'}], formatter: 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.inputSize6'}"/>
+										</layoutData>
+									</Input>
+									<freestyle:LabelWithMargin marginTop="0.4em" labelFor="freestyleGetRedemptionRateProductDiscount"
+										visible="{ parts : [ {path : 'featuresAvailable>/Financials'}, { path : 'Config/RedemptionRate/Visible'}, {path : 'More/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.featureFormatter' }"
+										text="{i18n>CreateOffer.Terms.FreestyleOffer.RedemptionRate}:">
+										<freestyle:layoutData>
+											<l:GridData span="L11 M11 S11"/>
+										</freestyle:layoutData>
+									</freestyle:LabelWithMargin>
+									<Input
+										visible="{ parts : [ {path : 'featuresAvailable>/Financials'}, { path : 'Config/RedemptionRate/Visible'}, {path : 'More/Visible'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.featureFormatter' }"
+										id="freestyleGetRedemptionRateProductDiscount"
+										editable="{ parts : [ {path : 'Config/RedemptionRate/Editable'}, { path : 'Content>/Editable'}], formatter : 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.booleanFormatter' }"
+										value="{path : 'Selection/RedemptionRate', type: 'sap.ui.model.type.Float', constraints: {maximum: 9999999999}, formatOptions: { style: 'standard', groupingEnabled: false, minIntegerDigits: 0, maxIntegerDigits: 10, minFractionDigits: 0, maxFractionDigits: 3, emptyString : null }}"
+										change="handleSelectedSubIncentiveRedemptionRate">
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</Input>
+									<VBox
+										visible="{ parts : [ {path : ''}, {path : 'featuresAvailable>/Financials'}], formatter: 'retail.pmr.promotionaloffers.plugins.terms.styles.FreestyleViewFormatters.incentivesSeeMoreVisible' }">
+										<Link press="toggleVisibity" text="{i18n>CreateOffer.SeeLess}" visible="{More/Visible}"/>
+										<Link press="toggleVisibity" text="{i18n>CreateOffer.SeeMore}" visible="{= ${More/Visible} === false}"/>
+										<layoutData>
+											<l:GridData span="L12 M12 S12"/>
+										</layoutData>
+									</VBox>
+								</f:fields>
+							</f:FormElement>
+						</f:FormContainer>
+					</f:formContainers>
+				</f:Form>
+				<freestyle:Separator visible="{path:'', formatter : '.isRewardSeparatorVisible'}"/>
+			</VBox>
+		</freestyle:BorderedPanel>
+		<freestyle:SmartFinancialControl visible="{= ${featuresAvailable>/Financials} === 'X' }" persistencyKey="FINANCIALS_TABLE_PERSISTENT_KEY"
+			financials="{/Financials}" termFinancialItems="{/TermFinancialFields}">
+			<freestyle:financialItems>
+				<freestyle:FinancialItem
+					data='\{ "keys" : ["RegularPrice", "RegularPriceMargin"], "separator" : "/", "columnIndex" : 0, "formatter": "financialsFormatter"}'/>
+				<freestyle:FinancialItem data='\{ "keys" : ["ProductCost"]}'/>
+				<freestyle:FinancialItem
+					data='\{ "keys" : ["CalculatedPrice", "Margin"], "separator" : "/", "columnIndex" : 1, "formatter": "financialsFormatter"}'/>
+			</freestyle:financialItems>
+			<freestyle:layoutData>
+				<l:GridData span="L4 M12 S12"/>
+			</freestyle:layoutData>
+		</freestyle:SmartFinancialControl>
+	</l:Grid>
+	<VBox width="100%" class="sapUiRespGrid sapUiRespGridHSpace1">
+		<core:Fragment fragmentName="retail.pmr.promotionaloffers.plugins.terms.controls.freestyle.ProductDetails" type="XML"/>
+	</VBox>
+</core:View>

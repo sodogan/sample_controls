@@ -1,0 +1,261 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:View xmlns:core="sap.ui.core" xmlns="sap.m" xmlns:ux="sap.uxap"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:l="sap.ui.layout"
+	xmlns:smartFilterBar="sap.ui.comp.smartfilterbar"
+	xmlns:smartTable="sap.ui.comp.smarttable"	
+	xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:semantic="sap.m.semantic"
+	xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	displayBlock="true" controllerName="retail.pmr.promotionaloffers.view.ManageOffers"	
+	height="100%">
+	<semantic:FullscreenPage
+		title="{i18n>manageoffer.AppTitle}"
+		showNavButton="true"
+		navButtonPress="onNavButtonPress"
+		id="page">
+		<semantic:content>
+			<l:FixFlex minFlexSize="200" vertical="true">
+				<l:fixContent>
+					<smartFilterBar:SmartFilterBar
+						id="smartFilterBarId"
+						entityType="Offer"						
+						persistencyKey="smartFilterBarKey"
+						beforeVariantSave="onBeforeVariantSave"
+						afterVariantLoad="onAfterVariantLoad"
+						customData:dateFormatSettings='\{"UTC":true\}'
+						enableBasicSearch="true">
+						<smartFilterBar:controlConfiguration>
+							<smartFilterBar:ControlConfiguration key="ExtLocationNodeId" visibleInAdvancedArea="true"/>
+							<smartFilterBar:ControlConfiguration key="LeadingCategoryName" visibleInAdvancedArea="true"/>	
+							<smartFilterBar:ControlConfiguration key="StartOfOffer" visibleInAdvancedArea="true"/>
+							<smartFilterBar:ControlConfiguration key="EndOfOffer" visibleInAdvancedArea="true"/>
+							<smartFilterBar:ControlConfiguration key="CreatedBy" visibleInAdvancedArea="true"/>				
+						</smartFilterBar:controlConfiguration>
+					</smartFilterBar:SmartFilterBar>
+				</l:fixContent>
+				<l:flexContent height="100%">
+					<smartTable:SmartTable 
+						id="offers"
+						demandPopin="true"
+						enableAutoBinding="true"
+						entitySet="Offers"
+						useExportToExcel="true"
+						smartFilterId="smartFilterBarId"
+						useVariantManagement="true" 
+						useTablePersonalisation="true"
+						tableType="ResponsiveTable"
+						persistencyKey="OFFERS_TABLE_PERSISTENT_KEY"
+						beforeRebindTable="onBeforeRebindTable"
+						header="{i18n>ManageOffers.Offers}"
+                        showRowCount="true"
+						class="sapUiMediumMarginBegin sapUiMediumMarginEnd"
+						ignoredFields="Type">
+						
+						<smartTable:customData>
+							<core:CustomData key="p13nDialogSettings" value='\{"filter": \{ "visible": false}, 
+																			   "group": \{ "visible": false}}'/>
+						</smartTable:customData>
+						
+						<Table
+							id="offersTable"
+							mode="MultiSelect"
+							selectionChange="toggleToolbarButtons"
+							growing="true"
+							growingThreshold="20">
+							
+							<columns>
+								<Column minScreenWidth="Tablet" demandPopin="true">
+									<customData>
+							          	<core:CustomData key="p13nData"  value='\{"columnIndex": "0", "columnKey": "Name","leadingProperty": "Name","additionalProperty": "ExtOfferId","sortProperty": "Name","filterProperty": "Name"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.Name}" tooltip="{i18n>ManageOffers.Name}"/>
+								</Column>
+								
+								<Column minScreenWidth="Tablet" demandPopin="true">
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "1", "columnKey": "ImagePath","leadingProperty": "ImagePath"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.Image}" tooltip="{i18n>ManageOffers.Image}" />
+								</Column>
+								
+								<Column minScreenWidth="Tablet" demandPopin="true">
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "2", "columnKey": "Status","leadingProperty": ["Status", "StatusName"],"sortProperty": "Status","filterProperty": "Status"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.Status}" tooltip="{i18n>ManageOffers.Status}"/>
+								</Column>
+
+								<Column minScreenWidth="Tablet" demandPopin="true">
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "4", "columnKey": "Timeframe", "leadingProperty": ["StartOfOffer", "EndOfOffer"],"sortProperty": "StartOfOffer","filterProperty": "StartOfOffer"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.TimeFrame}" tooltip="{i18n>ManageOffers.TimeFrame}"/>
+								</Column>
+								
+								<Column minScreenWidth="Tablet" demandPopin="true">
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnIndex": "8", "columnKey": "ChangedByName","leadingProperty": ["ChangedByName", "ChangedOn"],"sortProperty": "ChangedByName","filterProperty": "ChangedByName"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.LastChanged}" tooltip="{i18n>ManageOffers.LastChanged}"/>
+								</Column>
+								<Column minScreenWidth="Tablet" demandPopin="true" visible="false">
+									<customData> 
+							          	<core:CustomData key="p13nData" value='\{"columnKey": "CreatedByName","leadingProperty": ["CreatedByName", "CreatedOn"],"sortProperty": "CreatedByName","filterProperty": "CreatedByName"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.Created}" tooltip="{i18n>ManageOffers.Created}"/>
+								</Column>
+								 <Column visible="false">
+									<customData>
+							          	<core:CustomData key="p13nData"  value='\{"columnKey": "ExportedOn","leadingProperty": "ExportedOn","sortProperty": "ExportedOn","filterProperty": "ExportedOn", "type": "date"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.ExportedOn}" tooltip="{i18n>ManageOffers.ExportedOn}" />
+								</Column>
+								<Column visible="false">
+									<customData>
+							          	<core:CustomData key="p13nData"  value='\{"columnKey": "ChangedOn","leadingProperty": "ChangedOn","sortProperty": "ChangedOn","filterProperty": "ChangedOn", "type": "date"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.ChangedOn}" tooltip="{i18n>ManageOffers.ChangedOn}" />
+								</Column> 
+								<Column visible="false">
+									<customData>
+							          	<core:CustomData key="p13nData"  value='\{"columnKey": "CreatedOn","leadingProperty": "CreatedOn","sortProperty": "CreatedOn","filterProperty": "CreatedOn", "type": "date"}'/>
+							     	</customData>
+									<Text text="{i18n>ManageOffers.CreatedOn}" tooltip="{i18n>ManageOffers.CreatedOn}"/>
+								</Column>								
+							</columns>
+							<items templateShareable="true">
+								<ColumnListItem type="Navigation" press="displayOffer">
+									<cells>
+										<ObjectIdentifier
+											title="{Name}"
+											text="{ExtOfferId}"/>
+										<Image
+											width="50px"
+											src="{ImagePath}" 
+											alt="{Name}"
+											decorative="{= ${ImagePath} ? false : true}"/>
+										<ObjectStatus
+											text="{StatusName}"
+											class="sapMText sapMTextMaxWidth"
+											state="{
+												parts: [
+													{path: 'UIState'},
+													{path: 'Status'}
+												],
+												formatter: 'retail.pmr.promotionaloffers.utils.Utils.status'
+											}" />
+										<Text text="{
+											parts : [
+												{path: 'StartOfOffer' },
+												{path: 'EndOfOffer' }
+											],
+											formatter:'retail.pmr.promotionaloffers.utils.Formatter.datesFormatterForManageOffer'
+										}" />
+										<Text text="{
+											parts : [
+												{path: 'ChangedByName' },
+												{path: 'ChangedOn' }],
+											formatter:'retail.pmr.promotionaloffers.utils.Formatter.lastChangedByFormatter'
+										}" />
+										<Text text="{
+											parts : [
+												{path: 'CreatedByName' },
+												{path: 'CreatedOn' }],
+											formatter:'retail.pmr.promotionaloffers.utils.Formatter.lastChangedByFormatter'
+										}" />
+										<Text
+											text="{
+												path: 'ExportedOn',
+												formatter: 'retail.pmr.promotionaloffers.utils.Formatter.dateFormat'
+										}"/>
+										<Text
+											text="{
+												path: 'ChangedOn',
+												formatter: 'retail.pmr.promotionaloffers.utils.Formatter.dateFormat'
+										}"/>
+										<Text
+											text="{
+												path: 'CreatedOn',
+												formatter: 'retail.pmr.promotionaloffers.utils.Formatter.dateFormat'
+										}"/>										
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>
+						
+						<smartTable:layoutData>
+							<FlexItemData growFactor="1" />
+						</smartTable:layoutData>								 
+					</smartTable:SmartTable>
+				</l:flexContent>
+			</l:FixFlex>
+		</semantic:content>
+		
+		<semantic:messagesIndicator>
+			<semantic:MessagesIndicator press="onMessagesIndicatorPress" />
+		</semantic:messagesIndicator>
+
+		<semantic:customFooterContent>
+			<Button id="create" text="{i18n>Offer.CreateOffer}" press="createOfferPressed" />
+			<Button
+				id="vendorFunds"
+				visible="{= ${featuresAvailable>/VendorFunds} === 'X' }"
+				text="{i18n>CreateOffer.FromVendorFund.Button}"
+				press="createFromVendorFunds" />
+			<Button id="copy" text="{i18n>copyoffer.Button}" enabled="{Content>/Editable}" press="copyOfferPressed"/>
+			<Button id="edit" text="{i18n>ManagerOffers.editButton}" enabled="{Content>/EditEnabled}" press="editOfferPressed" />
+			<Button id="delete" text="{i18n>ManagerOffers.deleteButton}" enabled="{Content>/DeleteEnabled}" press="handleDeletePress"/>				
+			<Button 
+				id="status"
+				text="{i18n>ManagerOffers.statusButton}"
+				press="handleOfferFunctionPress" 
+				enabled="{Content>/OfferFunctionsEnabled}">
+				<customData>
+					<core:CustomData key="area" value="S" />
+				</customData>
+			</Button>
+			<Button 
+				id="transfer"
+				text="{i18n>ManagerOffers.transferButton}"
+				press="handleOfferFunctionPress" 
+				enabled="{Content>/OfferFunctionsEnabled}">
+				<customData>
+					<core:CustomData key="area" value="T" />
+				</customData>
+			</Button>
+			<Button 
+				id="update"
+				text="{i18n>ManagerOffers.updateButton}"
+				press="handleOfferFunctionPress" 
+				enabled="{Content>/OfferFunctionsEnabled}">
+				<customData>
+					<core:CustomData key="area" value="U" />
+				</customData>
+			</Button>
+			<Button 
+				id="collision"
+				text="{i18n>Offer.CollisionDetection}"
+				press="onCollisionDetection" 
+				enabled="{Content>/CollisionEnabled}">
+				<customData>
+					<core:CustomData key="area" value="C" />
+				</customData>
+			</Button>
+			<Button 
+				id="content"
+				text="{i18n>Offer.OfferContent}"
+				press="onOfferContent" 
+				visible="{UIVisiblity>/ContentAssignmentEnabled}"
+				enabled="{Content>/ContentEnabled}">
+				<customData>
+					<core:CustomData key="area" value="C" />
+				</customData>
+			</Button>			
+		</semantic:customFooterContent>
+	</semantic:FullscreenPage>
+</core:View>

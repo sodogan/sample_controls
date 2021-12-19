@@ -1,0 +1,83 @@
+<!--
+
+    Copyright (C) 2009-2019 SAP SE or an SAP affiliate company. All rights reserved.
+
+-->
+<core:View 
+		xmlns:mvc="sap.ui.core.mvc" 
+		xmlns:l="sap.ui.layout" 
+		xmlns:core="sap.ui.core"
+		xmlns:forms="sap.ui.layout.form"
+		xmlns="sap.m"		
+		displayBlock="true"		
+		controllerName="retail.pmr.promotionaloffers.plugins.VendorFund">
+		<l:VerticalLayout>
+			<l:content>
+				<Table
+					items="{/AvailableFunds}"
+					noDataText="{i18n>CreateOffer.VendorFund.NoData}"
+					mode="{= ${Content>/Editable} ? 'MultiSelect' : 'None' }">
+				  	<headerToolbar>
+						<Toolbar>
+							<Title text="{parts : [{path : 'i18n>CreateOffer.VendorFund.TableTitle'}, {path : '/AvailableFunds/length'}], formatter : 'jQuery.sap.formatMessage'}" level="H2"/>
+							<ToolbarSpacer/>
+							<Link 
+								text="{i18n>VendorFund.retrieveVendorFunds}"
+								press="retrieveVendorFunds"
+								visible="{Content>/Editable}"
+								enabled="{ActionsAllowed>/ActionAllowed}"/>
+						</Toolbar>
+					</headerToolbar>
+					<columns>
+						<Column>
+							<Text text="{i18n>VendorFund.fundName}" />
+						</Column>
+						<Column minScreenWidth="Tablet" demandPopin="true">
+							<Text text="{i18n>VendorFund.vendorName}" />
+						</Column>
+						<Column minScreenWidth="Tablet" demandPopin="true">
+							<Text text="{i18n>VendorFund.fundType}" />
+						</Column>
+						<Column minScreenWidth="Tablet" demandPopin="true">
+							<Text text="{i18n>VendorFund.fundCategory}" />
+						</Column>
+						<Column minScreenWidth="Tablet" demandPopin="true">
+							<Text text="{i18n>VendorFund.validityPeriod}" />
+						</Column>
+						<Column minScreenWidth="Tablet" demandPopin="true" hAlign="End">
+							<Text text="{i18n>VendorFund.summary}" />
+						</Column>
+					</columns>
+					<items>
+						<ColumnListItem selected="{Selected}">
+							<cells>
+								<ObjectIdentifier title="{Name}" text="{Id}"/>
+								<Text text="{VendorName}" />
+								<Text text="{TypeName}" />
+								<Text text="{CategoryName}" />
+								<Text text="{
+												path: 'StartDate',
+												type: 'sap.ui.model.type.Date',
+												formatOptions: {
+													style: 'medium',
+													UTC: true
+												}
+											} - {
+												path: 'EndDate',
+												type: 'sap.ui.model.type.Date',
+												formatOptions: {
+													style: 'medium',
+													UTC: true
+												}											
+											}"/>
+								<Text text="{Summary}" />
+							</cells>
+						</ColumnListItem>
+					</items>								
+				</Table>
+			</l:content>		
+			<l:dependents>
+				<BusyDialog id="busyVendorFunds" />
+			</l:dependents>
+		</l:VerticalLayout>
+</core:View>
